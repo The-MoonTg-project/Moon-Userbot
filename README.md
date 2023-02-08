@@ -31,8 +31,8 @@
 **Clone the repo**
 ```
  git clone https://github.com/Dragon-Userbot/Dragon-Userbot.git
- ```
+```
 **Setup**
-
+```
  cd Dragon-Userbot/ && bash install.sh
 ```
