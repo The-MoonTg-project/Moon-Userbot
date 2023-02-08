@@ -55,7 +55,7 @@ echo
 case $db_type in
     1)
 echo "Please enter db_url"
-echo "You can get it here -> https://telegra.ph/How-to-get-Mongodb-URL-and-login-in-telegram-08-01"
+echo "You can get it here -> "
 read -r -p "> " db_url
 db_name = Moon_Userbot
 db_type = mongodb
