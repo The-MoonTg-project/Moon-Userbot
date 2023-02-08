@@ -39,4 +39,4 @@
 
 **NOTE: If you choose MongoDB for your cloud then you need to setup mongo_db_url**
 
-**Recommend: **sqlite_**
+**Recommend: _sqlite_**
