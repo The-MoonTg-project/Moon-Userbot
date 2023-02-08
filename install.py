@@ -2,7 +2,7 @@
 #  Copyright (C) 2020-present Moon Userbot Organization
 #
 #  This program is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
+#  itunder the terms of the GNU General Public License as published by
 #  the Free Software Foundation, either version 3 of the License, or
 #  (at your option) any later version.
 
@@ -59,8 +59,8 @@ app.send_message(
 f"<b>[ {
         datetime.datetime.now()}] Moon-Userbot launched! \n"
     "Channel: @moonuserbot\n"
-    "Custom modules: @Moon_Userb0t_modules\n"
-    "Chat [RU]: @Moon_Userb0t_chat\n"
+    "Custom modules: @moonub_modules\n"
+    "Chat [RU]: @moonub_chat\n"
 f"For restart, enter:</b>\n"
 f"<code> {
         restart
