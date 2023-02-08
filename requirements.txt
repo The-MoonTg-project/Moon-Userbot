@@ -1,0 +1,14 @@
+pyrogram==1.4.16  
+ tgcrypto  
+ wheel  
+ pygments  
+ ffmpeg-python  
+ pymongo  
+ Pillow>=9.0.0  
+ pytube  
+ click  
+ pymongo[srv]  
+ dnspython  
+ requests  
+ environs  
+ GitPython 
