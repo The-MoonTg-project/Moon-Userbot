@@ -20,11 +20,14 @@
 
 <h2>Linux, Termux (use <a href='https://f-droid.org/en/packages/com.termux/'>f-droid</a> version) and Windows [only wsl]</h2> 
 
-**For Updating the packages
+**Update the packages**
 ```
  apt-get upgrade -y && apt-get update
 ```
+**Install Git[If installed ignore**
+```
  apt install git
+```
  git clone https://github.com/Dragon-Userbot/Dragon-Userbot.git
  cd Dragon-Userbot/ && bash install.sh
 ```
