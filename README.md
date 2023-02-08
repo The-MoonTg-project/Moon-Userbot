@@ -40,3 +40,14 @@
 **NOTE: If you choose MongoDB for your cloud then you need to setup mongo_db_url**
 
 **Recommend: _sqlite_**
+
+<h2>Credits</h2> 
+ <nav> 
+ <li><a href='https://github.com/Dragon-Userbot/Dragon-Userbot'>Dragon-Userbot</a></li> 
+ <li><a href='https://github.com/LaciaMemeFrame'>LaciaMemeFrame</a></li> 
+ <li><a href='https://t.me/nalinor'>nalinor</a></li> 
+ <li>asphy <a href='https://t.me/LKRinternationalrunetcomphinc'>tg</a> and <a href='https://ru.namemc.com/profile/asphyxiamywife.1'>namemc</a></li> 
+ <li><a href='http://t.me/fuccsoc'>fuccsoc</a></li> 
+ </nav> 
+ 
+ <h4>Written on <a href='https://github.com/pyrogram/pyrogram'>Pyrogram❤️</a> and <a href='https://github.com/MarshalX/tgcalls/tree/main/pytgcalls'>pytgcalls❤️</a></h4>
