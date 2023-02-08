@@ -42,11 +42,10 @@
 **Recommend: _sqlite_**
 
 <h2>Groups and support</h2> 
- <p><a href='https://t.me/Dragon_Userb0t'>Channel</a> with latest news on the official telegram [ru/en]</p> 
+ <p><a href='https://t.me/moonuserbot'>Channel</a> with latest news on the official telegram [en]</p> 
   
- <p><a href='https://t.me/Dragon_Userb0t_modules'>Channel</a> with custom modules [ru/en] </p> 
+ <p><a href='https://t.me/moonub_modules'>Channel</a> with custom modules [en] </p> 
   
- <p><a href='https://t.me/moonuserbot'>Channel</a> with ChAnGeLoGs!) /p> 
   
  <p><a href='https://t.me/moonub_chat'>Discussion</a> in the official telegram chat [en]</p> 
  
