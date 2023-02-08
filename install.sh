@@ -1,6 +1,6 @@
 #!/bin/bash
 if command -v termux-setup-storage; then
-echo For termux, please use https://raw.githubusercontent.com/Moon-Userbot/Moon-Userbot/main/termux-install.sh
+echo For termux, please use https://raw.githubusercontent.com/The-MoonTg-project/Moon-Userbot/main/termux-install.sh
 exit 1
 fi
 
@@ -20,7 +20,7 @@ cd Moon-Userbot
 elif [[-f ".env.dist"]] && [[-f "main.py"]] && [[-d "modules"]]; then
 :
 else
-    git clone https://github.com/Moon-Userbot/Moon-Userbot || exit 2
+    git clone https://github.com/The-MoonTg-project/Moon-Userbot || exit 2
 cd Moon-Userbot || exit 2
 fi
 
