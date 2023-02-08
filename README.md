@@ -8,5 +8,6 @@
 [![Size](https://img.shields.io/github/repo-size/The-MoonTg-project/Moon-Userbot?color=green)](https://github.com/The-MoonTg-project/Moon-Userbot)
 [![Contributors](https://img.shields.io/github/contributors/The-MoonTg-project/Moon-Userbot?color=green)](https://github.com/The-MoonTg-project/Moon-Userbot/graphs/contributors)
 [![License](https://img.shields.io/badge/License-GPL-pink)](https://github.com/The-MoonTg-project/Moon-Userbot/blob/main/LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://makeapullrequest.com)
 
 A Simple, Fast, Customizable Userbot for Telegram.
