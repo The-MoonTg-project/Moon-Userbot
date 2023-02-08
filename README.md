@@ -46,7 +46,6 @@
   
  <p><a href='https://t.me/moonub_modules'>Channel</a> with custom modules [en] </p> 
   
-  
  <p><a href='https://t.me/moonub_chat'>Discussion</a> in the official telegram chat [en]</p> 
  
 
