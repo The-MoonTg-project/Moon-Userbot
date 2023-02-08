@@ -7,6 +7,6 @@
 [![Last commit](https://img.shields.io/github/last-commit/The-MoonTg-project/Moon-Userbot?&logo=github)](https://github.com/The-MoonTg-project/Moon-Userbot)
 [![Size](https://img.shields.io/github/repo-size/The-MoonTg-project/Moon-Userbot?color=green)](https://github.com/The-MoonTg-project/Moon-Userbot)
 [![Contributors](https://img.shields.io/github/contributors/The-MoonTg-project/Moon-Userbot?color=green)](https://github.com/The-MoonTg-project/Moon-Userbot/graphs/contributors)
-[![License](https://img.shields.io/badge/License-AGPL-blue)](https://github.com/The-MoonTg-projectMoonTg-project/Moon-Userbo/blob/main/LICENSE)
+[![License](https://img.shields.io/badge/License-GPL-)](https://github.com/The-MoonTg-project/Moon-Userbot/blob/main/LICENSE)
 
 A Simple, Fast, Customizable Userbot for Telegram.
