@@ -1,5 +1,5 @@
-#  Dragon-Userbot - telegram userbot
-#  Copyright (C) 2020-present Dragon Userbot Organization
+#  Moon-Userbot - telegram userbot
+#  Copyright (C) 2020-present Moon Userbot Organization
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it is under the terms of the GNU General Public License as published by
@@ -70,7 +70,7 @@ app = Client(
     hide_password = True,
     workdir = script_path,
     app_version = userbot_version,
-    device_model = f"Dragon-Userbot @  {
+    device_model = f"Moon-Userbot @  {
         gitrepo.head.commit.hexsha[:7]}",
     system_version = platform.version() + " " + platform.machine(),
     sleep_threshold = 30,
@@ -181,6 +181,6 @@ db.set(
     [auth.hash for auth in app.send(GetAuthorizations()).authorizations],
 )
 
-logging.info("Dragon-Userbot started!")
+logging.info("Moon-Userbot started!")
 
 idle()
