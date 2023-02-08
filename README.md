@@ -6,6 +6,6 @@
  [![GitHub Stars](https://img.shields.io/github/stars/The-MoonTg-project/Moon-Userbot?&logo=github)](https://github.com/The-MoonTg-project/Moon-Userbot/stargazers)
     <img src="https://img.shields.io/badge/code%20style-black-000000.svg?style=for-the-badge" alt="Code style"> 
      <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/Dragon-Userbot/Dragon-Userbot?style=for-the-badge"> 
-     <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/Dragon-Userbot/Dragon-Userbot?style=for-the-badge"> 
+     <img alt="GitHub Repo stars" src="https://img.shields.io/github/The-MoonTg-projectMoonTg-project/Moon-Userbot?style=for-the-badge"> 
  </p>
 A Simple, Fast, Customizable Userbot for Telegram.
