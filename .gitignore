@@ -1,0 +1,17 @@
+.DS_Store
+.gitattributes
+.vscode
+/modules/__pycache__/
+__pycache__/
+*.session
+*.session-old
+*.db
+*.sqlite3
+*-journal
+/venv/
+/downloads/
+/modules/custom_modules
+.idea
+config.ini
+unknown_errors.txt
+.env
