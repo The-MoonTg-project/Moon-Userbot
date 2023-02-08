@@ -22,9 +22,9 @@
 
 
 ```
- apt-get upgrade -y
- apt-get update
- apt install git
- git clone https://github.com/Dragon-Userbot/Dragon-Userbot.git
- cd Dragon-Userbot/ && bash install.sh
+ apt-get upgrade -y
+ apt-get update
+ apt install git
+ git clone https://github.com/Dragon-Userbot/Dragon-Userbot.git
+ cd Dragon-Userbot/ && bash install.sh
 ```
