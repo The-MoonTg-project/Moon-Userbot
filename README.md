@@ -37,4 +37,4 @@
  cd Dragon-Userbot/ && bash install.sh
 ```
 
-**NOTE: If you choose MongoDB for your cloud then you need to setup 
+**NOTE: If you choose MongoDB for your cloud then you need to setup mongo_db_uan(<a href='https://telegra.ph/How-to-get-Mongodb-URL-and-login-in-telegram-08-01'>How to get Mongodb_URL and login in telegram</a>)
