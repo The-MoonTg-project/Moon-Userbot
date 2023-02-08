@@ -24,10 +24,15 @@
 ```
  apt-get upgrade -y && apt-get update
 ```
-**Install Git[If installed ignore**
+**Install Git[If installed ignore]**
 ```
  apt install git
 ```
+**Clone the repo**
+```
  git clone https://github.com/Dragon-Userbot/Dragon-Userbot.git
+ ```
+**Setup**
+
  cd Dragon-Userbot/ && bash install.sh
 ```
