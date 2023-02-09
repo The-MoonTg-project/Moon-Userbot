@@ -29,7 +29,7 @@ if ! command -v termux-setup-storage; then
   
  echo 
  echo "Enter API_ID and API_HASH" 
- echo "You can get it here -> https://my.telegram.org/apps" 
+ echo "You can get it here -> https://my.telegram.org/" 
  echo "Leave empty to use defaults  (please note that default keys significantly increases your ban chances)" 
  read -r -p "API_ID > " api_id 
   
