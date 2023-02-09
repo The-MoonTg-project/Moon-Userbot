@@ -71,7 +71,7 @@
              url = f"https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/{module_name}.py" 
          else: 
              modules_hashes = requests.get( 
-                 "https://raw.githubusercontent.com/The-MoonTg-project/Moon-Userbot/custom_modules/main/modules_hashes.txt" 
+                 "https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/modules_hashes.txt" 
              ).text 
              resp = requests.get(url) 
   
