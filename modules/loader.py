@@ -118,7 +118,7 @@
              return await message.edit( 
                  "<b>Only <a href=https://github.com/The-MoonTg-project/Moon-Userbot/custom_modules/tree/main/modules_hashes.txt>" 
                  "verified</a> modules or from the official " 
-                 "<a href=https://github.com/Moon-Userbot/custom_modules>" 
+                 "<a href=https://github.com/The-MoonTg-project/Moon-Userbot/custom_modules>" 
                  "custom_modules</a> repository are supported!</b>", 
                  disable_web_page_preview=True, 
              ) 
@@ -137,7 +137,7 @@
      module_name = message.command[1].lower() 
   
      if module_name.startswith( 
-         "https://raw.githubusercontent.com/Moon-Userbot/custom_modules/main/" 
+         "https://raw.githubusercontent.com/The-MoonTg-project/Moon-Userbot/custom_modules/main/" 
      ): 
          module_name = module_name.split("/")[-1].split(".")[0] 
   
@@ -161,7 +161,7 @@
          os.mkdir(f"{BASE_PATH}/modules/custom_modules") 
   
      modules_list = requests.get( 
-         "https://api.github.com/repos/Moon-Userbot/custom_modules/contents/" 
+         "https://api.github.com/repos/The-MoonTg-project/Moon-Userbot/custom_modules/contents/" 
      ).json() 
   
      new_modules = {} 
@@ -202,7 +202,7 @@
              continue 
   
          resp = requests.get( 
-             f"https://raw.githubusercontent.com/Moon-Userbot/custom_modules/main/{module_name}" 
+             f"https://raw.githubusercontent.com/The-MoonTg-project/Moon-Userbot/custom_modules/main/{module_name}" 
          ) 
          if not resp.ok: 
              modules_installed.remove(module_name) 
