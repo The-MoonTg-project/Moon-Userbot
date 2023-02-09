@@ -68,10 +68,10 @@
              module_name = url.split("/")[-1].split(".")[0] 
          elif "/" not in url and "." not in url: 
              module_name = url.lower() 
-             url = f"https://raw.githubusercontent.com/Moon-Userbot/custom_modules/main/{module_name}.py" 
+             url = f"https://raw.githubusercontent.com/The-MoonTg-project/Moon-Userbot/custom_modules/main/{module_name}.py" 
          else: 
              modules_hashes = requests.get( 
-                 "https://raw.githubusercontent.com/Moon-Userbot/custom_modules/main/modules_hashes.txt" 
+                 "https://raw.githubusercontent.com/The-MoonTg-project/Moon-Userbot/custom_modules/main/modules_hashes.txt" 
              ).text 
              resp = requests.get(url) 
   
@@ -83,9 +83,9 @@
   
              if hashlib.sha256(resp.content).hexdigest() not in modules_hashes: 
                  return await message.edit( 
-                     "<b>Only <a href=https://github.com/Moon-Userbot/custom_modules/tree/main/modules_hashes.txt>" 
+                     "<b>Only <a href=https://github.com/The-MoonTg-project/Moon-Userbot/custom_modules/tree/main/modules_hashes.txt>" 
                      "verified</a> modules or from the official " 
-                     "<a href=https://github.com/Moon-Userbot/custom_modules>" 
+                     "<a href=https://github.com/The-MoonTg-project/Moon-Userbot/custom_modules>" 
                      "custom_modules</a> repository are supported!</b>", 
                      disable_web_page_preview=True, 
                  ) 
@@ -110,13 +110,13 @@
              content = f.read() 
   
          modules_hashes = requests.get( 
-             "https://raw.githubusercontent.com/Moon-Userbot/custom_modules/main/modules_hashes.txt" 
+             "https://raw.githubusercontent.com/The-MoonTg-project/Moon-Userbot/custom_modules/main/modules_hashes.txt" 
          ).text 
   
          if hashlib.sha256(content).hexdigest() not in modules_hashes: 
              os.remove(file_name) 
              return await message.edit( 
-                 "<b>Only <a href=https://github.com/Moon-Userbot/custom_modules/tree/main/modules_hashes.txt>" 
+                 "<b>Only <a href=https://github.com/The-MoonTg-project/Moon-Userbot/custom_modules/tree/main/modules_hashes.txt>" 
                  "verified</a> modules or from the official " 
                  "<a href=https://github.com/Moon-Userbot/custom_modules>" 
                  "custom_modules</a> repository are supported!</b>", 
