@@ -118,7 +118,7 @@
              return await message.edit( 
                  "<b>Only <a href=https://github.com/The-MoonTg-project/custom_modules/tree/main/modules_hashes.txt>" 
                  "verified</a> modules or from the official " 
-                 "<a href=https://github.com/The-MoonTg-project/Moon-Userbot/custom_modules>" 
+                 "<a href=https://github.com/The-MoonTg-project/custom_modules>" 
                  "custom_modules</a> repository are supported!</b>", 
                  disable_web_page_preview=True, 
              ) 
