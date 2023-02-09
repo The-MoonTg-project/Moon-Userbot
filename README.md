@@ -42,6 +42,9 @@
 
 **Recommend: _sqlite_**
 
+### Contributions 
+_Contributions of any type are welcome like modules etc. 
+
 <h2>Support</h2> 
  <li><a href='https://t.me/moonuserbot'>Channel</a> with latest news on the official telegram [en]</li> 
   
