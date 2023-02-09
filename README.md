@@ -35,7 +35,7 @@
 ```
 **Setup**
 ```
- cd Dragon-Userbot/ && bash install.sh
+ cd Moon-Userbot/ && bash install.sh
 ```
 
 **NOTE: If you choose MongoDB for your cloud then you need to setup mongo_db_url**
