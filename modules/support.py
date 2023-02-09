@@ -23,7 +23,7 @@ from utils.misc import modules_help, prefix, userbot_version, python_version, gi
 
 @Client.on_message(filters.command(["support", "repo"], prefix) & filters.me)
 async def support(_, message: Message):
-    devs = ["@Qbtaumai", "@moonub_chat"]
+    devs = ["@Qbtaumai", "@H4T3H46K3R"]
     random.shuffle(devs)
 
     commands_count = 0.0
@@ -33,13 +33,13 @@ async def support(_, message: Message):
 
     await message.edit(
         f"<b>Moon-Userbot\n\n"
-        "GitHub: <a href=https://github.com/The-MoonTg-project/Moon-Userbot>Moon-Userbot/Moon-Userbot</a>\n"
+        "GitHub: <a href=https://github.com/The-MoonTg-project/Moon-Userbot>Moon-Userbot</a>\n"
         "Custom modules repository: <a href=https://github.com/The-MoonTg-project/custom_modules>"
-        "Moon-Userbot/custom_modules</a>\n"
+        "custom_modules</a>\n"
         "License: <a href=https://github.com/The-MoonTg-project/Moon-Userbot/blob/master/LICENSE>GNU GPL v3</a>\n\n"
         "Channel: @moonuserbot\n"
         "Custom modules: @moonub_modules\n"
-        "Chat [RU]: @moonub_chat\n"
+        "Chat [EN]: @moonub_chat\n"
         f"Main developers: {', '.join(devs)}\n\n"
         f"Python version: {python_version}\n"
         f"Modules count: {len(modules_help) / 1}\n"
@@ -53,7 +53,7 @@ async def version(client: Client, message: Message):
     changelog = ""
     ub_version = ".".join(userbot_version.split(".")[:2])
     async for m in client.search_messages(
-        "Moon_uB_cHaNgElOg", query=ub_version + "."
+        "moonuserbot", query=f"{userbot_version}."
     ):
         if ub_version in m.text:
             changelog = m.message_id
@@ -71,8 +71,7 @@ async def version(client: Client, message: Message):
         f"<b>Moon Userbot version: {userbot_version}\n"
         f"Changelog </b><i><a href=https://t.me/moonuserbot/{changelog}>in channel</a></i>.<b>\n"
         f"Changelog written by </b><i>"
-        f"<a href=tg://user?id=5254194517>\u2060</a>"
-        f"<a href=https://t.me/Qbtaumai>♿️</a></i>\n\n"
+        f"<a href=https://t.me/Qbtaumai>Abhi</a></i>\n\n"
         + (
             f"<b>Branch: <a href={remote_url}/tree/{gitrepo.active_branch}>{gitrepo.active_branch}</a>\n"
             if gitrepo.active_branch != "master"
