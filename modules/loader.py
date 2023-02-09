@@ -161,7 +161,7 @@
          os.mkdir(f"{BASE_PATH}/modules/custom_modules") 
   
      modules_list = requests.get( 
-         "https://api.github.com/repos/The-MoonTg-project/Moon-Userbot/custom_modules/contents/" 
+         "https://api.github.com/repos/The-MoonTg-project/custom_modules/contents/" 
      ).json() 
   
      new_modules = {} 
