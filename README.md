@@ -31,7 +31,7 @@
 ```
 **Clone the repo**
 ```
- git clone https://github.com/Dragon-Userbot/Moon-Userbot.git
+ git clone https://github.com/The-MoonTg-project/Moon-Userbot.git
 ```
 **Setup**
 ```
