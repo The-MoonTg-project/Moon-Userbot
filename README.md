@@ -1,5 +1,6 @@
 # Moon-Userbot
 <p align="center">
+ <img src="https://telegra.ph/file/b1cdb6f63f57eb732c660.jpg" width="500" alt="Moon-Userbot">
 
 [![Open Source Love](https://badges.frapsoft.com/os/v2/open-source.png?v=103)](https://github.com/The-MoonTg-project/Moon-Userbot)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-Yes-green)](https://github.com/The-MoonTg-project/Moon-Userbot/graphs/commit-activity)
