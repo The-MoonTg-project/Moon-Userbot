@@ -83,7 +83,7 @@
   
              if hashlib.sha256(resp.content).hexdigest() not in modules_hashes: 
                  return await message.edit( 
-                     "<b>Only <a href=https://github.com/The-MoonTg-project/Moon-Userbot/custom_modules/tree/main/modules_hashes.txt>" 
+                     "<b>Only <a href=https://github.com/The-MoonTg-project/custom_modules/tree/main/modules_hashes.txt>" 
                      "verified</a> modules or from the official " 
                      "<a href=https://github.com/The-MoonTg-project/Moon-Userbot/custom_modules>" 
                      "custom_modules</a> repository are supported!</b>", 
