@@ -31,11 +31,11 @@
 ```
 **Clone the repo**
 ```
- git clone https://github.com/Dragon-Userbot/Dragon-Userbot.git
+ git clone https://github.com/The-MoonTg-project/Moon-Userbot.git
 ```
 **Setup**
 ```
- cd Dragon-Userbot/ && bash install.sh
+ cd Moon-Userbot/ && bash install.sh
 ```
 
 **NOTE: If you choose MongoDB for your cloud then you need to setup mongo_db_url**
