@@ -68,7 +68,7 @@
              module_name = url.split("/")[-1].split(".")[0] 
          elif "/" not in url and "." not in url: 
              module_name = url.lower() 
-             url = f"https://raw.githubusercontent.com/The-MoonTg-project/Moon-Userbot/custom_modules/main/{module_name}.py" 
+             url = f"https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/{module_name}.py" 
          else: 
              modules_hashes = requests.get( 
                  "https://raw.githubusercontent.com/The-MoonTg-project/Moon-Userbot/custom_modules/main/modules_hashes.txt" 
