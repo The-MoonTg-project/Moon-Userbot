@@ -137,7 +137,7 @@
      module_name = message.command[1].lower() 
   
      if module_name.startswith( 
-         "https://raw.githubusercontent.com/The-MoonTg-project/Moon-Userbot/custom_modules/main/" 
+         "https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/" 
      ): 
          module_name = module_name.split("/")[-1].split(".")[0] 
   
