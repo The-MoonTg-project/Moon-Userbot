@@ -43,7 +43,9 @@
 **Recommend: _sqlite_**
 
 ### Contributions 
-_Contributions of any type are welcome like modules etc. 
+_Contributions of any type are welcome like modules etc. Feel free to do pr's with your changes, we'll review it within next 24hours_
+
+**Working on your first Pull Request?** You can learn how from this *free* series [How to Contribute to an Open Source Project on GitHub](https://kcd.im/pull-request) 
 
 <h2>Support</h2> 
  <li><a href='https://t.me/moonuserbot'>Channel</a> with latest news on the official telegram [en]</li> 
