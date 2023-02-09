@@ -110,7 +110,7 @@
              content = f.read() 
   
          modules_hashes = requests.get( 
-             "https://raw.githubusercontent.com/The-MoonTg-project/Moon-Userbot/custom_modules/main/modules_hashes.txt" 
+             "https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/modules_hashes.txt" 
          ).text 
   
          if hashlib.sha256(content).hexdigest() not in modules_hashes: 
