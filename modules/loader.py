@@ -63,7 +63,7 @@
          url = message.command[1].lower() 
   
          if url.startswith( 
-             "https://raw.githubusercontent.com/Moon-Userbot/custom_modules/main/" 
+             "https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/" 
          ): 
              module_name = url.split("/")[-1].split(".")[0] 
          elif "/" not in url and "." not in url: 
