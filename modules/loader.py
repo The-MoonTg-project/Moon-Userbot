@@ -202,7 +202,7 @@
              continue 
   
          resp = requests.get( 
-             f"https://raw.githubusercontent.com/The-MoonTg-project/Moon-Userbot/custom_modules/main/{module_name}" 
+             f"https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/{module_name}" 
          ) 
          if not resp.ok: 
              modules_installed.remove(module_name) 
