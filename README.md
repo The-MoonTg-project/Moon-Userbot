@@ -19,7 +19,7 @@
 
 <h1>Installation</h1>
 
-<h2>Linux, Termux (use <a href='https://f-droid.org/en/packages/com.termux/'>f-droid</a> version) and Windows [only wsl]</h2> 
+<h2>Linux, Windows [only wsl]</h2> 
 
 **Update the packages**
 ```
@@ -37,6 +37,8 @@
 ```
  cd Moon-Userbot/ && bash install.sh
 ```
+<h2> Termux (use <a href='https://f-droid.org/en/packages/com.termux/'>f-droid</a> version)</h2>
+**Full Installation instruction <a href='https://telegra.ph/Moon-Userbot-Installation---Termux-02-09'>Given here</a>**
 
 **NOTE: If you choose MongoDB for your cloud then you need to setup mongo_db_url**
 
