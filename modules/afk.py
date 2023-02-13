@@ -14,7 +14,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from userbot.helpers.PyroHelpers import GetChatID, ReplyCheck
+
 from pyrogram import Client, filters
 
 from utils.misc import modules_help, prefix
