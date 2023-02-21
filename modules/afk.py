@@ -25,8 +25,9 @@ from datetime import datetime
 from pyrogram import filters
 from pyrogram.types import Message
 
-import humanize
 humanize = import_library("humanize")
+
+import humanize
 
 
 AFK = False
