@@ -1,5 +1,5 @@
 if ! command -v termux-setup-storage; then 
-   echo This script can be executed only on Termux 
+   echo "This script can be executed only on Termux" 
    exit 1 
  fi 
   
