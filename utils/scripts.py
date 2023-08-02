@@ -143,6 +143,12 @@ def import_library(library_name: str, package_name: str = None):
             )
         return importlib.import_module(library_name)
 
+def edit_or_reply(message, text, parse_mode="md"):
+    """Edit Message If Its From Self, Else Reply To Message"""
+    if not message:
+        return await message.edit(text, parse_mode=parse_mode)
+    if not message.from_user:
+        return await message.edit(text, parse_mode=parse_mode)
 
 def resize_image(input_img, output=None, img_type="PNG"):
     if output is None:
