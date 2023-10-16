@@ -22,7 +22,7 @@ from PIL import Image
 import importlib
 import subprocess
 
-from pyrogram import Client, errors, types
+from pyrogram import Client, errors, types, enums
 import traceback
 from .misc import modules_help, prefix, requirements_list
 
@@ -95,7 +95,7 @@ async def interact_with(message: types.Message) -> types.Message:
 interact_with_to_delete = []
 
 
-def format_module_help(module_name: str):
+def format_module_help(module_name: str, prefix):
     commands = modules_help[module_name]
 
     help_text = f"<b>Help for |{module_name}|\n\nUsage:</b>\n"
@@ -143,12 +143,14 @@ def import_library(library_name: str, package_name: str = None):
             )
         return importlib.import_module(library_name)
 
-async def edit_or_reply(message, text, parse_mode="md"):
+
+async def edit_or_reply(message, text, parse_mode=enums.ParseMode.HTML):
     """Edit Message If Its From Self, Else Reply To Message"""
     if not message:
         return await message.edit(text, parse_mode=parse_mode)
     if not message.from_user:
         return await message.edit(text, parse_mode=parse_mode)
+
 
 def resize_image(input_img, output=None, img_type="PNG"):
     if output is None:
