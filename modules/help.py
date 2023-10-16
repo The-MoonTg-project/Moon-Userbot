@@ -14,7 +14,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from pyrogram import Client, filters
+from pyrogram import Client, filters, enums
 from pyrogram.types import Message
 
 from utils.misc import modules_help, prefix
@@ -44,18 +44,18 @@ async def help_cmd(_, message: Message):
             if len(text) >= 2048:
                 text += "</b>"
                 if msg_edited:
-                    await message.reply(text, disable_web_page_preview=True)
+                    await message.reply(text, enums.ParseMode.HTML, disable_web_page_preview=True)
                 else:
-                    await message.edit(text, disable_web_page_preview=True)
+                    await message.edit(text, enums.ParseMode.HTML, disable_web_page_preview=True)
                     msg_edited = True
                 text = "<b>"
 
         text += f"\nThe number of modules in the userbot: {len(modules_help) / 1}</b>"
 
         if msg_edited:
-            await message.reply(text, disable_web_page_preview=True)
+            await message.reply(text, enums.ParseMode.HTML, disable_web_page_preview=True)
         else:
-            await message.edit(text, disable_web_page_preview=True)
+            await message.edit(text, enums.ParseMode.HTML, disable_web_page_preview=True)
     elif message.command[1].lower() in modules_help:
         await message.edit(format_module_help(message.command[1].lower()))
     else:
