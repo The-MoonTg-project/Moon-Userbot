@@ -1,4 +1,8 @@
 # Moon-Userbot
+
+# ANNOUNCEMENT: Moon-Userbot is under maintainance due to pyrogram update and fixing errors due to new changes while there'es great new for you also: 
+## We're participating in Hacktoberfest 2023 🎉, So if you're a pyrogram dev and want some PR's for you hacktoberfest fix the new issues in the repo and get a PR merged now😊
+
 <p align="center">
  <kbd><img src="https://telegra.ph/file/0c37c2fb0f194cc1c0344.jpg" width="400" alt="Moon-Userbot"/></kbd>
 
