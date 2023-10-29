@@ -341,7 +341,7 @@ async def kick_command(client: Client, message: Message):
                 await client.ban_chat_member(
                     message.chat.id,
                     message.reply_to_message.from_user.id,
-                    int(time() + 60)
+                    int(time() + 60),
                 )
                 channel = await client.resolve_peer(message.chat.id)
                 user_id = await client.resolve_peer(
@@ -634,7 +634,7 @@ async def unmute_command(client, message):
                     message.chat.id,
                     message.reply_to_message.from_user.id,
                     u_p,
-                    int(time() + 30)
+                    int(time() + 30),
                 )
                 await message.edit(
                     f"<b>{message.reply_to_message.from_user.first_name}</b> <code>unmuted</code>"
@@ -648,7 +648,10 @@ async def unmute_command(client, message):
                 await message.edit(format_exc(e))
         else:
             await message.edit("<b>Reply on user msg</b>")
-    elif not message.reply_to_message and message.chat.type not in ["private", "channel"]:
+    elif not message.reply_to_message and message.chat.type not in [
+        "private",
+        "channel",
+    ]:
         u_p = message.chat.permissions
         if len(cause.split()) > 1:
             try:
@@ -919,7 +922,7 @@ async def promote_command(client: Client, message: Message):
                     can_delete_messages=True,
                     can_restrict_members=True,
                     can_invite_users=True,
-                    can_pin_messages=True
+                    can_pin_messages=True,
                 )
                 if len(cause.split()) > 1:
                     await client.set_administrator_title(
