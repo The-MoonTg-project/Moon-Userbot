@@ -9,18 +9,6 @@
 #  This program is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
 
-# Define constants for messages
-AFK_MSG = "`Beep boop. This is an automated message.\nI am not available right now.\nLast seen: {last_seen}\nReason: ```{AFK_REASON.upper()}```\nSee you after I'm done doing whatever I'm doing.`"
-TENTH_TIME_MSG = "`This is an automated message\nLast seen: {last_seen}\nThis is the 10th time I've told you I'm AFK right now..\nI'll get to you when I get to you.\nNo more auto messages for you`"
-STILL_AFK_MSG = "`Hey I'm still not back yet.\nLast seen: {last_seen}\nStill busy: ```{AFK_REASON.upper()}```\nTry pinging a bit later.`"
-AFK_SUMMARY_MSG = "`While you were away (for {last_seen}), you received {sum(USERS.values()) + sum(GROUPS.values())} messages from {len(USERS) + len(GROUPS)} chats`"
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-
-#  You should have received a copy of the GNU General Public License
-#  along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-
 import asyncio
 from datetime import datetime
 
@@ -33,6 +21,18 @@ from utils.scripts import import_library
 humanize = import_library("humanize")
 
 import humanize
+
+# Define constants for messages
+AFK_MSG = "`Beep boop. This is an automated message.\nI am not available right now.\nLast seen: {last_seen}\nReason: ```{AFK_REASON.upper()}```\nSee you after I'm done doing whatever I'm doing.`"
+TENTH_TIME_MSG = "`This is an automated message\nLast seen: {last_seen}\nThis is the 10th time I've told you I'm AFK right now..\nI'll get to you when I get to you.\nNo more auto messages for you`"
+STILL_AFK_MSG = "`Hey I'm still not back yet.\nLast seen: {last_seen}\nStill busy: ```{AFK_REASON.upper()}```\nTry pinging a bit later.`"
+AFK_SUMMARY_MSG = "`While you were away (for {last_seen}), you received {sum(USERS.values()) + sum(GROUPS.values())} messages from {len(USERS) + len(GROUPS)} chats`"
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 
 AFK = False
 AFK_REASON = ""
