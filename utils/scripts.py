@@ -9,6 +9,7 @@
 from pyrogram import Client, errors, types, enums
 import os
 import importlib
+import re
 import shlex
 from subprocess import CalledProcessError, run
 from typing import Optional
@@ -41,7 +42,10 @@ def text(message: types.Message):
 
 
 def restart():
-    os.execvp(sys.executable, [sys.executable, "main.py"])
+    if re.match(r'^[\w\.-]+$', sys.executable):
+        os.execvp(sys.executable, [sys.executable, "main.py"])
+    else:
+        raise ValueError("Invalid characters in program path")
 
 
 def format_exc(e: Exception, hint: str = None):
@@ -137,6 +141,8 @@ def import_library(library_name: str, package_name: Optional[str] = None):
     :param package_name: package name in PyPi (pip install example)
     :return: loaded module
     """
+    if not re.match(r'^[\w\.-]+$', library_name):
+        raise ValueError("Invalid characters in library name")
     if package_name is None:
         package_name = library_name
     requirements_list.append(package_name)
@@ -164,6 +170,10 @@ async def edit_or_reply(message, text, parse_mode=enums.ParseMode.HTML):
 
 
 def resize_image(input_img, output=None, img_type="PNG"):
+    if not re.match(r'^[\w\.-]+$', input_img):
+        raise ValueError("Invalid characters in input image path")
+    if output is not None and not re.match(r'^[\w\.-]+$', output):
+        raise ValueError("Invalid characters in output path")
     if output is None:
         output = BytesIO()
         output.name = f"sticker.{img_type.lower()}"
