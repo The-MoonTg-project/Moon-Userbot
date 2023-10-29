@@ -341,7 +341,7 @@ async def kick_command(client: Client, message: Message):
                 await client.ban_chat_member(
                     message.chat.id,
                     message.reply_to_message.from_user.id,
-                    int(time() + 60),
+                    int(time() + 60)
                 )
                 channel = await client.resolve_peer(message.chat.id)
                 user_id = await client.resolve_peer(
@@ -922,13 +922,13 @@ async def promote_command(client: Client, message: Message):
                     can_delete_messages=True,
                     can_restrict_members=True,
                     can_invite_users=True,
-                    can_pin_messages=True,
+                    can_pin_messages=True
                 )
                 if len(cause.split()) > 1:
                     await client.set_administrator_title(
                         message.chat.id,
                         message.reply_to_message.from_user.id,
-                        cause.split(maxsplit=1)[1],
+                        cause.split(maxsplit=1)[1]
                     )
                 await message.edit(
                     f"<b>{message.reply_to_message.from_user.first_name}</b> <code>promoted!</code>"
@@ -940,10 +940,7 @@ async def promote_command(client: Client, message: Message):
                 await message.edit("<b>No rights</b>")
             except Exception as e:
                 await message.edit(format_exc(e))
-    elif not message.reply_to_message and message.chat.type not in [
-        "private",
-        "channel",
-    ]:
+    elif not message.reply_to_message and message.chat.type not in ["private", "channel"]:
         if len(cause.split()) > 1:
             try:
                 promote_user = await client.get_users(cause.split(" ")[1])
@@ -954,13 +951,13 @@ async def promote_command(client: Client, message: Message):
                         can_delete_messages=True,
                         can_restrict_members=True,
                         can_invite_users=True,
-                        can_pin_messages=True,
+                        can_pin_messages=True
                     )
                     if len(cause.split()) > 1:
                         await client.set_administrator_title(
                             message.chat.id,
                             promote_user.id,
-                            f"\n{cause.split(' ', maxsplit=2)[2] if len(cause.split()) > 2 else None}",
+                            f"\n{cause.split(' ', maxsplit=2)[2] if len(cause.split()) > 2 else None}"
                         )
                     await message.edit(
                         f"<b>{promote_user.first_name}</b> <code>promoted!</code>"
