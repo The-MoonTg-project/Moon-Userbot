@@ -198,8 +198,8 @@ async def ban_command(client: Client, message: Message):
 
                 try:
                     channel = await client.resolve_peer(message.chat.id)
-                    user_id = await client.resolve_peer(user_to_ban.id)
-                    if (
+                    user_id = await client.resolve_peer(user_for_ban.id)
+                    if "report_spam" in cause.lower().split() and message.reply_to_message:
                         "report_spam" in cause.lower().split()
                         and message.reply_to_message
                     ):
@@ -354,7 +354,7 @@ async def kick_command(client: Client, message: Message):
             user_id = await client.resolve_peer(
                     message.reply_to_message.from_user.id
                 )
-                if "report_spam" in cause.lower().split() and message.reply_to_message:
+            if "report_spam" in cause.lower().split() and message.reply_to_message:
                     await client.send(
                         functions.channels.ReportSpam(
                             channel=channel,
@@ -647,7 +647,7 @@ async def unmute_command(client, message):
                     u_p,
                     int(time() + 30),
                 )
-                channel = await client.resolve_peer(message.chat.id)
+                await client.resolve_peer(message.chat.id)
                 await message.edit(
                     f"<b>{message.reply_to_message.from_user.first_name}</b> <code>unmuted</code>"
                     + f"\n{'<b>Cause:</b> <i>' + cause.split(' ', maxsplit=1)[1] + '</i>' if len(cause.split()) > 1 else ''}"
@@ -933,6 +933,8 @@ async def promote_command(client: Client, message: Message):
                     can_delete_messages=True,
                     can_restrict_members=True,
                 )
+                channel = await client.resolve_peer(message.chat.id)
+                )
                 await client.promote_chat_member(
                     message.chat.id,
                     message.reply_to_message.from_user.id,
@@ -1044,7 +1046,6 @@ async def delete_history(client: Client, message: Message):
                 user_for_delete, name = await get_user_and_name(message)
                 user_id = await client.resolve_peer(user_for_delete)
                 channel = await client.resolve_peer(message.chat.id)
-                user_id = await client.resolve_peer(user_for_delete)
                 await client.send(
                     functions.channels.DeleteParticipantHistory(
                         channel=channel, participant=user_id
@@ -1086,7 +1087,6 @@ async def delete_history(client: Client, message: Message):
                 try:
                     user_id = await client.resolve_peer(user_to_delete.id)
                     channel = await client.resolve_peer(message.chat.id)
-                    user_id = await client.resolve_peer(user_to_delete.id)
                     await client.send(
                         functions.channels.DeleteParticipantHistory(
                             channel=channel, participant=user_id
@@ -1119,8 +1119,6 @@ async def report_spam(client: Client, message: Message):
     try:
         user_id, name = await get_user_and_name(message)
         channel = await client.resolve_peer(message.chat.id)
-
-        user_id, name = await get_user_and_name(message)
         peer = await client.resolve_peer(user_id)
         await client.send(
             functions.channels.ReportSpam(
