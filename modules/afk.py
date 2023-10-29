@@ -42,7 +42,6 @@ def ReplyCheck(message: Message):
 
     if message.reply_to_message:
         reply_id = message.reply_to_message.id
-
     elif not message.from_user.is_self:
         reply_id = message.id
 
@@ -90,7 +89,6 @@ async def collect_afk_messages(bot: Client, message: Message):
                 parse_mode=enums.ParseMode.HTML,
             )
             CHAT_TYPE[GetChatID(message)] = 1
-            return
         elif GetChatID(message) in CHAT_TYPE:
             if CHAT_TYPE[GetChatID(message)] == 50:
                 text = (
