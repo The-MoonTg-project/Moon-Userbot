@@ -36,8 +36,9 @@ async def global_mention_clear(client: Client, message: Message):
     try:
         result = await client.send(request)
     except FloodWait as e:
-        await message.edit_text(
-            f"<code>FloodWait received. Wait {e.x} seconds before trying again</code>"
+        await message.edit(
+            f"<code>FloodWait received. Wait {e.x} seconds before trying again</code>",
+            parse_mode=enums.ParseMode.HTML
         )
         return
     await message.delete()
@@ -65,8 +66,9 @@ async def global_reaction_clear(client: Client, message: Message):
     try:
         result = await client.send(request)
     except FloodWait as e:
-        await message.edit_text(
-            f"<code>FloodWait received. Wait {e.x} seconds before trying again</code>"
+        await message.edit(
+            f"<code>FloodWait received. Wait {e.x} seconds before trying again</code>",
+            parse_mode=enums.ParseMode.HTML
         )
         return
     await message.delete()
