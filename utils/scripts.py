@@ -6,7 +6,12 @@
 #  the Free Software Foundation, either version 3 of the License, or
 #  (at your option) any later version.
 
-#  This program is distributed in the hope that it will be useful,
+from pyrogram import Client, errors, types, enums
+import os
+import importlib
+import shlex
+from subprocess import CalledProcessError, check_output
+from typing import Optional
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 from pyrogram import Client, errors, types, enums
@@ -113,7 +118,7 @@ def format_small_module_help(module_name: str):
     commands = modules_help[module_name]
 
     help_text = f"<b>Help for |{module_name}|\n\nCommands list:\n"
-    for command, desc in commands.items():
+    for command, _ in commands.items():
         cmd = command.split(maxsplit=1)
         args = " <code>" + cmd[1] + "</code>" if len(cmd) > 1 else ""
         help_text += f"<code>{prefix}{cmd[0]}</code>{args}\n"
@@ -122,7 +127,7 @@ def format_small_module_help(module_name: str):
     return help_text
 
 
-def import_library(library_name: str, package_name: str = None):
+def import_library(library_name: str, package_name: Optional[str] = None):
     """
     Loads a library, or installs it in ImportError case
     :param library_name: library name (import example...)
@@ -135,14 +140,14 @@ def import_library(library_name: str, package_name: str = None):
 
     try:
         return importlib.import_module(library_name)
-    except ImportError:
-        completed = subprocess.run(
-            ["python3", "-m", "pip", "install", package_name])
-        if completed.returncode != 0:
-            raise AssertionError(
-                f"Failed to install library {package_name} (pip exited with code {completed.returncode})"
-            )
-        return importlib.import_module(library_name)
+    except ImportError as err:
+        try:
+            check_output(shlex.split(f"python3 -m pip install {shlex.quote(package_name)}"), shell=True)
+            return importlib.import_module(library_name)
+        except CalledProcessError as e:
+            raise ImportError(f"Failed to install library {package_name}") from e
+        except Exception as e:
+            raise ImportError(f"An error occurred while trying to install {package_name}") from e
 
 
 async def edit_or_reply(message, text, parse_mode=enums.ParseMode.HTML):
