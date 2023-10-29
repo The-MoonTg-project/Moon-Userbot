@@ -14,8 +14,6 @@ import shlex
 from subprocess import Popen, PIPE
 from typing import Optional
 import importlib
-import re
-import shlex
 from subprocess import CalledProcessError, run
 from typing import Optional
 from pyrogram import Client, errors, types, enums
@@ -139,16 +137,15 @@ def import_library(library_name: str, package_name: Optional[str] = None):
         return importlib.import_module(library_name)
     except ImportError as err:
         try:
+            if not re.match(r'^[\w\.-]+$', package_name):
+                raise ValueError("Invalid characters in package name")
             package_name = shlex.quote(package_name)
             cmd = f"python3 -m pip install {package_name}"
-            if re.match(r'^[\w\.-]+$', package_name):
-                process = Popen(shlex.split(cmd), stdout=PIPE, stderr=PIPE, shell=False)
-                stdout, stderr = process.communicate()
-                if process.returncode != 0:
-                    raise CalledProcessError(process.returncode, cmd, output=stdout, stderr=stderr)
-                return importlib.import_module(library_name)
-            else:
-                raise ValueError("Invalid characters in package name")
+            process = Popen(shlex.split(cmd), stdout=PIPE, stderr=PIPE, shell=False)
+            stdout, stderr = process.communicate()
+            if process.returncode != 0:
+                raise CalledProcessError(process.returncode, cmd, output=stdout, stderr=stderr)
+            return importlib.import_module(library_name)
         except CalledProcessError as e:
             raise ImportError(f"Failed to install library {package_name}") from e
         except Exception as e:
