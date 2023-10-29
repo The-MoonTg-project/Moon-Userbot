@@ -348,7 +348,7 @@ async def unban_command(client: Client, message: Message):
 @Client.on_message(filters.command(["kick"], prefix) & filters.me)
 async def kick_command(client: Client, message: Message):
     cause = text(message)
-    if message.reply_to_message and message.chat.type not in ["private", "channel"]:
+    if message.reply_to_message and message.chat.type not in [CHAT_TYPE_PRIVATE, CHAT_TYPE_CHANNEL]:
         if message.reply_to_message.from_user:
             try:
                 TIME_LIMIT = 60
@@ -694,7 +694,7 @@ async def mute_command(client: Client, message: Message):
         for member in members
         if member.user.is_deleted
     ]
-        mute_seconds: int = 0
+    mute_seconds: int = 0
         for character in "mhdw":
             match = re.search(rf"(\d+|(\d+\.\d+)){character}", message.text)
             if match:
