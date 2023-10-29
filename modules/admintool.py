@@ -884,7 +884,7 @@ async def demote_command(client: Client, message: Message):
                 promote_user = await client.get_users(cause.split(" ")[1])
                 try:
                     await client.promote_chat_member(
-                        message.chat.id,
+                        message.chat.id, promote_user.id,
                         promote_user.id,
                         is_anonymous=False,
                         can_manage_chat=False,
