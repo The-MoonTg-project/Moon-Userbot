@@ -342,18 +342,17 @@ async def kick_command(client: Client, message: Message):
     if message.reply_to_message and message.chat.type not in CHAT_TYPES:
         if message.reply_to_message.from_user:
             BAN_COMMAND_MSG = "<b>No rights</b>"
-            
             try:
-            await client.ban_chat_member(
-            message.chat.id,
-            message.reply_to_message.from_user.id,
-            int(time() + 60),
-            )
-            channel = await client.resolve_peer(message.chat.id)
-            user_id = await client.resolve_peer(
-            message.reply_to_message.from_user.id
-            )
-            if "report_spam" in cause.lower().split() and message.reply_to_message:
+                await client.ban_chat_member(
+                    message.chat.id,
+                    message.reply_to_message.from_user.id,
+                    int(time() + 60),
+                )
+                channel = await client.resolve_peer(message.chat.id)
+                user_id = await client.resolve_peer(
+                    message.reply_to_message.from_user.id
+                )
+                if "report_spam" in cause.lower().split() and message.reply_to_message:
                     await client.send(
                         functions.channels.ReportSpam(
                             channel=channel,
@@ -654,7 +653,7 @@ async def unmute_command(client, message):
                 await client.restrict_chat_member(
                     message.chat.id,
                     message.reply_to_message.from_user.id,
-                    u_p,
+                    u_p
                     int(time() + 30),
                 )
                 await message.edit(
