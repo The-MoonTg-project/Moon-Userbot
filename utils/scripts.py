@@ -13,25 +13,15 @@ import re
 import shlex
 from subprocess import CalledProcessError, run
 from typing import Optional
-import shlex
 from subprocess import CalledProcessError, check_output
-from typing import Optional
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 from pyrogram import Client, errors, types, enums
-#  GNU General Public License for more details.
-
-#  You should have received a copy of the GNU General Public License
-#  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import asyncio
 import os
 import sys
 from io import BytesIO
-
 from PIL import Image
 import importlib
 import subprocess
-
 from pyrogram import Client, errors, types, enums
 import traceback
 from .misc import modules_help, prefix, requirements_list
