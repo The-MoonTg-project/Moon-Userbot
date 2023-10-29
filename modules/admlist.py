@@ -18,7 +18,7 @@ import json
 from html import escape as t
 from time import perf_counter
 
-from pyrogram import Client, filters, enums
+from pyrogram import Client, enums, filters
 from pyrogram.errors.exceptions.flood_420 import FloodWait
 from pyrogram.raw.functions.messages.get_all_chats import GetAllChats
 from pyrogram.types import Message
@@ -51,7 +51,9 @@ async def admcount(client: Client, message: Message):
                 adminned_chats += 1
     except Exception as e:
         if isinstance(e, FloodWait):
-            await message.edit(f"<code>[{e.x}: {enums.MessageType.TEXT}] - {e.y}</code>")
+            await message.edit(
+                f"<code>[{e.x}: {enums.MessageType.TEXT}] - {e.y}</code>"
+            )
         else:
             await message.edit(format_exc(e))
         return
@@ -123,7 +125,9 @@ async def admlist(client: Client, message: Message):
         )
     except Exception as e:
         if isinstance(e, FloodWait):
-            await message.edit(f"<code>[{e.x}: {enums.MessageType.TEXT}] - {e.y}</code>")
+            await message.edit(
+                f"<code>[{e.x}: {enums.MessageType.TEXT}] - {e.y}</code>"
+            )
         else:
             await message.edit(format_exc(e))
         return
