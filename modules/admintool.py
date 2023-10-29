@@ -344,7 +344,7 @@ async def kick_command(client: Client, message: Message):
     if message.reply_to_message and message.chat.type not in ["private", "channel"]:
         REPLY_ON_USER_MSG = "<b>Reply on user msg</b>"
         await message.edit(REPLY_ON_USER_MSG)
-            try:
+        try:
                 await client.ban_chat_member(
                     message.chat.id,
                     message.reply_to_message.from_user.id,
