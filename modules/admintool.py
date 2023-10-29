@@ -446,7 +446,7 @@ async def kick_command(client: Client, message: Message):
                     await message.edit(f"{SUCCESSFULLY_KICKED} {len(values)} {DELETED_ACCOUNTS}")
     # noinspection PyTypeChecker
     values = [
-        await message.chat.ban_member(user.user.id, int(time()) + 31)
+        await message.chat.ban_member(member.user.id, int(time()) + 31)
         for member in await message.chat.get_members()
         if member.user.is_deleted
     ]
@@ -688,8 +688,12 @@ async def unmute_command(client, message):
 
 @Client.on_message(filters.command(["mute"], prefix) & filters.me)
 async def mute_command(client: Client, message: Message):
-    cause = text(message)
-    if message.reply_to_message and message.chat.type not in ["private", "channel"]:
+    members = await message.chat.get_members()
+    values = [
+        await message.chat.ban_member(member.user.id, int(time()) + 31)
+        for member in members
+        if member.user.is_deleted
+    ]
         mute_seconds: int = 0
         for character in "mhdw":
             match = re.search(rf"(\d+|(\d+\.\d+)){character}", message.text)
