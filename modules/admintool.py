@@ -152,11 +152,7 @@ async def ban_command(client: Client, message: Message):
                             channel=channel, participant=user_id
                         )
                     )
-            text_c = "".join(
-                f" {_}"
-                for _ in cause.split()
-                if _.lower() not in ["delete_history", "report_spam"]
-            )
+            text_c = "".join(f" {_}" for _ in cause.split() if _.lower() not in ["delete_history", "report_spam"])
 
             await message.edit(
                 f"<b>{name}</b> <code>banned!</code>"
@@ -358,11 +354,7 @@ async def kick_command(client: Client, message: Message):
                             channel=channel, participant=user_id
                         )
                     )
-                text_c = "".join(
-                    f" {_}"
-                    for _ in cause.split()
-                    if _.lower() not in ["delete_history", "report_spam"]
-                )
+                text_c = "".join(f" {_}" for _ in cause.split() if _.lower() not in ["delete_history", "report_spam"])
 
                 await message.edit(
                     f"<b>{message.reply_to_message.from_user.first_name}</b> <code>kicked!</code>"
@@ -454,8 +446,8 @@ async def tmute_command(client: Client, message: Message):
             message.reply_to_message.from_user
             and message.reply_to_message.from_user.is_self
         ):
-            return await message.edit("<b>Not on yourself</b>")
             text_c = "".join(cause.split())
+            return await message.edit("<b>Not on yourself</b>")
 
         tmuted_users = db.get("core.ats", f"c{message.chat.id}", [])
         if user_for_tmute not in tmuted_users:
@@ -688,6 +680,7 @@ async def mute_command(client: Client, message: Message):
                 user_id = await client.resolve_peer(user_for_ban)
                 if "report_spam" in cause.lower().split():
                     await client.send(
+                    text_c = "".join(cause.split())
                         functions.channels.ReportSpam(
                             channel=channel,
                             participant=peer,
