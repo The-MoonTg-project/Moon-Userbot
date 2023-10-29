@@ -14,8 +14,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from io import StringIO
-from contextlib import redirect_stdout
+=======
 
 from pyrogram import Client, filters
 from pyrogram.types import Message
@@ -37,10 +36,7 @@ def user_exec(client: Client, message: Message):
         message.edit("<b>Code to execute isn't provided</b>")
         return
 
-    reply = message.reply_to_message
-
     code = message.text.split(maxsplit=1)[1]
-    stdout = StringIO()
 
     message.edit("<b>Executing...</b>")
 
@@ -68,7 +64,6 @@ def user_eval(client: Client, message: Message):
         message.edit("<b>Code to eval isn't provided</b>")
         return
 
-    reply = message.reply_to_message
 
     code = message.text.split(maxsplit=1)[1]
 
