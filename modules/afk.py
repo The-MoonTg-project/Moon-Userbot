@@ -101,7 +101,7 @@ async def collect_afk_messages(bot: Client, message: Message):
             if CHAT_TYPE[GetChatID(message)] == 50:
                 text = (
                     f"`This is an automated message\n"
-                    TENTH_TIME_MSG
+                    f"{TENTH_TIME_MSG}"
                     f"I'll get to you when I get to you.\n"
                     f"No more auto messages for you`"
                 )
@@ -115,7 +115,7 @@ async def collect_afk_messages(bot: Client, message: Message):
                 return
             elif CHAT_TYPE[GetChatID(message)] % 5 == 0:
                 text = (
-                    STILL_AFK_MSG
+                    f"{STILL_AFK_MSG}"
                 )
                 await bot.send_message(
                     chat_id=GetChatID(message),
@@ -153,7 +153,7 @@ async def afk_unset(bot: Client, message: Message):
     if AFK:
         last_seen = subtract_time(datetime.now(), AFK_TIME).replace("ago", "").strip()
         await message.edit(
-            AFK_SUMMARY_MSG,
+            f"{AFK_SUMMARY_MSG}",
             parse_mode=enums.ParseMode.HTML,
         )
         AFK = False
@@ -173,7 +173,7 @@ async def auto_afk_unset(bot: Client, message: Message):
     if AFK:
         last_seen = subtract_time(datetime.now(), AFK_TIME).replace("ago", "").strip()
         reply = await message.reply(
-            AFK_SUMMARY_MSG,
+            f"{AFK_SUMMARY_MSG}",
             parse_mode=enums.ParseMode.HTML,
         )
         AFK = False
