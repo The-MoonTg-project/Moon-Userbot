@@ -6,14 +6,15 @@
 #  the Free Software Foundation, either version 3 of the License, or
 #  (at your option) any later version.
 
+import asyncio
 import os
 import re
-import traceback
-from pyrogram import Client, errors, types, enums
-from typing import Optional
-import asyncio
 import sys
-from .misc import modules_help, prefix, requirements_list
+import traceback
+
+from pyrogram import Client, errors, types
+
+from .misc import modules_help, prefix
 
 
 def text(message: types.Message):
@@ -21,7 +22,7 @@ def text(message: types.Message):
 
 
 def restart():
-    if re.match(r'^[\w\.-]+$', sys.executable):
+    if re.match(r"^[\w\.-]+$", sys.executable):
         os.execvp(sys.executable, [sys.executable, "main.py"])
     else:
         raise ValueError("Invalid characters in program path")
@@ -111,5 +112,6 @@ def format_small_module_help(module_name: str):
     help_text += f"\nGet full usage: <code>{prefix}help {module_name}</code></b>"
 
     return help_text
+
 
 # Removed the incomplete function
