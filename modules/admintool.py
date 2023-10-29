@@ -345,7 +345,7 @@ async def kick_command(client: Client, message: Message):
         REPLY_ON_USER_MSG = "<b>Reply on user msg</b>"
         await message.edit(REPLY_ON_USER_MSG)
         try:
-                await client.ban_chat_member(
+            await client.ban_chat_member(
                     message.chat.id,
                     message.reply_to_message.from_user.id,
                     int(time() + 60),
@@ -641,7 +641,7 @@ async def unmute_command(client, message):
         u_p = message.chat.permissions
         if message.reply_to_message.from_user:
             try:
-                await client.restrict_chat_member(
+            await client.restrict_chat_member(
                     message.chat.id,
                     message.reply_to_message.from_user.id,
                     u_p,
