@@ -9,6 +9,7 @@
 #  This program is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+from pyrogram import Client, errors, types, enums
 #  GNU General Public License for more details.
 
 #  You should have received a copy of the GNU General Public License
@@ -40,7 +41,7 @@ def format_exc(e: Exception, hint: str = None):
     if isinstance(e, errors.RPCError):
         return (
             f"<b>Telegram API error!</b>\n"
-            f"<code>[{e.CODE} {e.ID or e.NAME}] - {e.MESSAGE}</code>"
+            f"<code>[{e.error_code} {e.error_message}] - {e.error_details}</code>"
         )
     else:
         if hint:
