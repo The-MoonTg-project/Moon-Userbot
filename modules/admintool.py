@@ -6,6 +6,19 @@
 #  the Free Software Foundation, either version 3 of the License, or
 #  (at your option) any later version.
 
+CHAT_TYPE_SUPERGROUP = "supergroup"
+CHAT_TYPE_PRIVATE = "private"
+CHAT_TYPE_CHANNEL = "channel"
+REPORT_SPAM = "report_spam"
+DELETE_HISTORY = "delete_history"
+NO_RIGHTS = "<b>No rights</b>"
+USER_NOT_FOUND = "<b>User is not found</b>"
+UNSUPPORTED = "<b>Unsupported</b>"
+HTML_BOLD = "<b>"
+HTML_CODE = "<code>"
+HTML_ITALIC = "<i>"
+HTML_END = "</b>"
+
 #  This program is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -696,8 +709,8 @@ async def mute_command(client: Client, message: Message):
         if member.user.is_deleted
     ]
     mute_seconds: int = 0
-        for character in "mhdw":
-            match = re.search(rf"(\d+|(\d+\.\d+)){character}", message.text)
+    for character in "mhdw":
+        match = re.search(rf"(\d+|(\d+\.\d+)){character}", message.text)
             if match:
                 if character == "m":
                     mute_seconds += int(
