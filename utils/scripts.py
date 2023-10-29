@@ -7,33 +7,9 @@
 #  (at your option) any later version.
 
 from pyrogram import Client, errors, types, enums
-import os
-import importlib
-import re
-import shlex
-from subprocess import CalledProcessError, run
 from typing import Optional
-import shlex
-from subprocess import CalledProcessError, check_output
-from typing import Optional
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-from pyrogram import Client, errors, types, enums
-#  GNU General Public License for more details.
-
-#  You should have received a copy of the GNU General Public License
-#  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import asyncio
-import os
 import sys
-from io import BytesIO
-
-from PIL import Image
-import importlib
-import subprocess
-
-from pyrogram import Client, errors, types, enums
-import traceback
 from .misc import modules_help, prefix, requirements_list
 
 
@@ -133,54 +109,12 @@ def format_small_module_help(module_name: str):
 
     return help_text
 
-
-def import_library(library_name: str, package_name: Optional[str] = None):
-    """
-    Loads a library, or installs it in ImportError case
-    :param library_name: library name (import example...)
-    :param package_name: package name in PyPi (pip install example)
-    :return: loaded module
-    """
-    if not re.match(r'^[\w\.-]+$', library_name):
-        raise ValueError("Invalid characters in library name")
-    if package_name is None:
-        package_name = library_name
-    requirements_list.append(package_name)
-
-    try:
-        return importlib.import_module(library_name)
-    except ImportError as err:
-        try:
-            # Sanitize user input
-            package_name = shlex.quote(package_name)
-            run(shlex.split(f"python3 -m pip install {package_name}"), check=True, shell=False)
-            return importlib.import_module(library_name)
-        except CalledProcessError as e:
-            raise ImportError(f"Failed to install library {package_name}") from e
-        except Exception as e:
-            raise ImportError(f"An error occurred while trying to install {package_name}") from e
-
-
 async def edit_or_reply(message, text, parse_mode=enums.ParseMode.HTML):
     """Edit Message If Its From Self, Else Reply To Message"""
     if not message:
         return await message.edit(text, parse_mode=parse_mode)
     if not message.from_user:
         return await message.edit(text, parse_mode=parse_mode)
-
-
-def resize_image(input_img, output=None, img_type="PNG"):
-    if not re.match(r'^[\w\.-]+$', input_img):
-        raise ValueError("Invalid characters in input image path")
-    if output is not None and not re.match(r'^[\w\.-]+$', output):
-        raise ValueError("Invalid characters in output path")
-    if output is None:
-        output = BytesIO()
-        output.name = f"sticker.{img_type.lower()}"
-
-    with Image.open(input_img) as img:
-        # We used to use thumbnail(size) here, but it returns with a *max* dimension of 512,512
-        # rather than making one side exactly 512 so we have to calculate dimensions manually :(
         if img.width == img.height:
             size = (512, 512)
         elif img.width < img.height:
