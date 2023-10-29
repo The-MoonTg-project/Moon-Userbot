@@ -10,7 +10,7 @@
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 
-NO_RIGHTS_MSG = "<b>No rights</b>"
+# NO_RIGHTS_MSG = "<b>No rights</b>"
 #  GNU General Public License for more details.
 
 #  You should have received a copy of the GNU General Public License
@@ -641,10 +641,6 @@ USER_NOT_FOUND_MSG = "<b>User is not found</b>"
 USER_ID_OR_USERNAME_MSG = "<b>user_id or username</b>"
 UNSUPPORTED_MSG = "<b>Unsupported</b>"
 
-NO_RIGHTS_MSG = "<b>No rights</b>"
-
-NO_RIGHTS_MSG = "<b>No rights</b>"
-
 @Client.on_message(filters.command(["unmute"], prefix) & filters.me)
 async def unmute_command(client, message):
     cause = text(message)
@@ -957,7 +953,7 @@ async def promote_command(client: Client, message: Message):
                     f"<b>{message.reply_to_message.from_user.first_name}</b> <code>promoted!</code>"
                     + f"\n{'<b>Prefix:</b> <i>' + cause.split(' ', maxsplit=1)[1] + '</i>' if len(cause.split()) > 1 else ''}"
                 )
-    # NO_RIGHTS_MSG = "<b>No rights</b>"
+    # NO_RIGHTS_MSG is already defined at the beginning of the file
     
             except UserAdminInvalid:
                 await message.edit(NO_RIGHTS_MSG)
