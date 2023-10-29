@@ -114,9 +114,7 @@ async def collect_afk_messages(bot: Client, message: Message):
             elif CHAT_TYPE[GetChatID(message)] > 50:
                 return
             elif CHAT_TYPE[GetChatID(message)] % 5 == 0:
-                text = (
-                    f"{STILL_AFK_MSG}"
-                )
+                text = f"{STILL_AFK_MSG}"
                 await bot.send_message(
                     chat_id=GetChatID(message),
                     text=text,
@@ -151,7 +149,7 @@ async def afk_unset(bot: Client, message: Message):
     global AFK, AFK_TIME, AFK_REASON, USERS, GROUPS
 
     if AFK:
-        last_seen = subtract_time(datetime.now(), AFK_TIME).replace("ago", "").strip()
+        subtract_time(datetime.now(), AFK_TIME).replace("ago", "").strip()
         await message.edit(
             f"{AFK_SUMMARY_MSG}",
             parse_mode=enums.ParseMode.HTML,
@@ -171,7 +169,7 @@ async def auto_afk_unset(bot: Client, message: Message):
     global AFK, AFK_TIME, AFK_REASON, USERS, GROUPS
 
     if AFK:
-        last_seen = subtract_time(datetime.now(), AFK_TIME).replace("ago", "").strip()
+        subtract_time(datetime.now(), AFK_TIME).replace("ago", "").strip()
         reply = await message.reply(
             f"{AFK_SUMMARY_MSG}",
             parse_mode=enums.ParseMode.HTML,
