@@ -28,7 +28,7 @@ from pyrogram.errors import (
     UsernameInvalid,
 )
 from pyrogram.raw import functions, types
-from pyrogram.types import ChatPermissions, Message
+from pyrogram.types import Message
 from pyrogram.utils import (
     MAX_CHANNEL_ID,
     MAX_USER_ID,
@@ -336,8 +336,7 @@ async def unban_command(client: Client, message: Message):
 async def kick_command(client: Client, message: Message):
     cause = text(message)
     if message.reply_to_message and message.chat.type not in ["private", "channel"]:
-        if message.reply_to_message.from_user:
-            try:
+        from pyrogram import filters
                 await client.ban_chat_member(
                     message.chat.id,
                     message.reply_to_message.from_user.id,
