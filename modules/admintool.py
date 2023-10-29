@@ -134,9 +134,10 @@ async def ban_command(client: Client, message: Message):
     if message.reply_to_message and message.chat.type not in ["private", "channel"]:
         user_for_ban, name = await get_user_and_name(message)
         try:
-            await client.ban_chat_member(message.chat.id, user_for_ban)
-            channel = await client.resolve_peer(message.chat.id)
-            user_id = await client.resolve_peer(user_for_ban)
+            try:
+                await client.ban_chat_member(message.chat.id, user_for_ban)
+                channel = await client.resolve_peer(message.chat.id)
+                user_id = await client.resolve_peer(user_for_ban)
             if "report_spam" in cause.lower().split():
                 await client.send(
                     functions.channels.ReportSpam(
@@ -337,11 +338,11 @@ async def kick_command(client: Client, message: Message):
     cause = text(message)
     if message.reply_to_message and message.chat.type not in ["private", "channel"]:
         from pyrogram import filters
-                await client.ban_chat_member(
-                    message.chat.id,
-                    message.reply_to_message.from_user.id,
-                    int(time() + 60),
-                )
+        await client.ban_chat_member(
+            message.chat.id,
+            message.reply_to_message.from_user.id,
+            int(time() + 60),
+        )
                 channel = await client.resolve_peer(message.chat.id)
                 user_id = await client.resolve_peer(
                     message.reply_to_message.from_user.id
