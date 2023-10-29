@@ -65,7 +65,7 @@ def subtract_time(start, end):
     ((filters.group & filters.mentioned) | filters.private)
     & ~filters.me
     & ~filters.service,
-group=3,
+    group=3,
 )
 async def collect_afk_messages(bot: Client, message: Message):
     if AFK:
