@@ -138,7 +138,7 @@ async def ban_command(client: Client, message: Message):
                 await client.ban_chat_member(message.chat.id, user_for_ban)
                 channel = await client.resolve_peer(message.chat.id)
                 user_id = await client.resolve_peer(user_for_ban)
-            if "report_spam" in cause.lower().split():
+                if "report_spam" in cause.lower().split():
                 await client.send(
                     functions.channels.ReportSpam(
                         channel=channel,
@@ -194,10 +194,7 @@ async def ban_command(client: Client, message: Message):
                 try:
                     channel = await client.resolve_peer(message.chat.id)
                     user_id = await client.resolve_peer(user_to_ban.id)
-                    if (
-                        "report_spam" in cause.lower().split()
-                        and message.reply_to_message
-                    ):
+                    if "report_spam" in cause.lower().split() and message.reply_to_message:
                         await client.send(
                             functions.channels.ReportSpam(
                                 channel=channel,
@@ -389,10 +386,7 @@ async def kick_command(client: Client, message: Message):
                 try:
                     channel = await client.resolve_peer(message.chat.id)
                     user_id = await client.resolve_peer(user_to_ban.id)
-                    if (
-                        "report_spam" in cause.lower().split()
-                        and message.reply_to_message
-                    ):
+                    if "report_spam" in cause.lower().split() and message.reply_to_message:
                         await client.send(
                             functions.channels.ReportSpam(
                                 channel=channel,
@@ -688,8 +682,10 @@ async def mute_command(client: Client, message: Message):
     if message.reply_to_message and message.chat.type not in ["private", "channel"]:
         mute_seconds: int = 0
         for character in "mhdw":
-            match = re.search(rf"(\d+|(\d+\.\d+)){character}", message.text)
-            if match:
+                await client.ban_chat_member(message.chat.id, user_for_ban)
+                channel = await client.resolve_peer(message.chat.id)
+                user_id = await client.resolve_peer(user_for_ban)
+                if "report_spam" in cause.lower().split():
                 if character == "m":
                     mute_seconds += int(
                         float(match.string[match.start() : match.end() - 1]) * 60 // 1
