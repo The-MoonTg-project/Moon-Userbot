@@ -875,8 +875,8 @@ async def demote_command(client: Client, message: Message):
             except Exception as e:
                 await message.edit(format_exc(e))
     elif not message.reply_to_message and message.chat.type not in [
-        "private",
-        "channel",
+        CHAT_TYPE_PRIVATE,
+        CHAT_TYPE_CHANNEL,
     ]:
         if len(cause.split()) > 1:
             try:
