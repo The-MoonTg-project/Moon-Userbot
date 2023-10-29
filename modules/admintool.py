@@ -10,7 +10,7 @@
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 
-BAN_COMMAND_MSG = "<b>No rights</b>"
+NO_RIGHTS_MSG = "<b>No rights</b>"
 #  GNU General Public License for more details.
 
 #  You should have received a copy of the GNU General Public License
@@ -341,7 +341,7 @@ async def kick_command(client: Client, message: Message):
     CHAT_TYPES = ["private", "channel"]
     if message.reply_to_message and message.chat.type not in CHAT_TYPES:
         if message.reply_to_message.from_user:
-            BAN_COMMAND_MSG = "<b>No rights</b>"
+            # NO_RIGHTS_MSG is already defined at the beginning of the file
             try:
                 await client.ban_chat_member(
                     message.chat.id,
@@ -641,7 +641,9 @@ USER_NOT_FOUND_MSG = "<b>User is not found</b>"
 USER_ID_OR_USERNAME_MSG = "<b>user_id or username</b>"
 UNSUPPORTED_MSG = "<b>Unsupported</b>"
 
-BAN_COMMAND_MSG = "<b>No rights</b>"
+NO_RIGHTS_MSG = "<b>No rights</b>"
+
+NO_RIGHTS_MSG = "<b>No rights</b>"
 
 @Client.on_message(filters.command(["unmute"], prefix) & filters.me)
 async def unmute_command(client, message):
@@ -653,7 +655,7 @@ async def unmute_command(client, message):
                 await client.restrict_chat_member(
                     message.chat.id,
                     message.reply_to_message.from_user.id,
-                    u_p
+                    u_p,
                     int(time() + 30),
                 )
                 await message.edit(
