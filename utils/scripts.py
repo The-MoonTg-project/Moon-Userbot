@@ -11,6 +11,24 @@ import os
 import importlib
 import re
 import shlex
+from subprocess import CalledProcessError, run
+from typing import Optional
+import shlex
+from subprocess import CalledProcessError, check_output
+from typing import Optional
+from pyrogram import Client, errors, types, enums
+import asyncio
+import os
+import sys
+from io import BytesIO
+from PIL import Image
+import importlib
+import subprocess
+from pyrogram import Client, errors, types, enums
+import traceback
+from .misc import modules_help, prefix, requirements_list
+import re
+import shlex
 from subprocess import CalledProcessError, Popen, PIPE, DEVNULL
 from typing import Optional
 import shlex
