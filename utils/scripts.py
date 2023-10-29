@@ -6,9 +6,19 @@
 #  the Free Software Foundation, either version 3 of the License, or
 #  (at your option) any later version.
 
-from pyrogram import Client, errors, types, enums
 import os
+import re
+import shlex
 import importlib
+import asyncio
+import subprocess
+import traceback
+from io import BytesIO
+from typing import Optional
+from PIL import Image
+from subprocess import CalledProcessError, Popen, PIPE, DEVNULL
+from pyrogram import Client, errors, types, enums
+from .misc import modules_help, prefix, requirements_list
 import re
 import shlex
 from subprocess import CalledProcessError, run
@@ -206,10 +216,10 @@ def import_library(library_name: str, package_name: Optional[str] = None):
 
 async def edit_or_reply(message, text, parse_mode=enums.ParseMode.HTML):
     """Edit Message If Its From Self, Else Reply To Message"""
-    if not message:
+    if message.from_user.is_self:
         return await message.edit(text, parse_mode=parse_mode)
-    if not message.from_user:
-        return await message.edit(text, parse_mode=parse_mode)
+    else:
+        return await message.reply(text, parse_mode=parse_mode)
 
 
 def resize_image(input_img, output=None, img_type="PNG"):
