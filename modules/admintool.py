@@ -199,7 +199,7 @@ async def ban_command(client: Client, message: Message):
                 try:
                     channel = await client.resolve_peer(message.chat.id)
                     user_id = await client.resolve_peer(user_for_ban.id)
-                    if "report_spam" in cause.lower().split() and message.reply_to_message:
+                    if "report_spam" in cause.lower().split():
                         "report_spam" in cause.lower().split()
                         and message.reply_to_message
                     ):
@@ -354,7 +354,7 @@ async def kick_command(client: Client, message: Message):
             user_id = await client.resolve_peer(
                     message.reply_to_message.from_user.id
                 )
-            if "report_spam" in cause.lower().split() and message.reply_to_message:
+            if "report_spam" in cause.lower().split():
                     await client.send(
                         functions.channels.ReportSpam(
                             channel=channel,
@@ -639,7 +639,8 @@ async def unmute_command(client, message):
     cause = text(message)
     if message.reply_to_message and message.chat.type not in ["private", "channel"]:
         u_p = message.chat.permissions
-        if message.reply_to_message.from_user:
+        if "report_spam" in cause.lower().split():
+            if message.reply_to_message:
             try:
                 await client.restrict_chat_member(
                     message.chat.id,
