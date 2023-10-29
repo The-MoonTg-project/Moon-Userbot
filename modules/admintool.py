@@ -341,7 +341,7 @@ async def kick_command(client: Client, message: Message):
                 await client.ban_chat_member(
                     message.chat.id,
                     message.reply_to_message.from_user.id,
-                    int(time() + 60),
+                    int(time() + 60)
                 )
                 channel = await client.resolve_peer(message.chat.id)
                 user_id = await client.resolve_peer(
@@ -352,7 +352,7 @@ async def kick_command(client: Client, message: Message):
                         functions.channels.ReportSpam(
                             channel=channel,
                             participant=user_id,
-                            id=[message.reply_to_message.message_id],
+                            id=[message.reply_to_message.message_id]
                         )
                     )
                 if "delete_history" in cause.lower().split():
@@ -379,25 +379,19 @@ async def kick_command(client: Client, message: Message):
                 await message.edit(format_exc(e))
         else:
             await message.edit("<b>Reply on user msg</b>")
-    elif not message.reply_to_message and message.chat.type not in [
-        "private",
-        "channel",
-    ]:
+    elif not message.reply_to_message and message.chat.type not in ["private", "channel"]:
         if len(cause.split()) > 1:
             try:
                 user_to_ban = await client.get_users(cause.split(" ")[1])
                 try:
                     channel = await client.resolve_peer(message.chat.id)
                     user_id = await client.resolve_peer(user_to_ban.id)
-                    if (
-                        "report_spam" in cause.lower().split()
-                        and message.reply_to_message
-                    ):
+                    if "report_spam" in cause.lower().split() and message.reply_to_message:
                         await client.send(
                             functions.channels.ReportSpam(
                                 channel=channel,
                                 participant=user_id,
-                                id=[message.reply_to_message.message_id],
+                                id=[message.reply_to_message.message_id]
                             )
                         )
                     if "delete_history" in cause.lower().split():
@@ -441,7 +435,6 @@ async def kick_command(client: Client, message: Message):
 @Client.on_message(filters.command(["kickdel"], prefix) & filters.me)
 async def kickdel_cmd(_, message: Message):
     await message.edit("<b>Kicking deleted accounts...</b>")
-    # noinspection PyTypeChecker
     values = [
         await message.chat.ban_member(user.user.id, int(time()) + 31)
         for member in await message.chat.get_members()
