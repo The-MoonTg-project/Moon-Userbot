@@ -139,14 +139,14 @@ async def ban_command(client: Client, message: Message):
                 channel = await client.resolve_peer(message.chat.id)
                 user_id = await client.resolve_peer(user_for_ban)
                 if "report_spam" in cause.lower().split():
-                await client.send(
-                    functions.channels.ReportSpam(
-                        channel=channel,
-                        participant=user_id,
-                        id=[message.reply_to_message.message_id],
+                    await client.send(
+                        functions.channels.ReportSpam(
+                            channel=channel,
+                            participant=user_id,
+                            id=[message.reply_to_message.message_id],
+                        )
                     )
-                )
-            if "delete_history" in cause.lower().split():
+                if "delete_history" in cause.lower().split():
                 await client.send(
                     functions.channels.DeleteParticipantHistory(
                         channel=channel, participant=user_id
@@ -686,6 +686,13 @@ async def mute_command(client: Client, message: Message):
                 channel = await client.resolve_peer(message.chat.id)
                 user_id = await client.resolve_peer(user_for_ban)
                 if "report_spam" in cause.lower().split():
+                    await client.send(
+                        functions.channels.ReportSpam(
+                            channel=channel,
+                            participant=peer,
+                            id=[message.reply_to_message.message_id],
+                        )
+                    )
                 if character == "m":
                     mute_seconds += int(
                         float(match.string[match.start() : match.end() - 1]) * 60 // 1
