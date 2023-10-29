@@ -16,6 +16,24 @@ from typing import Optional
 import shlex
 from subprocess import CalledProcessError, check_output
 from typing import Optional
+from pyrogram import Client, errors, types, enums
+import asyncio
+import os
+import sys
+from io import BytesIO
+from PIL import Image
+import importlib
+import subprocess
+from pyrogram import Client, errors, types, enums
+import traceback
+from .misc import modules_help, prefix, requirements_list
+import re
+import shlex
+from subprocess import CalledProcessError, run
+from typing import Optional
+import shlex
+from subprocess import CalledProcessError, check_output
+from typing import Optional
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 from pyrogram import Client, errors, types, enums
@@ -56,12 +74,9 @@ def format_exc(e: Exception, hint: str = None):
             f"<code>[{e.error_code} {e.error_message}] - {e.error_details}</code>"
         )
     else:
-        if hint:
-            hint_text = f"\n\n<b>Hint: {hint}</b>"
-        else:
-            hint_text = ""
+        hint_text = f"\n\n<b>Hint: {hint}</b>" if hint else ""
         return (
-            f"<b>Error!</b>\n" f"<code>{e.__class__.__name__}: {e}</code>" + hint_text
+            f"<b>Error!</b>\n<code>{e.__class__.__name__}: {e}</code>{hint_text}"
         )
 
 
