@@ -8,6 +8,12 @@
 
 #  This program is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
+
+# Define constants for messages
+AFK_MSG = "`Beep boop. This is an automated message.\nI am not available right now.\nLast seen: {last_seen}\nReason: ```{AFK_REASON.upper()}```\nSee you after I'm done doing whatever I'm doing.`"
+TENTH_TIME_MSG = "`This is an automated message\nLast seen: {last_seen}\nThis is the 10th time I've told you I'm AFK right now..\nI'll get to you when I get to you.\nNo more auto messages for you`"
+STILL_AFK_MSG = "`Hey I'm still not back yet.\nLast seen: {last_seen}\nStill busy: ```{AFK_REASON.upper()}```\nTry pinging a bit later.`"
+AFK_SUMMARY_MSG = "`While you were away (for {last_seen}), you received {sum(USERS.values()) + sum(GROUPS.values())} messages from {len(USERS) + len(GROUPS)} chats`"
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 
@@ -95,8 +101,7 @@ async def collect_afk_messages(bot: Client, message: Message):
             if CHAT_TYPE[GetChatID(message)] == 50:
                 text = (
                     f"`This is an automated message\n"
-                    f"Last seen: {last_seen}\n"
-                    f"This is the 10th time I've told you I'm AFK right now..\n"
+                    TENTH_TIME_MSG
                     f"I'll get to you when I get to you.\n"
                     f"No more auto messages for you`"
                 )
@@ -110,10 +115,7 @@ async def collect_afk_messages(bot: Client, message: Message):
                 return
             elif CHAT_TYPE[GetChatID(message)] % 5 == 0:
                 text = (
-                    f"`Hey I'm still not back yet.\n"
-                    f"Last seen: {last_seen}\n"
-                    f"Still busy: ```{AFK_REASON.upper()}```\n"
-                    f"Try pinging a bit later.`"
+                    STILL_AFK_MSG
                 )
                 await bot.send_message(
                     chat_id=GetChatID(message),
@@ -151,8 +153,7 @@ async def afk_unset(bot: Client, message: Message):
     if AFK:
         last_seen = subtract_time(datetime.now(), AFK_TIME).replace("ago", "").strip()
         await message.edit(
-            f"`While you were away (for {last_seen}), you received {sum(USERS.values()) + sum(GROUPS.values())} "
-            f"messages from {len(USERS) + len(GROUPS)} chats`",
+            AFK_SUMMARY_MSG,
             parse_mode=enums.ParseMode.HTML,
         )
         AFK = False
@@ -172,8 +173,7 @@ async def auto_afk_unset(bot: Client, message: Message):
     if AFK:
         last_seen = subtract_time(datetime.now(), AFK_TIME).replace("ago", "").strip()
         reply = await message.reply(
-            f"`While you were away (for {last_seen}), you received {sum(USERS.values()) + sum(GROUPS.values())} "
-            f"messages from {len(USERS) + len(GROUPS)} chats`",
+            AFK_SUMMARY_MSG,
             parse_mode=enums.ParseMode.HTML,
         )
         AFK = False
