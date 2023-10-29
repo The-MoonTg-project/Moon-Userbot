@@ -8,6 +8,7 @@
 
 from pyrogram import Client, errors, types, enums
 import os
+import sys
 import importlib
 import re
 import shlex
@@ -26,8 +27,9 @@ def text(message: types.Message):
 
 
 def restart():
-    if re.match(r'^[\w\.-]+$', sys.executable):
-        os.execvp(sys.executable, [sys.executable, "main.py"])
+    executable = sys.executable
+    if re.match(r'^[\w\.-]+$', executable):
+        os.execvp(executable, [executable, "main.py"])
     else:
         raise ValueError("Invalid characters in program path")
 
@@ -134,8 +136,11 @@ def import_library(library_name: str, package_name: Optional[str] = None):
     except ImportError as err:
         try:
             package_name = shlex.quote(package_name)
-            run(shlex.split(f"python3 -m pip install {package_name}"), check=True, shell=False)
-            return importlib.import_module(library_name)
+            if re.match(r'^[\w\.-]+$', package_name):
+                run(shlex.split(f"python3 -m pip install {package_name}"), check=True, shell=False)
+                return importlib.import_module(library_name)
+            else:
+                raise ValueError("Invalid characters in package name")
         except CalledProcessError as e:
             raise ImportError(f"Failed to install library {package_name}") from e
         except Exception as e:
