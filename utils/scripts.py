@@ -33,7 +33,7 @@ def text(message: types.Message):
 
 def restart():
     if re.match(r'^[\w\.-]+$', sys.executable):
-        os.execvp(sys.executable, [sys.executable, "main.py"])
+        os.execv(sys.executable, [sys.executable, "main.py"])
     else:
         raise ValueError("Invalid characters in program path")
 
@@ -143,7 +143,7 @@ def import_library(library_name: str, package_name: Optional[str] = None):
         try:
             # Sanitize user input
             package_name = shlex.quote(package_name)
-            run(shlex.split(f"python3 -m pip install {package_name}"), check=True, shell=False)
+            os.system(f"python3 -m pip install {package_name}")
             return importlib.import_module(library_name)
         except CalledProcessError as e:
             raise ImportError(f"Failed to install library {package_name}") from e
