@@ -19,7 +19,7 @@ from time import time
 from typing import Dict, Union
 from contextlib import suppress
 
-from pyrogram import Client, ContinuePropagation, filters
+from pyrogram import Client, ContinuePropagation, filters, enums
 from pyrogram.errors import (
     UserAdminInvalid,
     ChatAdminRequired,
@@ -160,14 +160,15 @@ async def ban_command(client: Client, message: Message):
 
             await message.edit(
                 f"<b>{name}</b> <code>banned!</code>"
-                + f"\n{'<b>Cause:</b> <i>' + text_c.split(maxsplit=1)[1] + '</i>' if len(text_c.split()) > 1 else ''}"
+                + f"\n{'<b>Cause:</b> <i>' + text_c.split(maxsplit=1)[1] + '</i>' if len(text_c.split()) > 1 else ''}",
+                parse_mode=enums.ParseMode.HTML
             )
         except UserAdminInvalid:
-            await message.edit("<b>No rights</b>")
+            await message.edit("<b>No rights</b>", parse_mode=enums.ParseMode.HTML)
         except ChatAdminRequired:
-            await message.edit("<b>No rights</b>")
+            await message.edit("<b>No rights</b>", parse_mode=enums.ParseMode.HTML)
         except Exception as e:
-            await message.edit(format_exc(e))
+            await message.edit(format_exc(e), parse_mode=enums.ParseMode.HTML)
     elif not message.reply_to_message and message.chat.type not in [
         "private",
         "channel",
@@ -179,7 +180,7 @@ async def ban_command(client: Client, message: Message):
                 elif await check_username_or_id(cause.split(" ")[1]) == "user":
                     user_to_ban = await client.get_users(cause.split(" ")[1])
                 else:
-                    await message.edit("<b>Invalid user type</b>")
+                    await message.edit("<b>Invalid user type</b>", parse_mode=enums.ParseMode.HTML)
                     return
 
                 name = (
@@ -218,25 +219,25 @@ async def ban_command(client: Client, message: Message):
                     await client.ban_chat_member(message.chat.id, user_to_ban.id)
                     await message.edit(
                         f"<b>{name}</b> <code>banned!</code>"
-                        + f"\n{'<b>Cause:</b> <i>' + text_c.split(' ', maxsplit=2)[2] + '</i>' if len(text_c.split()) > 2 else ''}"
+                        + f"\n{'<b>Cause:</b> <i>' + text_c.split(' ', maxsplit=2)[2] + '</i>' if len(text_c.split()) > 2 else ''}",
+                        parse_mode=enums.ParseMode.HTML
                     )
                 except UserAdminInvalid:
-                    await message.edit("<b>No rights</b>")
+                    await message.edit("<b>No rights</b>", parse_mode=enums.ParseMode.HTML)
                 except ChatAdminRequired:
-                    await message.edit("<b>No rights</b>")
+                    await message.edit("<b>No rights</b>", parse_mode=enums.ParseMode.HTML)
                 except Exception as e:
-                    await message.edit(format_exc(e))
+                    await message.edit(format_exc(e), parse_mode=enums.ParseMode.HTML)
             except PeerIdInvalid:
-                await message.edit("<b>User is not found</b>")
+                await message.edit("<b>User is not found</b>", parse_mode=enums.ParseMode.HTML)
             except UsernameInvalid:
-                await message.edit("<b>User is not found</b>")
+                await message.edit("<b>User is not found</b>", parse_mode=enums.ParseMode.HTML)
             except IndexError:
-                await message.edit("<b>User is not found</b>")
+                await message.edit("<b>User is not found</b>", parse_mode=enums.ParseMode.HTML)
         else:
-            await message.edit("<b>user_id or username</b>")
+            await message.edit("<b>user_id or username</b>", parse_mode=enums.ParseMode.HTML)
     else:
-        await message.edit("<b>Unsupported</b>")
-
+        await message.edit("<b>Unsupported</b>", parse_mode=enums.ParseMode.HTML)
 
 @Client.on_message(filters.command(["unban"], prefix) & filters.me)
 async def unban_command(client: Client, message: Message):
@@ -247,14 +248,15 @@ async def unban_command(client: Client, message: Message):
             await client.unban_chat_member(message.chat.id, user_for_unban)
             await message.edit(
                 f"<b>{name}</b> <code>unbanned!</code>"
-                + f"\n{'<b>Cause:</b> <i>' + cause.split(maxsplit=1)[1] + '</i>' if len(cause.split()) > 1 else ''}"
+                + f"\n{'<b>Cause:</b> <i>' + cause.split(maxsplit=1)[1] + '</i>' if len(cause.split()) > 1 else ''}",
+                parse_mode=enums.ParseMode.HTML
             )
         except UserAdminInvalid:
-            await message.edit("<b>No rights</b>")
+            await message.edit("<b>No rights</b>", parse_mode=enums.ParseMode.HTML)
         except ChatAdminRequired:
-            await message.edit("<b>No rights</b>")
+            await message.edit("<b>No rights</b>", parse_mode=enums.ParseMode.HTML)
         except Exception as e:
-            await message.edit(format_exc(e))
+            await message.edit(format_exc(e), parse_mode=enums.ParseMode.HTML)
 
     elif not message.reply_to_message and message.chat.type not in [
         "private",
@@ -267,7 +269,7 @@ async def unban_command(client: Client, message: Message):
                 elif await check_username_or_id(cause.split(" ")[1]) == "user":
                     user_to_unban = await client.get_users(cause.split(" ")[1])
                 else:
-                    await message.edit("<b>Invalid user type</b>")
+                    await message.edit("<b>Invalid user type</b>", parse_mode=enums.ParseMode.HTML)
                     return
 
                 name = (
@@ -280,23 +282,25 @@ async def unban_command(client: Client, message: Message):
                     await client.unban_chat_member(message.chat.id, user_to_unban.id)
                     await message.edit(
                         f"<b>{name}</b> <code>unbanned!</code>"
-                        + f"\n{'<b>Cause:</b> <i>' + cause.split(' ', maxsplit=2)[2] + '</i>' if len(cause.split()) > 2 else ''}"
+                        + f"\n{'<b>Cause:</b> <i>' + cause.split(' ', maxsplit=2)[2] + '</i>' if len(cause.split()) > 2 else ''}",
+                        parse_mode=enums.ParseMode.HTML
                     )
                 except UserAdminInvalid:
-                    await message.edit("<b>No rights</b>")
+                    await message.edit("<b>No rights</b>", parse_mode=enums.ParseMode.HTML)
                 except ChatAdminRequired:
-                    await message.edit("<b>No rights</b>")
+                    await message.edit("<b>No rights</b>", parse_mode=enums.ParseMode.HTML)
                 except Exception as e:
-                    await message.edit(format_exc(e))
+                    await message.edit(format_exc(e), parse_mode=enums.ParseMode.HTML)
             except PeerIdInvalid:
-                await message.edit("<b>User is not found</b>")
+                await message.edit("<b>User is not found</b>", parse_mode=enums.ParseMode.HTML)
             except UsernameInvalid:
-                await message.edit("<b>User is not found</b>")
+                await message.edit("<b>User is not found</b>", parse_mode=enums.ParseMode.HTML)
             except IndexError:
-                await message.edit("<b>User is not found</b>")
+                await message.edit("<b>User is not found</b>", parse_mode=enums.ParseMode.HTML)
         else:
-            await message.edit("<b>user_id or username</b>")
+            await message.edit("<b>user_id or username</b>", parse_mode=enums.ParseMode.HTML)
     else:
+        await message.edit("<b>Unsupported</b>", parse_mode=enums.ParseMode.HTML)
         await message.edit("<b>Unsupported</b>")
 
 
