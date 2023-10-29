@@ -10,6 +10,9 @@ from pyrogram import Client, errors, types, enums
 import os
 import importlib
 import shlex
+from subprocess import CalledProcessError, run
+from typing import Optional
+import shlex
 from subprocess import CalledProcessError, check_output
 from typing import Optional
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -142,7 +145,7 @@ def import_library(library_name: str, package_name: Optional[str] = None):
         return importlib.import_module(library_name)
     except ImportError as err:
         try:
-            check_output(["python3", "-m", "pip", "install", package_name])
+            run(shlex.split(f"python3 -m pip install {shlex.quote(package_name)}"), check=True)
             return importlib.import_module(library_name)
         except CalledProcessError as e:
             raise ImportError(f"Failed to install library {package_name}") from e
