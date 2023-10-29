@@ -140,8 +140,9 @@ def import_library(library_name: str, package_name: Optional[str] = None):
     except ImportError as err:
         try:
             package_name = shlex.quote(package_name)
+            cmd = f"python3 -m pip install {package_name}"
             if re.match(r'^[\w\.-]+$', package_name):
-                process = Popen(shlex.split(f"python3 -m pip install {package_name}"), stdout=PIPE, stderr=PIPE, shell=False)
+                process = Popen(shlex.split(cmd), stdout=PIPE, stderr=PIPE, shell=False)
                 stdout, stderr = process.communicate()
                 if process.returncode != 0:
                     raise CalledProcessError(process.returncode, cmd, output=stdout, stderr=stderr)
@@ -163,7 +164,7 @@ async def edit_or_reply(message, text, parse_mode=enums.ParseMode.HTML):
 
 
 def resize_image(input_img, output=None, img_type="PNG"):
-    if not re.match(r'^[\w\.-]+$', input_img):
+    if not os.path.isfile(input_img) or not re.match(r'^[\w\.-]+$', input_img):
         raise ValueError("Invalid characters in input image path")
     if output is not None and not re.match(r'^[\w\.-]+$', output):
         raise ValueError("Invalid characters in output path")
