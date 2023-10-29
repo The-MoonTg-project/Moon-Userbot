@@ -9,6 +9,8 @@
 #  This program is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+
+BAN_COMMAND_MSG = "<b>No rights</b>"
 #  GNU General Public License for more details.
 
 #  You should have received a copy of the GNU General Public License
@@ -130,7 +132,6 @@ async def get_user_and_name(message):
 
 
 @Client.on_message(filters.command(["ban"], prefix) & filters.me)
-BAN_COMMAND_MSG = "<b>No rights</b>"
 async def ban_command(client: Client, message: Message):
     cause = text(message)
     if message.reply_to_message and message.chat.type not in ["private", "channel"]:
@@ -340,17 +341,19 @@ async def kick_command(client: Client, message: Message):
     CHAT_TYPES = ["private", "channel"]
     if message.reply_to_message and message.chat.type not in CHAT_TYPES:
         if message.reply_to_message.from_user:
+            BAN_COMMAND_MSG = "<b>No rights</b>"
+            
             try:
-                await client.ban_chat_member(
-                    message.chat.id,
-                    message.reply_to_message.from_user.id,
-                    int(time() + 60),
-                )
-                channel = await client.resolve_peer(message.chat.id)
-                user_id = await client.resolve_peer(
-                    message.reply_to_message.from_user.id
-                )
-                if "report_spam" in cause.lower().split() and message.reply_to_message:
+            await client.ban_chat_member(
+            message.chat.id,
+            message.reply_to_message.from_user.id,
+            int(time() + 60),
+            )
+            channel = await client.resolve_peer(message.chat.id)
+            user_id = await client.resolve_peer(
+            message.reply_to_message.from_user.id
+            )
+            if "report_spam" in cause.lower().split() and message.reply_to_message:
                     await client.send(
                         functions.channels.ReportSpam(
                             channel=channel,
@@ -638,6 +641,8 @@ REPLY_ON_USER_MSG = "<b>Reply on user msg</b>"
 USER_NOT_FOUND_MSG = "<b>User is not found</b>"
 USER_ID_OR_USERNAME_MSG = "<b>user_id or username</b>"
 UNSUPPORTED_MSG = "<b>Unsupported</b>"
+
+BAN_COMMAND_MSG = "<b>No rights</b>"
 
 @Client.on_message(filters.command(["unmute"], prefix) & filters.me)
 async def unmute_command(client, message):
@@ -951,7 +956,7 @@ async def promote_command(client: Client, message: Message):
                     f"<b>{message.reply_to_message.from_user.first_name}</b> <code>promoted!</code>"
                     + f"\n{'<b>Prefix:</b> <i>' + cause.split(' ', maxsplit=1)[1] + '</i>' if len(cause.split()) > 1 else ''}"
                 )
-    NO_RIGHTS_MSG = "<b>No rights</b>"
+    # NO_RIGHTS_MSG = "<b>No rights</b>"
     
             except UserAdminInvalid:
                 await message.edit(NO_RIGHTS_MSG)
