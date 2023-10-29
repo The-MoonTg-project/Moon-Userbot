@@ -15,7 +15,7 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-from pyrogram import Client, filters
+from pyrogram import Client, filters, enums
 
 from utils.misc import modules_help, prefix
 
@@ -87,6 +87,7 @@ async def collect_afk_messages(bot: Client, message: Message):
                 chat_id=GetChatID(message),
                 text=text,
                 reply_to_message_id=ReplyCheck(message),
+                parse_mode=enums.ParseMode.HTML
             )
             CHAT_TYPE[GetChatID(message)] = 1
             return
@@ -103,6 +104,7 @@ async def collect_afk_messages(bot: Client, message: Message):
                     chat_id=GetChatID(message),
                     text=text,
                     reply_to_message_id=ReplyCheck(message),
+                    parse_mode=enums.ParseMode.HTML
                 )
             elif CHAT_TYPE[GetChatID(message)] > 50:
                 return
@@ -117,6 +119,7 @@ async def collect_afk_messages(bot: Client, message: Message):
                     chat_id=GetChatID(message),
                     text=text,
                     reply_to_message_id=ReplyCheck(message),
+                    parse_mode=enums.ParseMode.HTML
                 )
 
         CHAT_TYPE[GetChatID(message)] += 1
@@ -150,7 +153,8 @@ async def afk_unset(bot: Client, message: Message):
             datetime.now(), AFK_TIME).replace("ago", "").strip()
         await message.edit(
             f"`While you were away (for {last_seen}), you received {sum(USERS.values()) + sum(GROUPS.values())} "
-            f"messages from {len(USERS) + len(GROUPS)} chats`"
+            f"messages from {len(USERS) + len(GROUPS)} chats`",
+            parse_mode=enums.ParseMode.HTML
         )
         AFK = False
         AFK_TIME = ""
@@ -171,7 +175,8 @@ async def auto_afk_unset(bot: Client, message: Message):
             datetime.now(), AFK_TIME).replace("ago", "").strip()
         reply = await message.reply(
             f"`While you were away (for {last_seen}), you received {sum(USERS.values()) + sum(GROUPS.values())} "
-            f"messages from {len(USERS) + len(GROUPS)} chats`"
+            f"messages from {len(USERS) + len(GROUPS)} chats`",
+            parse_mode=enums.ParseMode.HTML
         )
         AFK = False
         AFK_TIME = ""
