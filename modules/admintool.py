@@ -52,10 +52,8 @@ def update_cache():
 @Client.on_message(filters.group & ~filters.channel & ~filters.me)
 async def admintool_handler(_, message: Message):
     if message.sender_chat:
-        if (
-            message.sender_chat.type == "supergroup"
-            or message.sender_chat.id == db_cache.get(f"linked{message.chat.id}", 0)
-        ):
+        if (message.sender_chat.type == "supergroup" or 
+            message.sender_chat.id == db_cache.get(f"linked{message.chat.id}", 0)):
             raise ContinuePropagation
 
     if message.sender_chat and db_cache.get(f"antich{message.chat.id}", False):
@@ -64,12 +62,8 @@ async def admintool_handler(_, message: Message):
             await message.chat.ban_member(message.sender_chat.id)
 
     tmuted_users = db_cache.get(f"c{message.chat.id}", [])
-    if (
-        message.from_user
-        and message.from_user.id in tmuted_users
-        or message.sender_chat
-        and message.sender_chat.id in tmuted_users
-    ):
+    if (message.from_user and message.from_user.id in tmuted_users or 
+        message.sender_chat and message.sender_chat.id in tmuted_users):
         with suppress(RPCError):
             await message.delete()
 
@@ -168,10 +162,7 @@ async def ban_command(client: Client, message: Message):
             await message.edit("<b>No rights</b>", parse_mode=enums.ParseMode.HTML)
         except Exception as e:
             await message.edit(format_exc(e), parse_mode=enums.ParseMode.HTML)
-    elif not message.reply_to_message and message.chat.type not in [
-        "private",
-        "channel",
-    ]:
+    elif not message.reply_to_message and message.chat.type not in ["private", "channel"]:
         if len(cause.split()) > 1:
             try:
                 if await check_username_or_id(cause.split(" ")[1]) == "channel":
@@ -193,10 +184,8 @@ async def ban_command(client: Client, message: Message):
                 try:
                     channel = await client.resolve_peer(message.chat.id)
                     user_id = await client.resolve_peer(user_to_ban.id)
-                    if (
-                        "report_spam" in cause.lower().split()
-                        and message.reply_to_message
-                    ):
+                    if ("report_spam" in cause.lower().split() and 
+                        message.reply_to_message):
                         await client.send(
                             functions.channels.ReportSpam(
                                 channel=channel,
@@ -251,6 +240,7 @@ async def ban_command(client: Client, message: Message):
             )
     else:
         await message.edit("<b>Unsupported</b>", parse_mode=enums.ParseMode.HTML)
+        await message.edit("<b>Unsupported</b>")
 
 
 @Client.on_message(filters.command(["unban"], prefix) & filters.me)
@@ -379,20 +369,15 @@ async def kick_command(client: Client, message: Message):
                 await message.edit(format_exc(e))
         else:
             await message.edit("<b>Reply on user msg</b>")
-    elif not message.reply_to_message and message.chat.type not in [
-        "private",
-        "channel",
-    ]:
+    elif not message.reply_to_message and message.chat.type not in ["private", "channel"]:
         if len(cause.split()) > 1:
             try:
                 user_to_ban = await client.get_users(cause.split(" ")[1])
                 try:
                     channel = await client.resolve_peer(message.chat.id)
                     user_id = await client.resolve_peer(user_to_ban.id)
-                    if (
-                        "report_spam" in cause.lower().split()
-                        and message.reply_to_message
-                    ):
+                    if ("report_spam" in cause.lower().split() and 
+                        message.reply_to_message):
                         await client.send(
                             functions.channels.ReportSpam(
                                 channel=channel,
@@ -648,10 +633,7 @@ async def unmute_command(client, message):
                 await message.edit(format_exc(e))
         else:
             await message.edit("<b>Reply on user msg</b>")
-    elif not message.reply_to_message and message.chat.type not in [
-        "private",
-        "channel",
-    ]:
+    elif not message.reply_to_message and message.chat.type not in ["private", "channel"]:
         u_p = message.chat.permissions
         if len(cause.split()) > 1:
             try:
@@ -922,13 +904,13 @@ async def promote_command(client: Client, message: Message):
                     can_delete_messages=True,
                     can_restrict_members=True,
                     can_invite_users=True,
-                    can_pin_messages=True,
+                    can_pin_messages=True
                 )
                 if len(cause.split()) > 1:
                     await client.set_administrator_title(
                         message.chat.id,
                         message.reply_to_message.from_user.id,
-                        cause.split(maxsplit=1)[1],
+                        cause.split(maxsplit=1)[1]
                     )
                 await message.edit(
                     f"<b>{message.reply_to_message.from_user.first_name}</b> <code>promoted!</code>"
@@ -940,10 +922,7 @@ async def promote_command(client: Client, message: Message):
                 await message.edit("<b>No rights</b>")
             except Exception as e:
                 await message.edit(format_exc(e))
-    elif not message.reply_to_message and message.chat.type not in [
-        "private",
-        "channel",
-    ]:
+    elif not message.reply_to_message and message.chat.type not in ["private", "channel"]:
         if len(cause.split()) > 1:
             try:
                 promote_user = await client.get_users(cause.split(" ")[1])
@@ -954,13 +933,13 @@ async def promote_command(client: Client, message: Message):
                         can_delete_messages=True,
                         can_restrict_members=True,
                         can_invite_users=True,
-                        can_pin_messages=True,
+                        can_pin_messages=True
                     )
                     if len(cause.split()) > 1:
                         await client.set_administrator_title(
                             message.chat.id,
                             promote_user.id,
-                            f"\n{cause.split(' ', maxsplit=2)[2] if len(cause.split()) > 2 else None}",
+                            f"\n{cause.split(' ', maxsplit=2)[2] if len(cause.split()) > 2 else None}"
                         )
                     await message.edit(
                         f"<b>{promote_user.first_name}</b> <code>promoted!</code>"
