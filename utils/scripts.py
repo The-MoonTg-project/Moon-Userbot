@@ -13,26 +13,10 @@ import re
 import shlex
 from subprocess import CalledProcessError, run
 from typing import Optional
-import shlex
-from subprocess import CalledProcessError, check_output
-from typing import Optional
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 from pyrogram import Client, errors, types, enums
-#  GNU General Public License for more details.
-
-#  You should have received a copy of the GNU General Public License
-#  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import asyncio
-import os
-import sys
 from io import BytesIO
-
 from PIL import Image
-import importlib
-import subprocess
-
-from pyrogram import Client, errors, types, enums
 import traceback
 from .misc import modules_help, prefix, requirements_list
 
@@ -86,7 +70,6 @@ async def interact_with(message: types.Message) -> types.Message:
     """
 
     await asyncio.sleep(1)
-    # noinspection PyProtectedMember
     response = await message._client.get_history(message.chat.id, limit=1)
     seconds_waiting = 0
 
@@ -96,7 +79,6 @@ async def interact_with(message: types.Message) -> types.Message:
             raise RuntimeError("bot didn't answer in 5 seconds")
 
         await asyncio.sleep(1)
-        # noinspection PyProtectedMember
         response = await message._client.get_history(message.chat.id, limit=1)
 
     interact_with_to_delete.append(message.message_id)
@@ -151,7 +133,6 @@ def import_library(library_name: str, package_name: Optional[str] = None):
         return importlib.import_module(library_name)
     except ImportError as err:
         try:
-            # Sanitize user input
             package_name = shlex.quote(package_name)
             run(shlex.split(f"python3 -m pip install {package_name}"), check=True, shell=False)
             return importlib.import_module(library_name)
@@ -179,8 +160,6 @@ def resize_image(input_img, output=None, img_type="PNG"):
         output.name = f"sticker.{img_type.lower()}"
 
     with Image.open(input_img) as img:
-        # We used to use thumbnail(size) here, but it returns with a *max* dimension of 512,512
-        # rather than making one side exactly 512 so we have to calculate dimensions manually :(
         if img.width == img.height:
             size = (512, 512)
         elif img.width < img.height:
