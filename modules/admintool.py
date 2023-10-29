@@ -10,7 +10,7 @@
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 
-NO_RIGHTS_MSG = "<b>No rights</b>"
+# NO_RIGHTS_MSG = "<b>No rights</b>"
 #  GNU General Public License for more details.
 
 #  You should have received a copy of the GNU General Public License
@@ -376,7 +376,6 @@ async def kick_command(client: Client, message: Message):
                     f"<b>{message.reply_to_message.from_user.first_name}</b> <code>kicked!</code>"
                     + f"\n{'<b>Cause:</b> <i>' + text_c.split(maxsplit=1)[1] + '</i>' if len(text_c.split()) > 1 else ''}"
                 )
-    NO_RIGHTS_MSG = "<b>No rights</b>"
         REPLY_ON_USER_MSG = "<b>Reply on user msg</b>"
             except UserAdminInvalid:
                 await message.edit(NO_RIGHTS_MSG)
