@@ -134,6 +134,7 @@ async def ban_command(client: Client, message: Message):
     if message.reply_to_message and message.chat.type not in ["private", "channel"]:
         user_for_ban, name = await get_user_and_name(message)
         try:
+            text_c = "".join(f" {_}" for _ in cause.split() if _.lower() not in ["delete_history", "report_spam"])
             try:
                 await client.ban_chat_member(message.chat.id, user_for_ban)
                 channel = await client.resolve_peer(message.chat.id)
@@ -152,7 +153,6 @@ async def ban_command(client: Client, message: Message):
                             channel=channel, participant=user_id
                         )
                     )
-            text_c = "".join(f" {_}" for _ in cause.split() if _.lower() not in ["delete_history", "report_spam"])
 
             await message.edit(
                 f"<b>{name}</b> <code>banned!</code>"
@@ -354,8 +354,8 @@ async def kick_command(client: Client, message: Message):
                             channel=channel, participant=user_id
                         )
                     )
-                text_c = "".join(f" {_}" for _ in cause.split() if _.lower() not in ["delete_history", "report_spam"])
-
+            text_c = "".join(f" {_}" for _ in cause.split() if _.lower() not in ["delete_history", "report_spam"])
+            try:
                 await message.edit(
                     f"<b>{message.reply_to_message.from_user.first_name}</b> <code>kicked!</code>"
                     + f"\n{'<b>Cause:</b> <i>' + text_c.split(maxsplit=1)[1] + '</i>' if len(text_c.split()) > 1 else ''}"
@@ -402,12 +402,14 @@ async def kick_command(client: Client, message: Message):
                     await client.ban_chat_member(
                         message.chat.id, user_to_ban.id, int(time() + 60)
                     )
-                    await message.edit(
-                        f"<b>{user_to_ban.first_name}</b> <code>kicked!</code>"
-                        + f"\n{'<b>Cause:</b> <i>' + text_c.split(' ', maxsplit=2)[2] + '</i>' if len(text_c.split()) > 2 else ''}"
-                    )
+                text_c = "".join(f" {_}" for _ in cause.split() if _.lower() not in ["delete_history", "report_spam"])
+                try:
+                await message.edit(
+                    f"<b>{user_to_ban.first_name}</b> <code>kicked!</code>"
+                    + f"\n{'<b>Cause:</b> <i>' + text_c.split(' ', maxsplit=2)[2] + '</i>' if len(text_c.split()) > 2 else ''}"
+                )
                 except UserAdminInvalid:
-                    await message.edit("<b>No rights</b>")
+                await message.edit("<b>No rights</b>")
                 except ChatAdminRequired:
                     await message.edit("<b>No rights</b>")
                 except Exception as e:
@@ -442,11 +444,11 @@ async def tmute_command(client: Client, message: Message):
     if message.reply_to_message and message.chat.type not in ["private", "channel"]:
         user_for_tmute, name = await get_user_and_name(message)
 
+        text_c = "".join(cause.split())
         if (
             message.reply_to_message.from_user
             and message.reply_to_message.from_user.is_self
         ):
-            text_c = "".join(cause.split())
             return await message.edit("<b>Not on yourself</b>")
 
         tmuted_users = db.get("core.ats", f"c{message.chat.id}", [])
@@ -675,12 +677,12 @@ async def mute_command(client: Client, message: Message):
     if message.reply_to_message and message.chat.type not in ["private", "channel"]:
         mute_seconds: int = 0
         for character in "mhdw":
+                text_c = "".join(cause.split())
                 await client.ban_chat_member(message.chat.id, user_for_ban)
                 channel = await client.resolve_peer(message.chat.id)
                 user_id = await client.resolve_peer(user_for_ban)
                 if "report_spam" in cause.lower().split():
                     await client.send(
-                    text_c = "".join(cause.split())
                         functions.channels.ReportSpam(
                             channel=channel,
                             participant=peer,
@@ -910,6 +912,7 @@ async def demote_command(client: Client, message: Message):
 @Client.on_message(filters.command(["promote"], prefix) & filters.me)
 async def promote_command(client: Client, message: Message):
     cause = text(message)
+    text_c = "".join(cause.split())
     if message.reply_to_message and message.chat.type not in ["private", "channel"]:
         if message.reply_to_message.from_user:
             try:
