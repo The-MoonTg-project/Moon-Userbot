@@ -711,11 +711,11 @@ async def mute_command(client: Client, message: Message):
     mute_seconds: int = 0
     for character in "mhdw":
         match = re.search(rf"(\d+|(\d+\.\d+)){character}", message.text)
-            if match:
-                if character == "m":
-                    mute_seconds += int(
-                        float(match.string[match.start() : match.end() - 1]) * 60 // 1
-                    )
+        if match:
+            if character == "m":
+                mute_seconds += int(
+                    float(match.string[match.start() : match.end() - 1]) * 60 // 1
+                )
                 if character == "h":
                     mute_seconds += int(
                         float(match.string[match.start() : match.end() - 1]) * 3600 // 1
