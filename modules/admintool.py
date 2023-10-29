@@ -455,6 +455,7 @@ async def tmute_command(client: Client, message: Message):
             and message.reply_to_message.from_user.is_self
         ):
             return await message.edit("<b>Not on yourself</b>")
+            text_c = "".join(cause.split())
 
         tmuted_users = db.get("core.ats", f"c{message.chat.id}", [])
         if user_for_tmute not in tmuted_users:
