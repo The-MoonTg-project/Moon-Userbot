@@ -6,9 +6,21 @@
 #  the Free Software Foundation, either version 3 of the License, or
 #  (at your option) any later version.
 
+import re
+import shlex
+from subprocess import CalledProcessError, check_output
+from typing import Optional
 from pyrogram import Client, errors, types, enums
+import asyncio
 import os
+import sys
+from io import BytesIO
+from PIL import Image
 import importlib
+import subprocess
+from pyrogram import Client, errors, types, enums
+import traceback
+from .misc import modules_help, prefix, requirements_list
 import re
 import shlex
 from subprocess import CalledProcessError, run
@@ -143,7 +155,7 @@ def import_library(library_name: str, package_name: Optional[str] = None):
         try:
             # Sanitize user input
             package_name = shlex.quote(package_name)
-            os.system(f"python3 -m pip install {package_name}")
+            check_output(["python3", "-m", "pip", "install", package_name])
             return importlib.import_module(library_name)
         except CalledProcessError as e:
             raise ImportError(f"Failed to install library {package_name}") from e
