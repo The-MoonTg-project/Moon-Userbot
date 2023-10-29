@@ -651,7 +651,7 @@ async def unmute_command(client, message):
                 await client.restrict_chat_member(
                     message.chat.id,
                     message.reply_to_message.from_user.id,
-                    u_p,
+                    u_p
                     int(time() + 30),
                 )
                 await message.edit(
@@ -953,8 +953,6 @@ async def promote_command(client: Client, message: Message):
                     f"<b>{message.reply_to_message.from_user.first_name}</b> <code>promoted!</code>"
                     + f"\n{'<b>Prefix:</b> <i>' + cause.split(' ', maxsplit=1)[1] + '</i>' if len(cause.split()) > 1 else ''}"
                 )
-    # NO_RIGHTS_MSG is already defined at the beginning of the file
-    
             except UserAdminInvalid:
                 await message.edit(NO_RIGHTS_MSG)
             except ChatAdminRequired:
