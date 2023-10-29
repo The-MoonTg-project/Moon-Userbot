@@ -352,7 +352,7 @@ async def kick_command(client: Client, message: Message):
         if message.reply_to_message.from_user:
             try:
                 TIME_LIMIT = 60
-                await client.ban_chat_member(
+                await client.kick_chat_member(
                     message.chat.id,
                     message.reply_to_message.from_user.id,
                     int(time() + TIME_LIMIT),
@@ -445,9 +445,10 @@ async def kick_command(client: Client, message: Message):
                     await message.chat.ban_member(user.user.id, int(time()) + TIME_LIMIT)
                     await message.edit(f"{SUCCESSFULLY_KICKED} {len(values)} {DELETED_ACCOUNTS}")
     # noinspection PyTypeChecker
+    members = await message.chat.get_members()
     values = [
-        await message.chat.ban_member(member.user.id, int(time()) + 31)
-        for member in await message.chat.get_members()
+        await message.chat.kick_member(member.user.id, until_date=int(time()) + 31)
+        for member in members
         if member.user.is_deleted
     ]
     await message.edit(f"<b>Successfully kicked {len(values)} deleted account(s)</b>")
@@ -690,7 +691,7 @@ async def unmute_command(client, message):
 async def mute_command(client: Client, message: Message):
     members = await message.chat.get_members()
     values = [
-        await message.chat.ban_member(member.user.id, int(time()) + 31)
+        await message.chat.kick_chat_member(member.user.id, until_date=int(time()) + 31)
         for member in members
         if member.user.is_deleted
     ]
