@@ -351,7 +351,7 @@ async def kick_command(client: Client, message: Message):
                     int(time() + 60),
                 )
             channel = await client.resolve_peer(message.chat.id)
-                user_id = await client.resolve_peer(
+            user_id = await client.resolve_peer(
                     message.reply_to_message.from_user.id
                 )
                 if "report_spam" in cause.lower().split() and message.reply_to_message:
@@ -648,8 +648,6 @@ async def unmute_command(client, message):
                     int(time() + 30),
                 )
                 channel = await client.resolve_peer(message.chat.id)
-                    int(time() + 30),
-                )
                 await message.edit(
                     f"<b>{message.reply_to_message.from_user.first_name}</b> <code>unmuted</code>"
                     + f"\n{'<b>Cause:</b> <i>' + cause.split(' ', maxsplit=1)[1] + '</i>' if len(cause.split()) > 1 else ''}"
@@ -694,7 +692,6 @@ async def unmute_command(client, message):
             await message.edit(USER_ID_OR_USERNAME)
     else:
         await message.edit(UNSUPPORTED)
-
 
 @Client.on_message(filters.command(["mute"], prefix) & filters.me)
 async def mute_command(client: Client, message: Message):
@@ -846,7 +843,6 @@ async def mute_command(client: Client, message: Message):
             await message.edit(USER_ID_OR_USERNAME)
     else:
         await message.edit(UNSUPPORTED)
-
 
 @Client.on_message(filters.command(["demote"], prefix) & filters.me)
 async def demote_command(client: Client, message: Message):
