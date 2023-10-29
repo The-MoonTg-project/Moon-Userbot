@@ -6,6 +6,9 @@
 #  the Free Software Foundation, either version 3 of the License, or
 #  (at your option) any later version.
 
+import os
+import re
+import traceback
 from pyrogram import Client, errors, types, enums
 from typing import Optional
 import asyncio
@@ -109,19 +112,4 @@ def format_small_module_help(module_name: str):
 
     return help_text
 
-async def edit_or_reply(message, text, parse_mode=enums.ParseMode.HTML):
-    """Edit Message If Its From Self, Else Reply To Message"""
-    if not message:
-        return await message.edit(text, parse_mode=parse_mode)
-    if not message.from_user:
-        return await message.edit(text, parse_mode=parse_mode)
-        if img.width == img.height:
-            size = (512, 512)
-        elif img.width < img.height:
-            size = (max(512 * img.width // img.height, 1), 512)
-        else:
-            size = (512, max(512 * img.height // img.width, 1))
-
-        img.resize(size).save(output, img_type)
-
-    return output
+# Removed the incomplete function
