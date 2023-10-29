@@ -9,6 +9,10 @@
 from pyrogram import Client, errors, types, enums
 import os
 import sys
+import re
+import shlex
+from subprocess import Popen, PIPE
+from typing import Optional
 import importlib
 import re
 import shlex
@@ -137,7 +141,10 @@ def import_library(library_name: str, package_name: Optional[str] = None):
         try:
             package_name = shlex.quote(package_name)
             if re.match(r'^[\w\.-]+$', package_name):
-                run(shlex.split(f"python3 -m pip install {package_name}"), check=True, shell=False)
+                process = Popen(shlex.split(f"python3 -m pip install {package_name}"), stdout=PIPE, stderr=PIPE, shell=False)
+                stdout, stderr = process.communicate()
+                if process.returncode != 0:
+                    raise CalledProcessError(process.returncode, cmd, output=stdout, stderr=stderr)
                 return importlib.import_module(library_name)
             else:
                 raise ValueError("Invalid characters in package name")
