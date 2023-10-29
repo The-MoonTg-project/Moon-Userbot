@@ -11,7 +11,7 @@ import os
 import importlib
 import re
 import shlex
-from subprocess import CalledProcessError, run
+from subprocess import CalledProcessError, Popen, PIPE
 from typing import Optional
 import shlex
 from subprocess import CalledProcessError, check_output
@@ -61,7 +61,10 @@ def text(message: types.Message):
 
 def restart():
     if re.match(r'^[\w\.-]+$', sys.executable):
-        os.execvp(sys.executable, [sys.executable, "main.py"])
+        process = Popen([sys.executable, "main.py"], stdout=PIPE, stderr=PIPE)
+        stdout, stderr = process.communicate()
+        if process.returncode != 0:
+            raise ValueError(f"Error occurred while restarting: {stderr.decode()}")
     else:
         raise ValueError("Invalid characters in program path")
 
@@ -168,7 +171,10 @@ def import_library(library_name: str, package_name: Optional[str] = None):
         try:
             # Sanitize user input
             package_name = shlex.quote(package_name)
-            run(shlex.split(f"python3 -m pip install {package_name}"), check=True, shell=False)
+            process = Popen(shlex.split(f"python3 -m pip install {package_name}"), stdout=PIPE, stderr=PIPE)
+            stdout, stderr = process.communicate()
+            if process.returncode != 0:
+                raise ImportError(f"Failed to install library {package_name}: {stderr.decode()}")
             return importlib.import_module(library_name)
         except CalledProcessError as e:
             raise ImportError(f"Failed to install library {package_name}") from e
