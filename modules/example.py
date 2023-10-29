@@ -1,24 +1,23 @@
-#  Moon-Userbot - telegram userbot
-#  Copyright (C) 2020-present Moon Userbot Organization
+#  Moon-Userbot - telegram userbot
+#  Copyright (C) 2020-present Moon Userbot Organization
 #
-#  This program is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, either version 3 of the License, or
-#  (at your option) any later version.
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
 
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
 
-#  You should have received a copy of the GNU General Public License
-#  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from pyrogram import Client, filters, enums
+from pyrogram import Client, enums, filters
 from pyrogram.types import Message
 
 from utils.misc import modules_help, prefix
-
 
 # if your module has packages from PyPi
 
@@ -35,7 +34,9 @@ async def example_edit(client: Client, message: Message):
     try:
         await message.edit("<code>This is an example module</code>")
     except Exception as e:
-        await message.edit(f"<code>[{e.error_code}: {enums.MessageType.TEXT}] - {e.error_details}</code>")
+        await message.edit(
+            f"<code>[{e.error_code}: {enums.MessageType.TEXT}] - {e.error_details}</code>"
+        )
 
 
 @Client.on_message(filters.command("example_send", prefix) & filters.me)
@@ -43,7 +44,9 @@ async def example_send(client: Client, message: Message):
     try:
         await client.send_message(message.chat.id, "<b>This is an example module</b>")
     except Exception as e:
-        await message.edit(f"<code>[{e.error_code}: {enums.MessageType.TEXT}] - {e.error_details}</code>")
+        await message.edit(
+            f"<code>[{e.error_code}: {enums.MessageType.TEXT}] - {e.error_details}</code>"
+        )
 
 
 # This adds instructions for your module
