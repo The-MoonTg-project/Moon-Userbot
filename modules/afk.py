@@ -15,21 +15,18 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-from pyrogram import Client, filters, enums
-
-from utils.misc import modules_help, prefix
-
 import asyncio
 from datetime import datetime
 
-from pyrogram import filters
-from utils.scripts import import_library
+from pyrogram import Client, enums, filters
 from pyrogram.types import Message
+
+from utils.misc import modules_help, prefix
+from utils.scripts import import_library
 
 humanize = import_library("humanize")
 
 import humanize
-
 
 AFK = False
 AFK_REASON = ""
@@ -53,7 +50,7 @@ def ReplyCheck(message: Message):
 
 
 def GetChatID(message: Message):
-    """ Get the group id of the incoming message"""
+    """Get the group id of the incoming message"""
     return message.chat.id
 
 
@@ -62,17 +59,20 @@ def subtract_time(start, end):
     subtracted = humanize.naturaltime(start - end)
     return str(subtracted)
 
+
 # Main
 
 
 @Client.on_message(
-    ((filters.group & filters.mentioned) | filters.private) & ~filters.me & ~filters.service, group=3
+    ((filters.group & filters.mentioned) | filters.private)
+    & ~filters.me
+    & ~filters.service,
+    group=3,
 )
 async def collect_afk_messages(bot: Client, message: Message):
     if AFK:
         last_seen = subtract_time(datetime.now(), AFK_TIME)
-        is_group = True if message.chat.type in [
-            "supergroup", "group"] else False
+        is_group = True if message.chat.type in ["supergroup", "group"] else False
         CHAT_TYPE = GROUPS if is_group else USERS
 
         if GetChatID(message) not in CHAT_TYPE:
@@ -87,7 +87,7 @@ async def collect_afk_messages(bot: Client, message: Message):
                 chat_id=GetChatID(message),
                 text=text,
                 reply_to_message_id=ReplyCheck(message),
-                parse_mode=enums.ParseMode.HTML
+                parse_mode=enums.ParseMode.HTML,
             )
             CHAT_TYPE[GetChatID(message)] = 1
             return
@@ -104,7 +104,7 @@ async def collect_afk_messages(bot: Client, message: Message):
                     chat_id=GetChatID(message),
                     text=text,
                     reply_to_message_id=ReplyCheck(message),
-                    parse_mode=enums.ParseMode.HTML
+                    parse_mode=enums.ParseMode.HTML,
                 )
             elif CHAT_TYPE[GetChatID(message)] > 50:
                 return
@@ -119,7 +119,7 @@ async def collect_afk_messages(bot: Client, message: Message):
                     chat_id=GetChatID(message),
                     text=text,
                     reply_to_message_id=ReplyCheck(message),
-                    parse_mode=enums.ParseMode.HTML
+                    parse_mode=enums.ParseMode.HTML,
                 )
 
         CHAT_TYPE[GetChatID(message)] += 1
@@ -149,12 +149,11 @@ async def afk_unset(bot: Client, message: Message):
     global AFK, AFK_TIME, AFK_REASON, USERS, GROUPS
 
     if AFK:
-        last_seen = subtract_time(
-            datetime.now(), AFK_TIME).replace("ago", "").strip()
+        last_seen = subtract_time(datetime.now(), AFK_TIME).replace("ago", "").strip()
         await message.edit(
             f"`While you were away (for {last_seen}), you received {sum(USERS.values()) + sum(GROUPS.values())} "
             f"messages from {len(USERS) + len(GROUPS)} chats`",
-            parse_mode=enums.ParseMode.HTML
+            parse_mode=enums.ParseMode.HTML,
         )
         AFK = False
         AFK_TIME = ""
@@ -171,12 +170,11 @@ async def auto_afk_unset(bot: Client, message: Message):
     global AFK, AFK_TIME, AFK_REASON, USERS, GROUPS
 
     if AFK:
-        last_seen = subtract_time(
-            datetime.now(), AFK_TIME).replace("ago", "").strip()
+        last_seen = subtract_time(datetime.now(), AFK_TIME).replace("ago", "").strip()
         reply = await message.reply(
             f"`While you were away (for {last_seen}), you received {sum(USERS.values()) + sum(GROUPS.values())} "
             f"messages from {len(USERS) + len(GROUPS)} chats`",
-            parse_mode=enums.ParseMode.HTML
+            parse_mode=enums.ParseMode.HTML,
         )
         AFK = False
         AFK_TIME = ""
@@ -188,4 +186,6 @@ async def auto_afk_unset(bot: Client, message: Message):
 
 
 modules_help["afk"] = {
-    "afk [reason]": "Go to AFK mode with reason as anything after .afk\nUsage: <code>.afk <reason></code>", "unafk": "Get out of AFK"}
+    "afk [reason]": "Go to AFK mode with reason as anything after .afk\nUsage: <code>.afk <reason></code>",
+    "unafk": "Get out of AFK",
+}
