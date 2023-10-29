@@ -55,6 +55,7 @@ async def example_edit(client: Client, message: Message):
             f"<code>[{e.error_code}: {enums.MessageType.TEXT}] - {e.error_details}</code>"
         )
 
+
 # This function listens for the "example_send" command and sends a new message saying
 # "This is an example module". If an error occurs, it edits the original message to display the error details.
 @Client.on_message(filters.command("example_send", prefix) & filters.me)
