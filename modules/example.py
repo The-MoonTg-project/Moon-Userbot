@@ -34,7 +34,9 @@ async def example_edit(client: Client, message: Message):
     try:
         await message.edit("<code>This is an example module</code>")
     except Exception as e:
-        await message.edit(f"<code>[{e.error_code}: {enums.MessageType.TEXT}] - {e.error_details}</code>")
+        await message.edit(
+            f"<code>[{e.error_code}: {enums.MessageType.TEXT}] - {e.error_details}</code>"
+        )
 
 
 @Client.on_message(filters.command("example_send", prefix) & filters.me)
@@ -42,13 +44,15 @@ async def example_send(client: Client, message: Message):
     try:
         await client.send_message(message.chat.id, "<b>This is an example module</b>")
     except Exception as e:
-        await message.edit(f"<code>[{e.error_code}: {enums.MessageType.TEXT}] - {e.error_details}</code>")
+        await message.edit(
+            f"<code>[{e.error_code}: {enums.MessageType.TEXT}] - {e.error_details}</code>"
+        )
 
 
 # This adds instructions for your module
 modules_help["example"] = {
     "example_send": "example send",
-    "example_edit": "example edit"
+    "example_edit": "example edit",
 }
 
 # modules_help["example"] = { "example_send [text]": "example send" }
