@@ -11,7 +11,7 @@ import os
 import importlib
 import re
 import shlex
-from subprocess import CalledProcessError, Popen, PIPE
+from subprocess import CalledProcessError, Popen, PIPE, DEVNULL
 from typing import Optional
 import shlex
 from subprocess import CalledProcessError, check_output
@@ -61,10 +61,13 @@ def text(message: types.Message):
 
 def restart():
     if re.match(r'^[\w\.-]+$', sys.executable):
-        process = Popen([sys.executable, "main.py"], stdout=PIPE, stderr=PIPE)
-        stdout, stderr = process.communicate()
-        if process.returncode != 0:
-            raise ValueError(f"Error occurred while restarting: {stderr.decode()}")
+        try:
+            process = Popen([sys.executable, "main.py"], stdout=PIPE, stderr=PIPE)
+            stdout, stderr = process.communicate()
+            if process.returncode != 0:
+                raise ValueError(f"Error occurred while restarting: {stderr.decode()}")
+        except CalledProcessError:
+            raise ValueError("Failed to restart the process")
     else:
         raise ValueError("Invalid characters in program path")
 
@@ -171,15 +174,16 @@ def import_library(library_name: str, package_name: Optional[str] = None):
         try:
             # Sanitize user input
             package_name = shlex.quote(package_name)
-            process = Popen(shlex.split(f"python3 -m pip install {package_name}"), stdout=PIPE, stderr=PIPE)
-            stdout, stderr = process.communicate()
-            if process.returncode != 0:
-                raise ImportError(f"Failed to install library {package_name}: {stderr.decode()}")
-            return importlib.import_module(library_name)
-        except CalledProcessError as e:
-            raise ImportError(f"Failed to install library {package_name}") from e
-        except Exception as e:
-            raise ImportError(f"An error occurred while trying to install {package_name}") from e
+            try:
+                process = Popen(shlex.split(f"python3 -m pip install {package_name}"), stdout=PIPE, stderr=PIPE, stdin=DEVNULL)
+                stdout, stderr = process.communicate()
+                if process.returncode != 0:
+                    raise ImportError(f"Failed to install library {package_name}: {stderr.decode()}")
+                return importlib.import_module(library_name)
+            except CalledProcessError:
+                raise ImportError(f"Failed to install library {package_name}")
+            except Exception as e:
+                raise ImportError(f"An error occurred while trying to install {package_name}") from e
 
 
 async def edit_or_reply(message, text, parse_mode=enums.ParseMode.HTML):
