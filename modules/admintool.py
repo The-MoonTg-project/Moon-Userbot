@@ -147,11 +147,11 @@ async def ban_command(client: Client, message: Message):
                         )
                     )
                 if "delete_history" in cause.lower().split():
-                await client.send(
-                    functions.channels.DeleteParticipantHistory(
-                        channel=channel, participant=user_id
+                    await client.send(
+                        functions.channels.DeleteParticipantHistory(
+                            channel=channel, participant=user_id
+                        )
                     )
-                )
             text_c = "".join(
                 f" {_}"
                 for _ in cause.split()
@@ -1030,7 +1030,7 @@ async def delete_history(client: Client, message: Message):
                 user_for_delete, name = await get_user_and_name(message)
                 channel = await client.resolve_peer(message.chat.id)
                 user_id = await client.resolve_peer(user_for_delete)
-                await client.send(
+                    await client.send(
                     functions.channels.DeleteParticipantHistory(
                         channel=channel, participant=user_id
                     )
