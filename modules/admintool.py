@@ -141,7 +141,7 @@ async def ban_command(client: Client, message: Message):
         user_for_ban, name = await get_user_and_name(message)
         try:
             await client.ban_chat_member(message.chat.id, user_for_ban)
-                channel = await client.resolve_peer(message.chat.id)
+            channel = await client.resolve_peer(message.chat.id)
             user_id = await client.resolve_peer(user_for_ban)
             if "report_spam" in cause.lower().split():
                 await client.send(
@@ -197,7 +197,7 @@ async def ban_command(client: Client, message: Message):
                 )
 
                 try:
-                        channel = await client.resolve_peer(message.chat.id)
+                    channel = await client.resolve_peer(message.chat.id)
                     user_id = await client.resolve_peer(user_to_ban.id)
                     if (
                         "report_spam" in cause.lower().split()
@@ -647,6 +647,9 @@ async def unmute_command(client, message):
                     u_p,
                     int(time() + 30),
                 )
+                channel = await client.resolve_peer(message.chat.id)
+                    int(time() + 30),
+                )
                 await message.edit(
                     f"<b>{message.reply_to_message.from_user.first_name}</b> <code>unmuted</code>"
                     + f"\n{'<b>Cause:</b> <i>' + cause.split(' ', maxsplit=1)[1] + '</i>' if len(cause.split()) > 1 else ''}"
@@ -934,7 +937,8 @@ async def promote_command(client: Client, message: Message):
                     can_delete_messages=True,
                     can_restrict_members=True,
                 )
-                channel = await client.resolve_peer(message.chat.id)
+                await client.promote_chat_member(
+                    message.chat.id,
                     message.reply_to_message.from_user.id,
                     can_delete_messages=True,
                     can_restrict_members=True,
