@@ -1,5 +1,6 @@
 from pyrogram import Client, filters, types
 from pyrogram import enums as enums
+from utils.misc import prefix
 
 @Client.on_message(filters.command("sqoute", prefix) & filters.me)
 async def sqoute(client: Client, message: types.Message):
