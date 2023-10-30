@@ -14,7 +14,9 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from pyrogram import Client, enums as enums, filters
+from pyrogram import Client
+from pyrogram import enums as enums
+from pyrogram import filters
 from pyrogram.errors import FloodWait
 from pyrogram.raw import functions, types
 from pyrogram.types import Message
