@@ -1,4 +1,6 @@
-from pyrogram import Client, filters, enums
+from pyrogram import Client, filters, enums, types
+from utils.scripts import format_exc
+prefix = utils.misc.prefix
 
 @Client.on_message(filters.command("update", prefix) & filters.me)
 async def update(client: Client, message: Message):
