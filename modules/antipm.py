@@ -14,7 +14,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from pyrogram import Client, filters
+from pyrogram import Client, enums, filters
 from pyrogram.raw import functions
 from pyrogram.types import Message
 
@@ -25,8 +25,7 @@ anti_pm_enabled = filters.create(
     lambda _, __, ___: db.get("core.antipm", "status", False)
 )
 
-in_contact_list = filters.create(
-    lambda _, __, message: message.from_user.is_contact)
+in_contact_list = filters.create(lambda _, __, message: message.from_user.is_contact)
 
 is_support = filters.create(lambda _, __, message: message.chat.is_support)
 
@@ -56,21 +55,26 @@ async def anti_pm(_, message: Message):
         if db.get("core.antipm", "status", False):
             await message.edit(
                 "<b>Anti-PM status: enabled\n"
-                f"Disable with: </b><code>{prefix}antipm disable</code>"
+                f"Disable with: </b><code>{prefix}antipm disable</code>",
+                parse_mode=enums.ParseMode.HTML,
             )
         else:
             await message.edit(
                 "<b>Anti-PM status: disabled\n"
-                f"Enable with: </b><code>{prefix}antipm enable</code>"
+                f"Enable with: </b><code>{prefix}antipm enable</code>",
+                parse_mode=enums.ParseMode.HTML,
             )
     elif message.command[1] in ["enable", "on", "1", "yes", "true"]:
         db.set("core.antipm", "status", True)
-        await message.edit("<b>Anti-PM enabled!</b>")
+        await message.edit("<b>Anti-PM enabled!</b>", parse_mode=enums.ParseMode.HTML)
     elif message.command[1] in ["disable", "off", "0", "no", "false"]:
         db.set("core.antipm", "status", False)
-        await message.edit("<b>Anti-PM disabled!</b>")
+        await message.edit("<b>Anti-PM disabled!</b>", parse_mode=enums.ParseMode.HTML)
     else:
-        await message.edit(f"<b>Usage: {prefix}antipm [enable|disable]</b>")
+        await message.edit(
+            f"<b>Usage: {prefix}antipm [enable|disable]</b>",
+            parse_mode=enums.ParseMode.HTML,
+        )
 
 
 @Client.on_message(filters.command(["antipm_report"], prefix) & filters.me)
@@ -79,21 +83,30 @@ async def antipm_report(_, message: Message):
         if db.get("core.antipm", "spamrep", False):
             await message.edit(
                 "<b>Spam-reporting enabled.\n"
-                f"Disable with: </b><code>{prefix}antipm_report disable</code>"
+                f"Disable with: </b><code>{prefix}antipm_report disable</code>",
+                parse_mode=enums.ParseMode.HTML,
             )
         else:
             await message.edit(
                 "<b>Spam-reporting disabled.\n"
-                f"Enable with: </b><code>{prefix}antipm_report enable</code>"
+                f"Enable with: </b><code>{prefix}antipm_report enable</code>",
+                parse_mode=enums.ParseMode.HTML,
             )
     elif message.command[1] in ["enable", "on", "1", "yes", "true"]:
         db.set("core.antipm", "spamrep", True)
-        await message.edit("<b>Spam-reporting enabled!</b>")
+        await message.edit(
+            "<b>Spam-reporting enabled!</b>", parse_mode=enums.ParseMode.HTML
+        )
     elif message.command[1] in ["disable", "off", "0", "no", "false"]:
         db.set("core.antipm", "spamrep", False)
-        await message.edit("<b>Spam-reporting disabled!</b>")
+        await message.edit(
+            "<b>Spam-reporting disabled!</b>", parse_mode=enums.ParseMode.HTML
+        )
     else:
-        await message.edit(f"<b>Usage: {prefix}antipm_report [enable|disable]</b>")
+        await message.edit(
+            f"<b>Usage: {prefix}antipm_report [enable|disable]</b>",
+            parse_mode=enums.ParseMode.HTML,
+        )
 
 
 @Client.on_message(filters.command(["antipm_block"], prefix) & filters.me)
@@ -102,21 +115,30 @@ async def antipm_block(_, message: Message):
         if db.get("core.antipm", "block", False):
             await message.edit(
                 "<b>Blocking users enabled.\n"
-                f"Disable with: </b><code>{prefix}antipm_block disable</code>"
+                f"Disable with: </b><code>{prefix}antipm_block disable</code>",
+                parse_mode=enums.ParseMode.HTML,
             )
         else:
             await message.edit(
                 "<b>Blocking users disabled.\n"
-                f"Enable with: </b><code>{prefix}antipm_block enable</code>"
+                f"Enable with: </b><code>{prefix}antipm_block enable</code>",
+                parse_mode=enums.ParseMode.HTML,
             )
     elif message.command[1] in ["enable", "on", "1", "yes", "true"]:
         db.set("core.antipm", "block", True)
-        await message.edit("<b>Blocking users enabled!</b>")
+        await message.edit(
+            "<b>Blocking users enabled!</b>", parse_mode=enums.ParseMode.HTML
+        )
     elif message.command[1] in ["disable", "off", "0", "no", "false"]:
         db.set("core.antipm", "block", False)
-        await message.edit("<b>Blocking users disabled!</b>")
+        await message.edit(
+            "<b>Blocking users disabled!</b>", parse_mode=enums.ParseMode.HTML
+        )
     else:
-        await message.edit(f"<b>Usage: {prefix}antipm_block [enable|disable]</b>")
+        await message.edit(
+            f"<b>Usage: {prefix}antipm_block [enable|disable]</b>",
+            parse_mode=enums.ParseMode.HTML,
+        )
 
 
 modules_help["antipm"] = {

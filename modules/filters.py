@@ -14,21 +14,21 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from pyrogram import Client, filters, ContinuePropagation, errors
+from pyrogram import Client, ContinuePropagation, enums, errors, filters
 from pyrogram.types import (
-    Message,
+    InputMediaAudio,
     InputMediaDocument,
     InputMediaPhoto,
     InputMediaVideo,
-    InputMediaAudio,
+    Message,
 )
+
+# noinspection PyUnresolvedReferences
+from utils.db import db
 
 # noinspection PyUnresolvedReferences
 from utils.misc import modules_help, prefix
 from utils.scripts import format_exc
-
-# noinspection PyUnresolvedReferences
-from utils.db import db
 
 
 def get_filters_chat(chat_id):
@@ -80,13 +80,11 @@ async def filters_main_handler(client: Client, message: Message):
                         )
                     else:
                         media_grouped_list.append(
-                            InputMediaVideo(_.video.file_id,
-                                            _.caption.markdown)
+                            InputMediaVideo(_.video.file_id, _.caption.markdown)
                         )
                 elif _.video.thumbs:
                     media_grouped_list.append(
-                        InputMediaVideo(_.video.file_id,
-                                        _.video.thumbs[0].file_id)
+                        InputMediaVideo(_.video.file_id, _.video.thumbs[0].file_id)
                     )
                 else:
                     media_grouped_list.append(InputMediaVideo(_.video.file_id))
@@ -109,8 +107,7 @@ async def filters_main_handler(client: Client, message: Message):
                         )
                     else:
                         media_grouped_list.append(
-                            InputMediaDocument(
-                                _.document.file_id, _.caption.markdown)
+                            InputMediaDocument(_.document.file_id, _.caption.markdown)
                         )
                 elif _.document.thumbs:
                     media_grouped_list.append(
@@ -119,8 +116,7 @@ async def filters_main_handler(client: Client, message: Message):
                         )
                     )
                 else:
-                    media_grouped_list.append(
-                        InputMediaDocument(_.document.file_id))
+                    media_grouped_list.append(InputMediaDocument(_.document.file_id))
         await client.send_media_group(
             message.chat.id,
             media_grouped_list,
@@ -141,7 +137,8 @@ async def filter_handler(client: Client, message: Message):
     try:
         if len(message.text.split()) < 2:
             return await message.edit(
-                f"<b>Usage</b>: <code>{prefix}filter [name] (Reply required)</code>"
+                f"<b>Usage</b>: <code>{prefix}filter [name] (Reply required)</code>",
+                parse_mode=enums.ParseMode.HTML,
             )
         name = message.text.split(maxsplit=1)[1].lower()
         chat_filters = get_filters_chat(message.chat.id)
@@ -176,7 +173,8 @@ async def filter_handler(client: Client, message: Message):
                 )
             except errors.ChatForwardsRestricted:
                 await message.edit(
-                    "<b>Forwarding messages is restricted by chat admins</b>"
+                    "<b>Forwarding messages is restricted by chat admins</b>",
+                    parse_mode=enums.ParseMode.HTML,
                 )
                 return
             filter_ = {
@@ -195,7 +193,8 @@ async def filter_handler(client: Client, message: Message):
                     )
                 else:
                     await message.edit(
-                        "<b>Forwarding messages is restricted by chat admins</b>"
+                        "<b>Forwarding messages is restricted by chat admins</b>",
+                        parse_mode=enums.ParseMode.HTML,
                     )
                     return
             filter_ = {
@@ -207,7 +206,10 @@ async def filter_handler(client: Client, message: Message):
         chat_filters.update({name: filter_})
 
         set_filters_chat(message.chat.id, chat_filters)
-        return await message.edit(f"<b>Filter</b> <code>{name}</code> has been added.")
+        return await message.edit(
+            f"<b>Filter</b> <code>{name}</code> has been added.",
+            parse_mode=enums.ParseMode.HTML,
+        )
     except Exception as e:
         return await message.edit(format_exc(e))
 
@@ -222,7 +224,7 @@ async def filters_handler(client: Client, message: Message):
             text += f"{index}. <code>{key}</code>\n"
         text = f"<b>Your filters in current chat</b>:\n\n" f"{text}"
         text = text[:4096]
-        return await message.edit(text)
+        return await message.edit(text, parse_mode=enums.ParseMode.HTML)
     except Exception as e:
         return await message.edit(format_exc(e))
 
@@ -233,17 +235,22 @@ async def filters_handler(client: Client, message: Message):
 async def filter_del_handler(client: Client, message: Message):
     try:
         if len(message.text.split()) < 2:
-            return await message.edit(f"<b>Usage</b>: <code>{prefix}fdel [name]</code>")
+            return await message.edit(
+                f"<b>Usage</b>: <code>{prefix}fdel [name]</code>",
+                parse_mode=enums.ParseMode.HTML,
+            )
         name = message.text.split(maxsplit=1)[1].lower()
         chat_filters = get_filters_chat(message.chat.id)
         if name not in chat_filters.keys():
             return await message.edit(
-                f"<b>Filter</b> <code>{name}</code> doesn't exists."
+                f"<b>Filter</b> <code>{name}</code> doesn't exists.",
+                parse_mode=enums.ParseMode.HTML,
             )
         del chat_filters[name]
         set_filters_chat(message.chat.id, chat_filters)
         return await message.edit(
-            f"<b>Filter</b> <code>{name}</code> has been deleted."
+            f"<b>Filter</b> <code>{name}</code> has been deleted.",
+            parse_mode=enums.ParseMode.HTML,
         )
     except Exception as e:
         return await message.edit(format_exc(e))
@@ -254,17 +261,20 @@ async def filter_search_handler(client: Client, message: Message):
     try:
         if len(message.text.split()) < 2:
             return await message.edit(
-                f"<b>Usage</b>: <code>{prefix}fsearch [name]</code>"
+                f"<b>Usage</b>: <code>{prefix}fsearch [name]</code>",
+                parse_mode=enums.ParseMode.HTML,
             )
         name = message.text.split(maxsplit=1)[1].lower()
         chat_filters = get_filters_chat(message.chat.id)
         if name not in chat_filters.keys():
             return await message.edit(
-                f"<b>Filter</b> <code>{name}</code> doesn't exists."
+                f"<b>Filter</b> <code>{name}</code> doesn't exists.",
+                parse_mode=enums.ParseMode.HTML,
             )
         return await message.edit(
             f"<b>Trigger</b>:\n<code>{name}</code"
-            f">\n<b>Answer</b>:\n{chat_filters[name]}"
+            f">\n<b>Answer</b>:\n{chat_filters[name]}",
+            parse_mode=enums.ParseMode.HTML,
         )
     except Exception as e:
         return await message.edit(format_exc(e))

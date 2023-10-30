@@ -6,9 +6,19 @@
 #  the Free Software Foundation, either version 3 of the License, or
 #  (at your option) any later version.
 
-#  This program is distributed in the hope that it will be useful,
+from pyrogram import Client, errors, types, enums
+import os
+import importlib
+import re
+import shlex
+from subprocess import CalledProcessError, run
+from typing import Optional
+import shlex
+from subprocess import CalledProcessError, check_output
+from typing import Optional
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+from pyrogram import Client, errors, types, enums
 #  GNU General Public License for more details.
 
 #  You should have received a copy of the GNU General Public License
@@ -32,7 +42,10 @@ def text(message: types.Message):
 
 
 def restart():
-    os.execvp(sys.executable, [sys.executable, "main.py"])
+    if re.match(r'^[\w\.-]+$', sys.executable):
+        os.execvp(sys.executable, [sys.executable, "main.py"])
+    else:
+        raise ValueError("Invalid characters in program path")
 
 
 def format_exc(e: Exception, hint: str = None):
@@ -40,7 +53,7 @@ def format_exc(e: Exception, hint: str = None):
     if isinstance(e, errors.RPCError):
         return (
             f"<b>Telegram API error!</b>\n"
-            f"<code>[{e.CODE} {e.ID or e.NAME}] - {e.MESSAGE}</code>"
+            f"<code>[{e.error_code} {e.error_message}] - {e.error_details}</code>"
         )
     else:
         if hint:
@@ -112,7 +125,7 @@ def format_small_module_help(module_name: str):
     commands = modules_help[module_name]
 
     help_text = f"<b>Help for |{module_name}|\n\nCommands list:\n"
-    for command, desc in commands.items():
+    for command, _ in commands.items():
         cmd = command.split(maxsplit=1)
         args = " <code>" + cmd[1] + "</code>" if len(cmd) > 1 else ""
         help_text += f"<code>{prefix}{cmd[0]}</code>{args}\n"
@@ -121,27 +134,31 @@ def format_small_module_help(module_name: str):
     return help_text
 
 
-def import_library(library_name: str, package_name: str = None):
+def import_library(library_name: str, package_name: Optional[str] = None):
     """
     Loads a library, or installs it in ImportError case
     :param library_name: library name (import example...)
     :param package_name: package name in PyPi (pip install example)
     :return: loaded module
     """
+    if not re.match(r'^[\w\.-]+$', library_name):
+        raise ValueError("Invalid characters in library name")
     if package_name is None:
         package_name = library_name
     requirements_list.append(package_name)
 
     try:
         return importlib.import_module(library_name)
-    except ImportError:
-        completed = subprocess.run(
-            ["python3", "-m", "pip", "install", package_name])
-        if completed.returncode != 0:
-            raise AssertionError(
-                f"Failed to install library {package_name} (pip exited with code {completed.returncode})"
-            )
-        return importlib.import_module(library_name)
+    except ImportError as err:
+        try:
+            # Sanitize user input
+            package_name = shlex.quote(package_name)
+            run(shlex.split(f"python3 -m pip install {package_name}"), check=True, shell=False)
+            return importlib.import_module(library_name)
+        except CalledProcessError as e:
+            raise ImportError(f"Failed to install library {package_name}") from e
+        except Exception as e:
+            raise ImportError(f"An error occurred while trying to install {package_name}") from e
 
 
 async def edit_or_reply(message, text, parse_mode=enums.ParseMode.HTML):
@@ -153,6 +170,10 @@ async def edit_or_reply(message, text, parse_mode=enums.ParseMode.HTML):
 
 
 def resize_image(input_img, output=None, img_type="PNG"):
+    if not re.match(r'^[\w\.-]+$', input_img):
+        raise ValueError("Invalid characters in input image path")
+    if output is not None and not re.match(r'^[\w\.-]+$', output):
+        raise ValueError("Invalid characters in output path")
     if output is None:
         output = BytesIO()
         output.name = f"sticker.{img_type.lower()}"
