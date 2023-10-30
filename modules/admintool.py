@@ -379,9 +379,9 @@ async def kick_command(client: Client, message: Message):
                     + f"\n{'<b>Cause:</b> <i>' + text_c.split(maxsplit=1)[1] + '</i>' if len(text_c.split()) > 1 else ''}"
                 )
             except UserAdminInvalid:
-                await message.edit("<b>No rights</b>")
+                await message.edit(NO_RIGHTS)
             except ChatAdminRequired:
-                await message.edit("<b>No rights</b>")
+                await message.edit(NO_RIGHTS)
             except Exception as e:
                 await message.edit(format_exc(e))
         else:
@@ -429,9 +429,19 @@ async def kick_command(client: Client, message: Message):
                         + f"\n{'<b>Cause:</b> <i>' + text_c.split(' ', maxsplit=2)[2] + '</i>' if len(text_c.split()) > 2 else ''}"
                     )
                 except UserAdminInvalid:
-                    await message.edit("<b>No rights</b>")
+                    await message.edit(NO_RIGHTS)
                 except ChatAdminRequired:
-                    await message.edit("<b>No rights</b>")
+                    await message.edit(NO_RIGHTS)
+            except PeerIdInvalid:
+                await message.edit(USER_NOT_FOUND)
+            except UsernameInvalid:
+                await message.edit(USER_NOT_FOUND)
+            except IndexError:
+                await message.edit(USER_NOT_FOUND)
+        else:
+            await message.edit(USER_ID_OR_USERNAME)
+    else:
+        await message.edit(UNSUPPORTED)
                 except Exception as e:
                     await message.edit(format_exc(e))
             except PeerIdInvalid:
@@ -443,7 +453,7 @@ async def kick_command(client: Client, message: Message):
         else:
             await message.edit("<b>user_id or username</b>")
     else:
-        await message.edit("<b>Unsupported</b>")
+        await message.edit(UNSUPPORTED)
 
 
 @Client.on_message(filters.command(["kickdel"], prefix) & filters.me)
@@ -517,18 +527,17 @@ async def tmute_command(client: Client, message: Message):
                     await message.edit(f"<b>{name}</b> <code>already in tmute</code>")
 
             except PeerIdInvalid:
-                await message.edit("<b>User is not found</b>")
+                await message.edit(USER_NOT_FOUND)
             except UsernameInvalid:
-                await message.edit("<b>User is not found</b>")
+                await message.edit(USER_NOT_FOUND)
             except IndexError:
-                await message.edit("<b>User is not found</b>")
+                await message.edit(USER_NOT_FOUND)
         else:
-            await message.edit("<b>user_id or username</b>")
+            await message.edit(USER_ID_OR_USERNAME)
     else:
-        await message.edit("<b>Unsupported</b>")
+        await message.edit(UNSUPPORTED)
 
     update_cache()
-
 
 @Client.on_message(filters.command(["tunmute"], prefix) & filters.me)
 async def tunmute_command(client: Client, message: Message):
@@ -580,18 +589,17 @@ async def tunmute_command(client: Client, message: Message):
                         + f"\n{'<b>Cause:</b> <i>' + cause.split(maxsplit=2)[2] + '</i>' if len(cause.split()) > 2 else ''}"
                     )
             except PeerIdInvalid:
-                await message.edit("<b>User is not found</b>")
+                await message.edit(USER_NOT_FOUND)
             except UsernameInvalid:
-                await message.edit("<b>User is not found</b>")
+                await message.edit(USER_NOT_FOUND)
             except IndexError:
-                await message.edit("<b>User is not found</b>")
+                await message.edit(USER_NOT_FOUND)
         else:
-            await message.edit("<b>user_id or username</b>")
+            await message.edit(USER_ID_OR_USERNAME)
     else:
-        await message.edit("<b>Unsupported</b>")
+        await message.edit(UNSUPPORTED)
 
     update_cache()
-
 
 @Client.on_message(filters.command(["tmute_users"], prefix) & filters.me)
 async def tunmute_users_command(client: Client, message: Message):
@@ -656,7 +664,7 @@ async def unmute_command(client, message):
             except UserAdminInvalid:
                 await message.edit(NO_RIGHTS)
             except ChatAdminRequired:
-                await message.edit("<b>No rights</b>")
+                await message.edit(NO_RIGHTS)
             except Exception as e:
                 await message.edit(format_exc(e))
         else:
@@ -678,7 +686,7 @@ async def unmute_command(client, message):
                         + f"\n{'<b>Cause:</b> <i>' + cause.split(' ', maxsplit=2)[2] + '</i>' if len(cause.split()) > 2 else ''}"
                     )
                 except UserAdminInvalid:
-                    await message.edit("<b>No rights</b>")
+                    await message.edit(NO_RIGHTS)
                 except ChatAdminRequired:
                     await message.edit("<b>No rights</b>")
                 except Exception as e:
@@ -686,9 +694,9 @@ async def unmute_command(client, message):
             except PeerIdInvalid:
                 await message.edit(USER_NOT_FOUND)
             except UsernameInvalid:
-                await message.edit("<b>User is not found</b>")
+                await message.edit(USER_NOT_FOUND)
             except IndexError:
-                await message.edit("<b>User is not found</b>")
+                await message.edit(USER_NOT_FOUND)
         else:
             await message.edit(USER_ID_OR_USERNAME)
     else:
@@ -759,7 +767,7 @@ async def mute_command(client: Client, message: Message):
         except UserAdminInvalid:
             await message.edit(NO_RIGHTS)
         except ChatAdminRequired:
-            await message.edit("<b>No rights</b>")
+            await message.edit(NO_RIGHTS)
         except Exception as e:
             await message.edit(format_exc(e))
     elif not message.reply_to_message and message.chat.type not in [
@@ -831,15 +839,15 @@ async def mute_command(client: Client, message: Message):
                 except UserAdminInvalid:
                     await message.edit(NO_RIGHTS)
                 except ChatAdminRequired:
-                    await message.edit("<b>No rights</b>")
+                    await message.edit(NO_RIGHTS)
                 except Exception as e:
                     await message.edit(format_exc(e))
             except PeerIdInvalid:
                 await message.edit(USER_NOT_FOUND)
             except UsernameInvalid:
-                await message.edit("<b>User is not found</b>")
+                await message.edit(USER_NOT_FOUND)
             except IndexError:
-                await message.edit("<b>User is not found</b>")
+                await message.edit(USER_NOT_FOUND)
         else:
             await message.edit(USER_ID_OR_USERNAME)
     else:
@@ -873,7 +881,7 @@ async def demote_command(client: Client, message: Message):
             except UserAdminInvalid:
                 await message.edit(NO_RIGHTS)
             except ChatAdminRequired:
-                await message.edit("<b>No rights</b>")
+                await message.edit(NO_RIGHTS)
             except Exception as e:
                 await message.edit(format_exc(e))
     elif not message.reply_to_message and message.chat.type not in [
@@ -906,20 +914,19 @@ async def demote_command(client: Client, message: Message):
                 except UserAdminInvalid:
                     await message.edit(NO_RIGHTS)
                 except ChatAdminRequired:
-                    await message.edit("<b>No rights</b>")
+                    await message.edit(NO_RIGHTS)
                 except Exception as e:
                     await message.edit(format_exc(e))
             except PeerIdInvalid:
                 await message.edit(USER_NOT_FOUND)
             except UsernameInvalid:
-                await message.edit("<b>User is not found</b>")
+                await message.edit(USER_NOT_FOUND)
             except IndexError:
-                await message.edit("<b>User is not found</b>")
+                await message.edit(USER_NOT_FOUND)
         else:
             await message.edit(USER_ID_OR_USERNAME)
     else:
         await message.edit(UNSUPPORTED)
-        await message.edit("<b>Unsupported</b>")
 
 
 @Client.on_message(filters.command(["promote"], prefix) & filters.me)
