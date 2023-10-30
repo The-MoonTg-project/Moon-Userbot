@@ -1,4 +1,5 @@
-from pyrogram import Client, filters, enums, types
+from pyrogram import Client, filters, types
+from pyrogram import enums as enums
 from utils.scripts import format_exc
 prefix = utils.misc.prefix
 
