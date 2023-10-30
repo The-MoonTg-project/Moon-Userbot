@@ -32,6 +32,7 @@ async def support(_, message: Message):
             commands_count += 1
 
     await message.edit(
+        parse_mode=enums.ParseMode.HTML,
         f"<b>Moon-Userbot\n\n"
         "GitHub: <a href=https://github.com/The-MoonTg-project/Moon-Userbot>Moon-Userbot</a>\n"
         "Custom modules repository: <a href=https://github.com/The-MoonTg-project/custom_modules>"
@@ -68,6 +69,7 @@ async def version(client: Client, message: Message):
     )
 
     await message.reply(
+        parse_mode=enums.ParseMode.HTML,
         f"<b>Moon Userbot version: {userbot_version}\n"
         f"Changelog </b><i><a href=https://t.me/moonuserbot/{changelog}>in channel</a></i>.<b>\n"
         f"Changelog written by </b><i>"
@@ -81,7 +83,6 @@ async def version(client: Client, message: Message):
         f"{gitrepo.head.commit.hexsha[:7]}</a> by {gitrepo.head.commit.author.name}\n"
         f"Commit time: {commit_time}</b>",
     )
-
 
 modules_help["support"] = {
     "support": "Information about userbot",
