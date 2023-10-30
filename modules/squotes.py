@@ -123,7 +123,7 @@ async def fake_quote_cmd(client: Client, message: types.Message):
 
     if send_for_me:
         await message.delete()
-        message = await client.send_message("me", "<b>Generating...</b>")
+        message = await client.send_message("me", "<b>Generating...</b>", parse_mode=enums.ParseMode.HTML)
     else:
         await message.edit("<b>Generating...</b>", parse_mode=enums.ParseMode.HTML)
 

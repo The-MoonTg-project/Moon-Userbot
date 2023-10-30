@@ -35,9 +35,9 @@ async def spam(client: Client, message: Message):
 
     for msg in range(amount):
         if message.reply_to_message:
-            sent = await message.reply_to_message.reply(text)
+            sent = await message.reply_to_message.reply(text, parse_mode=enums.ParseMode.HTML)
         else:
-            sent = await client.send_message(message.chat.id, text)
+            sent = await client.send_message(message.chat.id, text, parse_mode=enums.ParseMode.HTML)
 
         if message.command[0] == "statspam":
             await asyncio.sleep(0.1)

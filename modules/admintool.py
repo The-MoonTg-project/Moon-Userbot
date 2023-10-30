@@ -89,6 +89,7 @@ async def admintool_handler(_, message: Message):
             await message.reply(
                 db_cache.get(f"welcome_text{message.chat.id}"),
                 disable_web_page_preview=True,
+                parse_mode=enums.ParseMode.HTML
             )
 
     raise ContinuePropagation

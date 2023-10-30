@@ -87,7 +87,7 @@ async def save_note(client: Client, message: Message):
                     if message.reply_to_message.text:
                         # manual copy
                         message_id = await client.send_message(
-                            chat_id, message.reply_to_message.text
+                            chat_id, message.reply_to_message.text, parse_mode=enums.ParseMode.HTML
                         )
                     else:
                         await message.edit(
@@ -113,7 +113,7 @@ async def save_note(client: Client, message: Message):
         checking_note = db.get("core.notes", f"note{note_name}", False)
         if not checking_note:
             message_id = await client.send_message(
-                chat_id, message.text.split(note_name)[1].strip()
+                chat_id, message.text.split(note_name)[1].strip(), parse_mode=enums.ParseMode.HTML
             )
             note = {
                 "MEDIA_GROUP": False,

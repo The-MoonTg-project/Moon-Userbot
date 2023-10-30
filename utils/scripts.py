@@ -165,9 +165,9 @@ def import_library(library_name: str, package_name: Optional[str] = None):
 async def edit_or_reply(message, text):
     """Edit Message If Its From Self, Else Reply To Message"""
     if not message:
-        return await message.edit(text)
+        return await message.edit(text, parse_mode=enums.ParseMode.HTML)
     if not message.from_user:
-        return await message.edit(text)
+        return await message.edit(text, parse_mode=enums.ParseMode.HTML)
     if not message.from_user:
         return await message.edit(text, parse_mode=enums.ParseMode.HTML)
 

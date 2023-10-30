@@ -60,6 +60,7 @@ if __name__ == "__main__":
             "Chat [EN]: @moonub_chat\n"
             f"For restart, enter:</b>\n"
             f"<code>{restart}</code>",
+            parse_mode=enums.ParseMode.HTML
         )
     except Exception:
         pass
