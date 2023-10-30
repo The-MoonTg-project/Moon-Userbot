@@ -19,49 +19,6 @@ from PIL import Image
 from subprocess import CalledProcessError, Popen, PIPE, DEVNULL
 from pyrogram import Client, errors, types, enums
 from .misc import modules_help, prefix, requirements_list
-import re
-import shlex
-from subprocess import CalledProcessError, run
-from typing import Optional
-import shlex
-from subprocess import CalledProcessError, check_output
-from typing import Optional
-from pyrogram import Client, errors, types, enums
-import asyncio
-import os
-import sys
-from io import BytesIO
-from PIL import Image
-import importlib
-import subprocess
-from pyrogram import Client, errors, types, enums
-import traceback
-from .misc import modules_help, prefix, requirements_list
-import re
-import shlex
-from subprocess import CalledProcessError, Popen, PIPE, DEVNULL
-from typing import Optional
-import shlex
-from subprocess import CalledProcessError, check_output
-from typing import Optional
-from pyrogram import Client, errors, types, enums
-import asyncio
-import os
-import sys
-from io import BytesIO
-from PIL import Image
-import importlib
-import subprocess
-from pyrogram import Client, errors, types, enums
-import traceback
-from .misc import modules_help, prefix, requirements_list
-import re
-import shlex
-from subprocess import CalledProcessError, run
-from typing import Optional
-import shlex
-from subprocess import CalledProcessError, check_output
-from typing import Optional
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 from pyrogram import Client, errors, types, enums
@@ -94,8 +51,8 @@ def restart():
             stdout, stderr = process.communicate()
             if process.returncode != 0:
                 raise ValueError(f"Error occurred while restarting: {stderr.decode()}")
-        except CalledProcessError:
-            raise ValueError("Failed to restart the process")
+        except CalledProcessError as e:
+            raise ValueError(f"Failed to restart the process: {str(e)}")
     else:
         raise ValueError("Invalid characters in program path")
 
@@ -110,7 +67,7 @@ def format_exc(e: Exception, hint: str = None):
     else:
         hint_text = f"\n\n<b>Hint: {hint}</b>" if hint else ""
         return (
-            f"<b>Error!</b>\n<code>{e.__class__.__name__}: {e}</code>{hint_text}"
+            f"<b>Error!</b>\n<code>{e.__class__.__name__}: {str(e)}</code>{hint_text}"
         )
 
 
@@ -185,7 +142,7 @@ def format_small_module_help(module_name: str):
 
 def import_library(library_name: str, package_name: Optional[str] = None):
     """
-    Loads a library, or installs it in ImportError case
+    Loads a library, or installs it in ImportError case. If the library cannot be imported, it attempts to install it using pip.
     :param library_name: library name (import example...)
     :param package_name: package name in PyPi (pip install example)
     :return: loaded module
