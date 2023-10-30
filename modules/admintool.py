@@ -128,10 +128,10 @@ async def ban_command(client: Client, message: Message):
             channel = await client.resolve_peer(message.chat.id)
             user_id = await client.resolve_peer(user_for_ban)
                 if "report_spam" in cause.lower().split():
-                    await client.send(functions.channels.ReportSpam(
-                        channel=channel,
-                        participant=user_id
-                    ))
+                await client.send(functions.channels.ReportSpam(
+                    channel=channel,
+                    participant=user_id
+                ))
     # elif not message.reply_to_message and message.chat.type not in ["private", "channel"]:
         if len(cause.split()) > 1:
             try:
@@ -153,10 +153,10 @@ async def ban_command(client: Client, message: Message):
                     channel = await client.resolve_peer(message.chat.id)
                     user_id = await client.resolve_peer(user_to_ban.id)
                         if ("report_spam" in cause.lower().split() and message.reply_to_message):
-                            await client.send(functions.channels.ReportSpam(
-                                channel=channel,
-                            participant=user_id,
-                            id=[message.reply_to_message.message_id],
+                        await client.send(functions.channels.ReportSpam(
+                        channel=channel,
+                        participant=user_id,
+                        id=[message.reply_to_message.message_id],
                         ))
                     if "delete_history" in cause.lower().split():
                         await client.send(functions.channels.DeleteParticipantHistory(
@@ -256,15 +256,15 @@ async def ban_command(client: Client, message: Message):
                     channel = await client.resolve_peer(message.chat.id)
                     user_id = await client.resolve_peer(user_to_ban.id)
                         if (
-                            "report_spam" in cause.lower().split()
-                            and message.reply_to_message
+                        "report_spam" in cause.lower().split()
+                        and message.reply_to_message
                         ):
-                            await client.send(
-                            functions.channels.ReportSpam(
-                                channel=channel,
-                                participant=user_id,
-                                id=[message.reply_to_message.message_id],
-                            )
+                        await client.send(
+                        functions.channels.ReportSpam(
+                        channel=channel,
+                        participant=user_id,
+                        id=[message.reply_to_message.message_id],
+                        )
                         )
                     if "delete_history" in cause.lower().split():
                         await client.send(
