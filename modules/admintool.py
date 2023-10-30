@@ -1,7 +1,7 @@
 #  Moon-Userbot - telegram userbot
 #  Copyright (C) 2020-present Moon Userbot Organization
 #
-             if "report_spam" in cause.lower().split():
+if "report_spam" in cause.lower().split():
                  await client.send(
 #  the Free Software Foundation, either version 3 of the License, or
 #  (at your option) any later version.
@@ -660,7 +660,7 @@ async def unmute_command(client, message):
         if "report_spam" in cause.lower().split():
             if message.reply_to_message:
                 try:
-                await client.restrict_chat_member(
+                    await client.restrict_chat_member(
                     message.chat.id,
                     message.reply_to_message.from_user.id,
                     u_p,
