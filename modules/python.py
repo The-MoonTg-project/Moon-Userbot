@@ -18,8 +18,8 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from io import StringIO
 from contextlib import redirect_stdout
+from io import StringIO
 
 from pyrogram import Client, enums, filters
 from pyrogram.types import Message
@@ -29,7 +29,6 @@ from utils.misc import modules_help, prefix
 from utils.scripts import format_exc
 
 # noinspection PyUnresolvedReferences
-from utils.db import db
 
 
 # noinspection PyUnusedLocal
@@ -38,7 +37,9 @@ from utils.db import db
 )
 def user_exec(client: Client, message: Message):
     if len(message.command) == 1:
-        message.edit("<b>Code to execute isn't provided</b>", parse_mode=enums.ParseMode.HTML)
+        message.edit(
+            "<b>Code to execute isn't provided</b>", parse_mode=enums.ParseMode.HTML
+        )
         return
 
     reply = message.reply_to_message
@@ -83,10 +84,11 @@ def user_eval(client: Client, message: Message):
             f"<code>{code}</code>\n\n"
             "<b>Result</b>:\n"
             f"<code>{result}</code>",
-            parse_mode=enums.ParseMode.HTML
+            parse_mode=enums.ParseMode.HTML,
         )
     except Exception as e:
         message.edit(format_exc(e), parse_mode=enums.ParseMode.HTML)
+
 
 modules_help["python"] = {
     "ex [python code]": "Execute Python code",
