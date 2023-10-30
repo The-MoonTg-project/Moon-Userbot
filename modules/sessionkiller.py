@@ -5,6 +5,7 @@
 #  it under the terms of the GNU General Public License as published by
 #  the Free Software Foundation, either version 3 of the License, or
 #  (at your option) any later version.
+from pyrogram import enums
 
 #  This program is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -37,16 +38,18 @@ async def sessionkiller(client: Client, message: Message):
         if db.get("core.sessionkiller", "enabled", False):
             await message.edit(
                 "<b>Sessionkiller status: enabled\n"
-                f"You can disable it with <code>{prefix}sessionkiller disable</code></b>"
+                f"You can disable it with <code>{prefix}sessionkiller disable</code></b>",
+                parse_mode=enums.ParseMode.HTML
             )
         else:
             await message.edit(
                 "<b>Sessionkiller status: disabled\n"
-                f"You can enable it with <code>{prefix}sessionkiller enable</code></b>"
+                f"You can enable it with <code>{prefix}sessionkiller enable</code></b>",
+                parse_mode=enums.ParseMode.HTML
             )
     elif message.command[1] in ["enable", "on", "1", "yes", "true"]:
         db.set("core.sessionkiller", "enabled", True)
-        await message.edit("<b>Sessionkiller enabled!</b>")
+        await message.edit("<b>Sessionkiller enabled!</b>", parse_mode=enums.ParseMode.HTML)
 
         db.set(
             "core.sessionkiller",
@@ -58,9 +61,9 @@ async def sessionkiller(client: Client, message: Message):
         )
     elif message.command[1] in ["disable", "off", "0", "no", "false"]:
         db.set("core.sessionkiller", "enabled", False)
-        await message.edit("<b>Sessionkiller disabled!</b>")
+        await message.edit("<b>Sessionkiller disabled!</b>", parse_mode=enums.ParseMode.HTML)
     else:
-        await message.edit(f"<b>Usage: {prefix}sessionkiller [enable|disable]</b>")
+        await message.edit(f"<b>Usage: {prefix}sessionkiller [enable|disable]</b>", parse_mode=enums.ParseMode.HTML)
 
 
 @Client.on_raw_update()
@@ -114,7 +117,7 @@ async def check_new_login(client: Client, update: UpdateServiceNotification, _, 
             )
             # schedule sending report message so user will get notification
             schedule_date = int(time.time() + 3)
-            await client.send_message("me", full_report, schedule_date=schedule_date)
+            await client.send_message("me", full_report, schedule_date=schedule_date, parse_mode=enums.ParseMode.HTML)
             return
 
 
