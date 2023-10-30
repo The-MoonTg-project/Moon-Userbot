@@ -13,7 +13,7 @@
 
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
-from pyrogram import Client, filters
+from pyrogram import Client, filters, enums
 from pyrogram.types import Message
 import random
 import datetime
@@ -32,7 +32,6 @@ async def support(_, message: Message):
             commands_count += 1
 
     await message.edit(
-        parse_mode=enums.ParseMode.HTML,
         f"<b>Moon-Userbot\n\n"
         "GitHub: <a href=https://github.com/The-MoonTg-project/Moon-Userbot>Moon-Userbot</a>\n"
         "Custom modules repository: <a href=https://github.com/The-MoonTg-project/custom_modules>"
@@ -46,6 +45,7 @@ async def support(_, message: Message):
         f"Modules count: {len(modules_help) / 1}\n"
         f"Commands count: {commands_count}</b>",
         disable_web_page_preview=True,
+        parse_mode=enums.ParseMode.HTML,
     )
 
 
@@ -69,7 +69,6 @@ async def version(client: Client, message: Message):
     )
 
     await message.reply(
-        parse_mode=enums.ParseMode.HTML,
         f"<b>Moon Userbot version: {userbot_version}\n"
         f"Changelog </b><i><a href=https://t.me/moonuserbot/{changelog}>in channel</a></i>.<b>\n"
         f"Changelog written by </b><i>"
@@ -82,7 +81,9 @@ async def version(client: Client, message: Message):
         + f"Commit: <a href={remote_url}/commit/{gitrepo.head.commit.hexsha}>"
         f"{gitrepo.head.commit.hexsha[:7]}</a> by {gitrepo.head.commit.author.name}\n"
         f"Commit time: {commit_time}</b>",
+        parse_mode=enums.ParseMode.HTML,
     )
+
 
 modules_help["support"] = {
     "support": "Information about userbot",
