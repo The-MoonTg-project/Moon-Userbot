@@ -6,35 +6,28 @@
 #  the Free Software Foundation, either version 3 of the License, or
 #  (at your option) any later version.
 
-from pyrogram import Client, errors, types, enums
-import os
-import importlib
-import re
-import shlex
-from subprocess import CalledProcessError, run
-from typing import Optional
-import shlex
-from subprocess import CalledProcessError, check_output
-from typing import Optional
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-from pyrogram import Client, errors, types, enums
-#  GNU General Public License for more details.
-
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import asyncio
+import importlib
 import os
+import re
+import shlex
 import sys
+import traceback
 from io import BytesIO
+from subprocess import CalledProcessError, run
+from typing import Optional
 
 from PIL import Image
-import importlib
-import subprocess
 
-from pyrogram import Client, errors, types, enums
-import traceback
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+from pyrogram import Client, enums, errors, types
+
 from .misc import modules_help, prefix, requirements_list
+
+#  GNU General Public License for more details.
 
 
 def text(message: types.Message):
@@ -42,7 +35,7 @@ def text(message: types.Message):
 
 
 def restart():
-    if re.match(r'^[\w\.-]+$', sys.executable):
+    if re.match(r"^[\w\.-]+$", sys.executable):
         os.execvp(sys.executable, [sys.executable, "main.py"])
     else:
         raise ValueError("Invalid characters in program path")
@@ -68,7 +61,9 @@ def format_exc(e: Exception, hint: str = None):
 def with_reply(func):
     async def wrapped(client: Client, message: types.Message):
         if not message.reply_to_message:
-            await message.edit("<b>Reply to message is required</b>", parse_mode=enums.ParseMode.HTML)
+            await message.edit(
+                "<b>Reply to message is required</b>", parse_mode=enums.ParseMode.HTML
+            )
         else:
             return await func(client, message)
 
@@ -141,7 +136,7 @@ def import_library(library_name: str, package_name: Optional[str] = None):
     :param package_name: package name in PyPi (pip install example)
     :return: loaded module
     """
-    if not re.match(r'^[\w\.-]+$', library_name):
+    if not re.match(r"^[\w\.-]+$", library_name):
         raise ValueError("Invalid characters in library name")
     if package_name is None:
         package_name = library_name
@@ -153,12 +148,18 @@ def import_library(library_name: str, package_name: Optional[str] = None):
         try:
             # Sanitize user input
             package_name = shlex.quote(package_name)
-            run(shlex.split(f"python3 -m pip install {package_name}"), check=True, shell=False)
+            run(
+                shlex.split(f"python3 -m pip install {package_name}"),
+                check=True,
+                shell=False,
+            )
             return importlib.import_module(library_name)
         except CalledProcessError as e:
             raise ImportError(f"Failed to install library {package_name}") from e
         except Exception as e:
-            raise ImportError(f"An error occurred while trying to install {package_name}") from e
+            raise ImportError(
+                f"An error occurred while trying to install {package_name}"
+            ) from e
 
 
 async def edit_or_reply(message, text):
@@ -172,9 +173,9 @@ async def edit_or_reply(message, text):
 
 
 def resize_image(input_img, output=None, img_type="PNG"):
-    if not re.match(r'^[\w\.-]+$', input_img):
+    if not re.match(r"^[\w\.-]+$", input_img):
         raise ValueError("Invalid characters in input image path")
-    if output is not None and not re.match(r'^[\w\.-]+$', output):
+    if output is not None and not re.match(r"^[\w\.-]+$", output):
         raise ValueError("Invalid characters in output path")
     if output is None:
         output = BytesIO()
