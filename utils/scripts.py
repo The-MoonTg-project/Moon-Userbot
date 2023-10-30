@@ -35,10 +35,20 @@ def text(message: types.Message):
 
 
 def restart():
-    if re.match(r"^[\w\.-]+$", sys.executable):
-        os.execvp(sys.executable, [sys.executable, "main.py"])
+    executable_path = sys.executable
+    if re.match(r"^[\w\.-]+$", executable_path):
+        try:
+            os.execvp(executable_path, [executable_path, "main.py"])
+        except OSError as e:
+            print(f"Failed to restart: {e}")
     else:
         raise ValueError("Invalid characters in program path")
+
+try:
+    restart()
+except ValueError as e:
+    print(e)
+
 
 
 def format_exc(e: Exception, hint: str = None):
