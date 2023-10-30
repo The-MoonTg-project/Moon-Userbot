@@ -5,6 +5,10 @@
 #  it under the terms of the GNU General Public License as published by
 #  the Free Software Foundation, either version 3 of the License, or
 #  (at your option) any later version.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#  GNU General Public License for more details.
 
 #  This program is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,7 +21,7 @@
 from io import StringIO
 from contextlib import redirect_stdout
 
-from pyrogram import Client, filters
+from pyrogram import Client, enums, filters
 from pyrogram.types import Message
 
 # noinspection PyUnresolvedReferences
@@ -34,7 +38,7 @@ from utils.db import db
 )
 def user_exec(client: Client, message: Message):
     if len(message.command) == 1:
-        message.edit("<b>Code to execute isn't provided</b>")
+        message.edit("<b>Code to execute isn't provided</b>", parse_mode=enums.ParseMode.HTML)
         return
 
     reply = message.reply_to_message
@@ -54,11 +58,11 @@ def user_exec(client: Client, message: Message):
             f"<code>{stdout.getvalue()}</code>"
         )
         if message.command[0] == "exnoedit":
-            message.reply(text)
+            message.reply(text, parse_mode=enums.ParseMode.HTML)
         else:
-            message.edit(text)
+            message.edit(text, parse_mode=enums.ParseMode.HTML)
     except Exception as e:
-        message.edit(format_exc(e))
+        message.edit(format_exc(e), parse_mode=enums.ParseMode.HTML)
 
 
 # noinspection PyUnusedLocal
@@ -78,11 +82,11 @@ def user_eval(client: Client, message: Message):
             "<b>Expression:</b>\n"
             f"<code>{code}</code>\n\n"
             "<b>Result</b>:\n"
-            f"<code>{result}</code>"
+            f"<code>{result}</code>",
+            parse_mode=enums.ParseMode.HTML
         )
     except Exception as e:
-        message.edit(format_exc(e))
-
+        message.edit(format_exc(e), parse_mode=enums.ParseMode.HTML)
 
 modules_help["python"] = {
     "ex [python code]": "Execute Python code",
