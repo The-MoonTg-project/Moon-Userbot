@@ -15,7 +15,7 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import os
 
-from pyrogram import Client, filters
+from pyrogram import Client, filters, enums
 from pyrogram.types import Message
 import requests
 from utils.misc import modules_help, prefix
@@ -29,12 +29,12 @@ async def short(_, message: Message):
     elif message.reply_to_message:
         link = message.reply_to_message.text
     else:
-        await message.edit(f"<b>Usage: </b><code>{prefix}short [url to short]</code>")
+        await message.edit(f"<b>Usage: </b><code>{prefix}short [url to short]</code>", parse_mode=enums.ParseMode.HTML)
         return
 
     shortened = requests.get("https://clck.ru/--", data={"url": link}).text
 
-    await message.edit(shortened.replace("https://", ""), disable_web_page_preview=True)
+    await message.edit(shortened.replace("https://", ""), disable_web_page_preview=True, parse_mode=enums.ParseMode.HTML)
 
 
 @Client.on_message(filters.command("urldl", prefix) & filters.me)
@@ -45,11 +45,12 @@ async def urldl(client: Client, message: Message):
         link = message.reply_to_message.text
     else:
         await message.edit(
-            f"<b>Usage: </b><code>{prefix}urldl [url to download]</code>"
+            f"<b>Usage: </b><code>{prefix}urldl [url to download]</code>",
+            parse_mode=enums.ParseMode.HTML
         )
         return
 
-    await message.edit("<b>Downloading...</b>")
+    await message.edit("<b>Downloading...</b>", parse_mode=enums.ParseMode.HTML)
     file_name = "downloads/" + link.split("/")[-1]
 
     try:
@@ -60,11 +61,11 @@ async def urldl(client: Client, message: Message):
             for chunk in resp.iter_content(chunk_size=8192):
                 f.write(chunk)
 
-        await message.edit("<b>Uploading...</b>")
+        await message.edit("<b>Uploading...</b>", parse_mode=enums.ParseMode.HTML)
         await client.send_document(message.chat.id, file_name)
         await message.delete()
     except Exception as e:
-        await message.edit(format_exc(e))
+        await message.edit(format_exc(e), parse_mode=enums.ParseMode.HTML)
     finally:
         os.remove(file_name)
 
@@ -77,7 +78,7 @@ async def upload_cmd(_, message: Message):
     min_file_age = 31
     max_file_age = 180
 
-    await message.edit("<b>Downloading...</b>")
+    await message.edit("<b>Downloading...</b>", parse_mode=enums.ParseMode.HTML)
 
     try:
         file_name = await message.download()
@@ -85,15 +86,15 @@ async def upload_cmd(_, message: Message):
         try:
             file_name = await message.reply_to_message.download()
         except ValueError:
-            await message.edit("<b>File to upload not found</b>")
+            await message.edit("<b>File to upload not found</b>", parse_mode=enums.ParseMode.HTML)
             return
 
     if os.path.getsize(file_name) > max_size:
-        await message.edit(f"<b>Files longer than {max_size_mb}MB isn't supported</b>")
+        await message.edit(f"<b>Files longer than {max_size_mb}MB isn't supported</b>", parse_mode=enums.ParseMode.HTML)
         os.remove(file_name)
         return
 
-    await message.edit("<b>Uploading...</b>")
+    await message.edit("<b>Uploading...</b>", parse_mode=enums.ParseMode.HTML)
     with open(file_name, "rb") as f:
         response = requests.post(
             "https://x0.at",
@@ -111,9 +112,10 @@ async def upload_cmd(_, message: Message):
         await message.edit(
             f"<b>Your URL: {url}\nYour file will live {file_age} days</b>",
             disable_web_page_preview=True,
+            parse_mode=enums.ParseMode.HTML
         )
     else:
-        await message.edit(f"<b>API returned an error!\n" f"{response.text}</b>")
+        await message.edit(f"<b>API returned an error!\n" f"{response.text}</b>", parse_mode=enums.ParseMode.HTML)
 
     os.remove(file_name)
 
@@ -126,7 +128,7 @@ async def webshot(client: Client, message: Message):
         full_link = f"https://webshot.deam.io/{user_link}/?delay=2000"
         await client.send_document(message.chat.id, full_link, caption=f"{user_link}")
     except Exception as e:
-        await message.edit(format_exc(e))
+        await message.edit(format_exc(e), parse_mode=enums.ParseMode.HTML)
 
 
 modules_help["url"] = {

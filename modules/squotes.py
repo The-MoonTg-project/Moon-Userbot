@@ -19,7 +19,7 @@ import os
 from io import BytesIO
 
 import requests
-from pyrogram import Client, filters, errors, types
+from pyrogram import Client, filters, errors, types, enums
 
 from utils.misc import modules_help, prefix
 from utils.scripts import with_reply, format_exc, resize_image
@@ -60,9 +60,9 @@ async def quote_cmd(client: Client, message: types.Message):
 
     if send_for_me:
         await message.delete()
-        message = await client.send_message("me", "<b>Generating...</b>")
+        message = await client.send_message("me", "<b>Generating...</b>", parse_mode=enums.ParseMode.HTML)
     else:
-        await message.edit("<b>Generating...</b>")
+        await message.edit("<b>Generating...</b>", parse_mode=enums.ParseMode.HTML)
 
     url = "https://quotes.fl1yd.su/generate"
     params = {
@@ -76,20 +76,21 @@ async def quote_cmd(client: Client, message: types.Message):
     response = requests.post(url, json=params)
     if not response.ok:
         return await message.edit(
-            f"<b>Quotes API error!</b>\n" f"<code>{response.text}</code>"
+            f"<b>Quotes API error!</b>\n" f"<code>{response.text}</code>",
+            parse_mode=enums.ParseMode.HTML
         )
 
     resized = resize_image(
         BytesIO(response.content), img_type="PNG" if is_png else "WEBP"
     )
-    await message.edit("<b>Sending...</b>")
+    await message.edit("<b>Sending...</b>", parse_mode=enums.ParseMode.HTML)
 
     try:
         func = client.send_document if is_png else client.send_sticker
         chat_id = "me" if send_for_me else message.chat.id
         await func(chat_id, resized)
     except errors.RPCError as e:  # no rights to send stickers, etc
-        await message.edit(format_exc(e))
+        await message.edit(format_exc(e), parse_mode=enums.ParseMode.HTML)
     else:
         await message.delete()
 
@@ -110,7 +111,7 @@ async def fake_quote_cmd(client: Client, message: types.Message):
     )
 
     if not fake_quote_text:
-        return await message.edit("<b>Fake quote text is empty</b>")
+        return await message.edit("<b>Fake quote text is empty</b>", parse_mode=enums.ParseMode.HTML)
 
     q_message = await client.get_messages(
         message.chat.id, message.reply_to_message.message_id
@@ -124,7 +125,7 @@ async def fake_quote_cmd(client: Client, message: types.Message):
         await message.delete()
         message = await client.send_message("me", "<b>Generating...</b>")
     else:
-        await message.edit("<b>Generating...</b>")
+        await message.edit("<b>Generating...</b>", parse_mode=enums.ParseMode.HTML)
 
     url = "https://quotes.fl1yd.su/generate"
     params = {
@@ -136,20 +137,21 @@ async def fake_quote_cmd(client: Client, message: types.Message):
     response = requests.post(url, json=params)
     if not response.ok:
         return await message.edit(
-            f"<b>Quotes API error!</b>\n" f"<code>{response.text}</code>"
+            f"<b>Quotes API error!</b>\n" f"<code>{response.text}</code>",
+            parse_mode=enums.ParseMode.HTML
         )
 
     resized = resize_image(
         BytesIO(response.content), img_type="PNG" if is_png else "WEBP"
     )
-    await message.edit("<b>Sending...</b>")
+    await message.edit("<b>Sending...</b>", parse_mode=enums.ParseMode.HTML)
 
     try:
         func = client.send_document if is_png else client.send_sticker
         chat_id = "me" if send_for_me else message.chat.id
         await func(chat_id, resized)
     except errors.RPCError as e:  # no rights to send stickers, etc
-        await message.edit(format_exc(e))
+        await message.edit(format_exc(e), parse_mode=enums.ParseMode.HTML)
     else:
         await message.delete()
 

@@ -14,7 +14,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from pyrogram import Client, filters
+from pyrogram import Client, filters, enums
 from pyrogram.types import Message
 
 from utils.misc import modules_help, prefix
@@ -38,12 +38,12 @@ async def switch(client: Client, message: Message):
             if history and history[1].from_user.is_self and history[1].text:
                 text = history[1].text
             else:
-                await message.edit("<b>Text to switch not found</b>")
+                await message.edit("<b>Text to switch not found</b>", parse_mode=enums.ParseMode.HTML)
                 return
     else:
         text = message.text.split(maxsplit=1)[1]
 
-    await message.edit(str.translate(text, table))
+    await message.edit(str.translate(text, table), parse_mode=enums.ParseMode.HTML)
 
 
 modules_help["switch"] = {

@@ -45,7 +45,7 @@ from utils.misc import modules_help, prefix
 @Client.on_message(filters.command(["shell", "sh"], prefix) & filters.me)
 async def shell(_, message: Message):
     if len(message.command) < 2:
-        return await message.edit("<b>Specify the command in message text</b>")
+        return await message.edit("<b>Specify the command in message text</b>", parse_mode=enums.ParseMode.HTML)
     cmd_text = message.text.split(maxsplit=1)[1]
     cmd_args = shlex.split(cmd_text)
     cmd_obj = subprocess.Popen(

@@ -29,7 +29,7 @@ from utils.scripts import format_exc
 
 @Client.on_message(filters.command("admcount", prefix) & filters.me)
 async def admcount(client: Client, message: Message):
-    await message.edit("<b>Retrieving information... (it'll take some time)</b>")
+    await message.edit("<b>Retrieving information... (it'll take some time)</b>", parse_mode=enums.ParseMode.HTML)
 
     start = perf_counter()
     try:
@@ -52,10 +52,11 @@ async def admcount(client: Client, message: Message):
     except Exception as e:
         if isinstance(e, FloodWait):
             await message.edit(
-                f"<code>[{e.x}: {enums.MessageType.TEXT}] - {e.y}</code>"
+                f"<code>[{e.x}: {enums.MessageType.TEXT}] - {e.y}</code>",
+                parse_mode=enums.ParseMode.HTML
             )
         else:
-            await message.edit(format_exc(e))
+            await message.edit(format_exc(e), parse_mode=enums.ParseMode.HTML)
         return
 
     stop = perf_counter()
@@ -66,13 +67,14 @@ async def admcount(client: Client, message: Message):
         f"<b><u>Owned chats:</u></b> {owned_chats}\n"
         f"<b><u>Owned chats with username:</u></b> {owned_usernamed_chats}\n\n"
         f"Done at {round(stop - start, 3)} seconds.\n\n"
-        f"<b>Get full list: </b><code>{prefix}admlist</code>"
+        f"<b>Get full list: </b><code>{prefix}admlist</code>",
+        parse_mode=enums.ParseMode.HTML
     )
 
 
 @Client.on_message(filters.command("admlist", prefix) & filters.me)
 async def admlist(client: Client, message: Message):
-    await message.edit("<b>Retrieving information... (it'll take some time)</b>")
+    await message.edit("<b>Retrieving information... (it'll take some time)</b>", parse_mode=enums.ParseMode.HTML)
 
     start = perf_counter()
     try:
@@ -121,15 +123,17 @@ async def admlist(client: Client, message: Message):
             f"\n<b><u>Adminned chats:</u></b> {len(adminned_chats)}\n"
             f"<b><u>Owned chats:</u></b> {len(owned_chats)}\n"
             f"<b><u>Owned chats with username:</u></b> {len(owned_usernamed_chats)}\n\n"
-            f"Done at {round(stop - start, 3)} seconds."
+            f"Done at {round(stop - start, 3)} seconds.",
+            parse_mode=enums.ParseMode.HTML
         )
     except Exception as e:
         if isinstance(e, FloodWait):
             await message.edit(
-                f"<code>[{e.x}: {enums.MessageType.TEXT}] - {e.y}</code>"
+                f"<code>[{e.x}: {enums.MessageType.TEXT}] - {e.y}</code>",
+                parse_mode=enums.ParseMode.HTML
             )
         else:
-            await message.edit(format_exc(e))
+            await message.edit(format_exc(e), parse_mode=enums.ParseMode.HTML)
         return
 
 

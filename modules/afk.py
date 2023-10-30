@@ -153,7 +153,7 @@ async def afk_unset(bot: Client, message: Message):
         await message.edit(
             f"`While you were away (for {last_seen}), you received {sum(USERS.values()) + sum(GROUPS.values())} "
             f"messages from {len(USERS) + len(GROUPS)} chats`",
-            parse_mode=enums.ParseMode.HTML,
+            parse_mode=enums.ParseMode.HTML
         )
         AFK = False
         AFK_TIME = ""

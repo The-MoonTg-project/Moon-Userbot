@@ -47,7 +47,7 @@ def user_exec(client: Client, message: Message):
     code = message.text.split(maxsplit=1)[1]
     stdout = StringIO()
 
-    message.edit("<b>Executing...</b>")
+    message.edit("<b>Executing...</b>", parse_mode=enums.ParseMode.HTML)
 
     try:
         with redirect_stdout(stdout):
@@ -70,7 +70,7 @@ def user_exec(client: Client, message: Message):
 @Client.on_message(filters.command(["ev", "eval"], prefix) & filters.me)
 def user_eval(client: Client, message: Message):
     if len(message.command) == 1:
-        message.edit("<b>Code to eval isn't provided</b>")
+        message.edit("<b>Code to eval isn't provided</b>", parse_mode=enums.ParseMode.HTML)
         return
 
     reply = message.reply_to_message

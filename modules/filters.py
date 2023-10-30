@@ -237,7 +237,7 @@ async def filters_handler(client: Client, message: Message):
         text = text[:4096]
         return await message.edit(text, parse_mode=enums.ParseMode.HTML)
     except Exception as e:
-        return await message.edit(format_exc(e))
+        return await message.edit(format_exc(e), parse_mode=enums.ParseMode.HTML)
 
 
 @Client.on_message(
@@ -264,7 +264,7 @@ async def filter_del_handler(client: Client, message: Message):
             parse_mode=enums.ParseMode.HTML,
         )
     except Exception as e:
-        return await message.edit(format_exc(e))
+        return await message.edit(format_exc(e), parse_mode=enums.ParseMode.HTML)
 
 
 @Client.on_message(filters.command(["fsearch"], prefix) & filters.me)
@@ -288,7 +288,7 @@ async def filter_search_handler(client: Client, message: Message):
             parse_mode=enums.ParseMode.HTML,
         )
     except Exception as e:
-        return await message.edit(format_exc(e))
+        return await message.edit(format_exc(e), parse_mode=enums.ParseMode.HTML)
 
 
 modules_help["filters"] = {

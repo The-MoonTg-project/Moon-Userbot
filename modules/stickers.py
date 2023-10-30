@@ -17,7 +17,7 @@
 import os
 from io import BytesIO
 
-from pyrogram import Client, filters, types
+from pyrogram import Client, filters, types, enums
 
 from utils.misc import modules_help, prefix
 from utils.scripts import (

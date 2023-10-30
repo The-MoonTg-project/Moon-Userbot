@@ -242,13 +242,13 @@ async def save_note(client: Client, message: Message):
 
 @Client.on_message(filters.command(["notes"], prefix) & filters.me)
 async def notes(_, message: Message):
-    await message.edit("<b>Loading...</b>")
+    await message.edit("<b>Loading...</b>", parse_mode=enums.ParseMode.HTML)
     text = "Available notes:\n\n"
     collection = db.get_collection("core.notes")
     for note in collection.keys():
         if note[:4] == "note":
             text += f"<code>{note[4:]}</code>\n"
-    await message.edit(text)
+    await message.edit(text, parse_mode=enums.ParseMode.HTML)
 
 
 @Client.on_message(filters.command(["clear"], prefix) & filters.me)

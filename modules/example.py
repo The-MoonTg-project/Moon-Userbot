@@ -32,10 +32,11 @@ from utils.misc import modules_help, prefix
 @Client.on_message(filters.command("example_edit", prefix) & filters.me)
 async def example_edit(client: Client, message: Message):
     try:
-        await message.edit("<code>This is an example module</code>")
+        await message.edit("<code>This is an example module</code>", parse_mode=enums.ParseMode.HTML)
     except Exception as e:
         await message.edit(
-            f"<code>[{e.error_code}: {enums.MessageType.TEXT}] - {e.error_details}</code>"
+            f"<code>[{e.error_code}: {enums.MessageType.TEXT}] - {e.error_details}</code>",
+            parse_mode=enums.ParseMode.HTML
         )
 
 
@@ -45,7 +46,8 @@ async def example_send(client: Client, message: Message):
         await client.send_message(message.chat.id, "<b>This is an example module</b>")
     except Exception as e:
         await message.edit(
-            f"<code>[{e.error_code}: {enums.MessageType.TEXT}] - {e.error_details}</code>"
+            f"<code>[{e.error_code}: {enums.MessageType.TEXT}] - {e.error_details}</code>",
+            parse_mode=enums.ParseMode.HTML
         )
 
 

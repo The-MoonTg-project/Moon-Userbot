@@ -129,6 +129,7 @@ async def loadmod(_, message: Message):
                 "<a href=https://github.com/The-MoonTg-project/custom_modules>"
                 "custom_modules</a> repository are supported!</b>",
                 disable_web_page_preview=True,
+                parse_mode=enums.ParseMode.HTML
             )
         else:
             os.rename(file_name, f"./modules/custom_modules/{module_name}.py")
@@ -190,22 +191,23 @@ async def load_all_mods(_, message: Message):
             continue
         new_modules[module_info["name"][:-3]] = module_info["download_url"]
     if not new_modules:
-        return await message.edit("<b>All modules already loaded</b>")
+        return await message.edit("<b>All modules already loaded</b>", parse_mode=enums.ParseMode.HTML)
 
-    await message.edit(f'<b>Loading new modules: {" ".join(new_modules.keys())}</b>')
+    await message.edit(f'<b>Loading new modules: {" ".join(new_modules.keys())}</b>', parse_mode=enums.ParseMode.HTML)
     for name, url in new_modules.items():
         with open(f"./modules/custom_modules/{name}.py", "wb") as f:
             f.write(requests.get(url).content)
 
     await message.edit(
-        f'<b>Successfully loaded new modules: {" ".join(new_modules.keys())}</b>'
+        f'<b>Successfully loaded new modules: {" ".join(new_modules.keys())}</b>',
+        parse_mode=enums.ParseMode.HTML
     )
     restart()
 
 
 @Client.on_message(filters.command(["updateallmods"], prefix) & filters.me)
 async def updateallmods(_, message: Message):
-    await message.edit("<b>Updating modules...</b>")
+    await message.edit("<b>Updating modules...</b>", parse_mode=enums.ParseMode.HTML)
 
     if not os.path.exists(f"{BASE_PATH}/modules/custom_modules"):
         os.mkdir(f"{BASE_PATH}/modules/custom_modules")
@@ -213,7 +215,7 @@ async def updateallmods(_, message: Message):
     modules_installed = list(os.walk("modules/custom_modules"))[0][2]
 
     if not modules_installed:
-        return await message.edit("<b>You don't have any modules installed</b>")
+        return await message.edit("<b>You don't have any modules installed</b>", parse_mode=enums.ParseMode.HTML)
 
     for module_name in modules_installed:
         if not module_name.endswith(".py"):
@@ -229,7 +231,7 @@ async def updateallmods(_, message: Message):
         with open(f"./modules/custom_modules/{module_name}", "wb") as f:
             f.write(resp.content)
 
-    await message.edit(f"<b>Successfully updated {len(modules_installed)} modules</b>")
+    await message.edit(f"<b>Successfully updated {len(modules_installed)} modules</b>", parse_mode=enums.ParseMode.HTML)
 
 
 modules_help["loader"] = {
