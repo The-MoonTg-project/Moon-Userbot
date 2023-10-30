@@ -14,7 +14,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from pyrogram import Client, filters
+from pyrogram import Client, filters, enums
 from pyrogram.types import Message
 
 from utils.db import db
@@ -29,10 +29,10 @@ async def setprefix(_, message: Message):
     if len(message.command) > 1:
         pref = message.command[1]
         db.set("core.main", "prefix", pref)
-        await message.edit(f"<b>Prefix [ <code>{pref}</code> ] is set!</b>")
+        await message.edit(f"<b>Prefix [ <code>{pref}</code> ] is set!</b>", parse_mode=enums.ParseMode.HTML)
         restart()
     else:
-        await message.edit("<b>The prefix must not be empty!</b>")
+        await message.edit("<b>The prefix must not be empty!</b>", parse_mode=enums.ParseMode.HTML)
 
 
 modules_help["prefix"] = {
