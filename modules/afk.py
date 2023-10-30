@@ -26,8 +26,6 @@ from utils.scripts import import_library
 
 humanize = import_library("humanize")
 
-import humanize
-
 AFK = False
 AFK_REASON = ""
 AFK_TIME = ""
