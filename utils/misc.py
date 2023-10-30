@@ -15,8 +15,10 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from sys import version_info
-from .db import db
+
 from git import Repo
+
+from .db import db
 
 
 class ModulesHelpDict(dict):
