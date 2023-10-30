@@ -5,6 +5,23 @@
 #  it under the terms of the GNU General Public License as published by
 #  the Free Software Foundation, either version 3 of the License, or
 #  (at your option) any later version.
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+from subprocess import Popen, PIPE, TimeoutExpired
+import os
+from time import perf_counter
+
+from pyrogram import Client, filters
+from pyrogram.types import Message
+from pyrogram import enums as enums
+
+from utils.misc import modules_help, prefix
 
 #  This program is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -40,7 +57,7 @@ async def shell(_, message: Message):
     char = "#" if os.getuid() == 0 else "$"
     text = f"<b>{char}</b> <code>{cmd_text}</code>\n\n"
 
-    await message.edit(text + "<b>Running...</b>")
+    await message.edit(text + "<b>Running...</b>", parse_mode=enums.ParseMode.HTML)
     try:
         start_time = perf_counter()
         stdout, stderr = cmd_obj.communicate(timeout=60)
@@ -53,7 +70,7 @@ async def shell(_, message: Message):
         if stderr:
             text += "<b>Error:</b>\n" f"<code>{stderr}</code>\n\n"
         text += f"<b>Completed in {round(stop_time - start_time, 5)} seconds with code {cmd_obj.returncode}</b>"
-    await message.edit(text)
+    await message.edit(text, parse_mode=enums.ParseMode.HTML)
     cmd_obj.kill()
 
 
