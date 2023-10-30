@@ -127,7 +127,7 @@ async def ban_command(client: Client, message: Message):
             await client.ban_chat_member(message.chat.id, user_for_ban)
             channel = await client.resolve_peer(message.chat.id)
             user_id = await client.resolve_peer(user_for_ban)
-                if "report_spam" in cause.lower().split():
+            if "report_spam" in cause.lower().split():
                 await client.send(functions.channels.ReportSpam(
                     channel=channel,
                     participant=user_id
@@ -452,10 +452,7 @@ async def kick_command(client: Client, message: Message):
                 try:
                     channel = await client.resolve_peer(message.chat.id)
                     user_id = await client.resolve_peer(user_to_ban.id)
-                    if (
-                        "report_spam" in cause.lower().split()
-                        and message.reply_to_message
-                    ):
+                    if "report_spam" in cause.lower().split() and message.reply_to_message:
                         await client.send(
                             functions.channels.ReportSpam(
                                 channel=channel,
