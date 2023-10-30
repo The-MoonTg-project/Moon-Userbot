@@ -1,8 +1,8 @@
 #  Moon-Userbot - telegram userbot
 #  Copyright (C) 2020-present Moon Userbot Organization
 #
-#  This program is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
+             if "report_spam" in cause.lower().split():
+                 await client.send(
 #  the Free Software Foundation, either version 3 of the License, or
 #  (at your option) any later version.
 
@@ -361,13 +361,13 @@ async def kick_command(client: Client, message: Message):
                     message.reply_to_message.from_user.id
                 )
             if "report_spam" in cause.lower().split():
-                    await client.send(
-                        functions.channels.ReportSpam(
-                            channel=channel,
-                            participant=user_id,
-                            id=[message.reply_to_message.message_id],
-                        )
+                await client.send(
+                    functions.channels.ReportSpam(
+                        channel=channel,
+                        participant=user_id,
+                        id=[message.reply_to_message.message_id],
                     )
+                )
                 if "delete_history" in cause.lower().split():
                     await client.send(
                         functions.channels.DeleteParticipantHistory(
@@ -659,7 +659,7 @@ async def unmute_command(client, message):
         u_p = message.chat.permissions
         if "report_spam" in cause.lower().split():
             if message.reply_to_message:
-            try:
+                try:
                 await client.restrict_chat_member(
                     message.chat.id,
                     message.reply_to_message.from_user.id,
