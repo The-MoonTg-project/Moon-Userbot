@@ -13,7 +13,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from subprocess import run, PIPE, TimeoutExpired
+import subprocess
 import shlex
 import os
 from time import perf_counter
@@ -48,12 +48,17 @@ async def shell(_, message: Message):
         return await message.edit("<b>Specify the command in message text</b>")
     cmd_text = message.text.split(maxsplit=1)[1]
     cmd_args = shlex.split(cmd_text)
-    cmd_obj = run(
+    cmd_obj = subprocess.Popen(
         cmd_args,
-        stdout=PIPE,
-        stderr=PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
         text=True,
     )
+    try:
+        stdout, stderr = cmd_obj.communicate(timeout=60)
+    except subprocess.TimeoutExpired:
+        cmd_obj.kill()
+        text += "<b>Timeout expired (60 seconds)</b>"
 
     char = "#" if os.getuid() == 0 else "$"
     text = f"<b>{char}</b> <code>{cmd_text}</code>\n\n"
