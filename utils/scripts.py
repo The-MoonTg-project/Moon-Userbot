@@ -53,7 +53,8 @@ def format_exc(e: Exception, hint: str = None):
     if isinstance(e, errors.RPCError):
         return (
             f"<b>Telegram API error!</b>\n"
-            f"<code>[{e.error_code} {e.error_message}] - {e.error_details}</code>"
+            f"<code>[{e.error_code} {e.error_message}] - {e.error_details}</code>",
+            parse_mode=enums.ParseMode.HTML
         )
     else:
         if hint:
@@ -61,14 +62,14 @@ def format_exc(e: Exception, hint: str = None):
         else:
             hint_text = ""
         return (
-            f"<b>Error!</b>\n" f"<code>{e.__class__.__name__}: {e}</code>" + hint_text
+            f"<b>Error!</b>\n" f"<code>{e.__class__.__name__}: {e}</code>" + hint_text, parse_mode=enums.ParseMode.HTML
         )
 
 
 def with_reply(func):
     async def wrapped(client: Client, message: types.Message):
         if not message.reply_to_message:
-            await message.edit("<b>Reply to message is required</b>")
+            await message.edit("<b>Reply to message is required</b>", parse_mode=enums.ParseMode.HTML)
         else:
             return await func(client, message)
 
@@ -164,9 +165,9 @@ def import_library(library_name: str, package_name: Optional[str] = None):
 async def edit_or_reply(message, text, parse_mode=enums.ParseMode.HTML):
     """Edit Message If Its From Self, Else Reply To Message"""
     if not message:
-        return await message.edit(text, parse_mode=parse_mode)
+        return await message.edit(text, parse_mode=enums.ParseMode.HTML)
     if not message.from_user:
-        return await message.edit(text, parse_mode=parse_mode)
+        return await message.edit(text, parse_mode=enums.ParseMode.HTML)
 
 
 def resize_image(input_img, output=None, img_type="PNG"):
