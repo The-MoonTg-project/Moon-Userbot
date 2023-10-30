@@ -2,11 +2,6 @@
 #  Copyright (C) 2020-present Moon Userbot Organization
 #
 #  This program is free software: you can redistribute it and/or modify
-return await message.edit(
-            f"<b>Trigger</b>:\n<code>{name}</code"
-            f">\n<b>Answer</b>:\n{chat_filters[name]}",
-            parse_mode=enums.ParseMode.HTML
-        )
 
 #  This program is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
