@@ -949,7 +949,7 @@ async def promote_command(client: Client, message: Message):
                             f"<b>{promote_user.first_name}</b> <code>promoted!</code>"
                             + f"\n{'<b>Prefix:</b> <i>' + cause.split(' ', maxsplit=2)[2] + '</i>' if len(cause.split()) > 2 else ''}",
                             parse_mode=enums.ParseMode.HTML
-                )
+                        )
                 except UserAdminInvalid:
                     await message.edit("<b>No rights</b>", parse_mode=enums.ParseMode.HTML)
                 except ChatAdminRequired:
@@ -1065,7 +1065,7 @@ async def delete_history(client: Client, message: Message):
                         f"<code>History from </code><b>{name}</b><code> was deleted!</code>"
                         + f"\n{'<b>Cause:</b> <i>' + cause.split(' ', maxsplit=2)[2] + '</i>' if len(cause.split()) > 2 else ''}",
                         parse_mode=enums.ParseMode.HTML
-                )
+                    )
                 except UserAdminInvalid:
                     await message.edit("<b>No rights</b>", parse_mode=enums.ParseMode.HTML)
                 except ChatAdminRequired:
