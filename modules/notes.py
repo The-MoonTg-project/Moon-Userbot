@@ -5,6 +5,17 @@
 #  it under the terms of the GNU General Public License as published by
 #  the Free Software Foundation, either version 3 of the License, or
 #  (at your option) any later version.
+from pyrogram import Client, enums, errors, filters
+from pyrogram.types import (
+    InputMediaAudio,
+    InputMediaDocument,
+    InputMediaPhoto,
+    InputMediaVideo,
+    Message,
+)
+
+from utils.db import db
+from utils.misc import modules_help, prefix
 
 #  This program is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,24 +25,13 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from pyrogram import Client, filters, errors
-from pyrogram.types import (
-    Message,
-    InputMediaPhoto,
-    InputMediaVideo,
-    InputMediaAudio,
-    InputMediaDocument,
-)
-
-from utils.db import db
-from utils.misc import modules_help, prefix
 
 #  from utils.scripts import with_reply
 
 
 @Client.on_message(filters.command(["save"], prefix) & filters.me)
 async def save_note(client: Client, message: Message):
-    await message.edit("<b>Loading...</b>")
+    await message.edit("<b>Loading...</b>", parse_mode=enums.ParseMode.HTML)
 
     try:
         chat = await client.get_chat(db.get("core.notes", "chat_id", 0))
@@ -61,7 +61,8 @@ async def save_note(client: Client, message: Message):
                     )
                 except errors.ChatForwardsRestricted:
                     await message.edit(
-                        "<b>Forwarding messages is restricted by chat admins</b>"
+                        "<b>Forwarding messages is restricted by chat admins</b>",
+                        parse_mode=enums.ParseMode.HTML,
                     )
                     return
                 note = {
@@ -70,9 +71,13 @@ async def save_note(client: Client, message: Message):
                     "CHAT_ID": str(chat_id),
                 }
                 db.set("core.notes", f"note{note_name}", note)
-                await message.edit(f"<b>Note {note_name} saved</b>")
+                await message.edit(
+                    f"<b>Note {note_name} saved</b>", parse_mode=enums.ParseMode.HTML
+                )
             else:
-                await message.edit("<b>This note already exists</b>")
+                await message.edit(
+                    "<b>This note already exists</b>", parse_mode=enums.ParseMode.HTML
+                )
         else:
             checking_note = db.get("core.notes", f"note{note_name}", False)
             if not checking_note:
@@ -86,7 +91,8 @@ async def save_note(client: Client, message: Message):
                         )
                     else:
                         await message.edit(
-                            "<b>Forwarding messages is restricted by chat admins</b>"
+                            "<b>Forwarding messages is restricted by chat admins</b>",
+                            parse_mode=enums.ParseMode.HTML,
                         )
                         return
                 note = {
@@ -95,9 +101,13 @@ async def save_note(client: Client, message: Message):
                     "CHAT_ID": str(chat_id),
                 }
                 db.set("core.notes", f"note{note_name}", note)
-                await message.edit(f"<b>Note {note_name} saved</b>")
+                await message.edit(
+                    f"<b>Note {note_name} saved</b>", parse_mode=enums.ParseMode.HTML
+                )
             else:
-                await message.edit("<b>This note already exists</b>")
+                await message.edit(
+                    "<b>This note already exists</b>", parse_mode=enums.ParseMode.HTML
+                )
     elif len(message.text.split()) >= 3:
         note_name = message.text.split(maxsplit=1)[1].split()[0]
         checking_note = db.get("core.notes", f"note{note_name}", False)
@@ -111,17 +121,7 @@ async def save_note(client: Client, message: Message):
                 "CHAT_ID": str(chat_id),
             }
             db.set("core.notes", f"note{note_name}", note)
-            await message.edit(f"<b>Note {note_name} saved</b>")
-        else:
-            await message.edit("<b>This note already exists</b>")
-    else:
-        await message.edit(f"<b>Example: <code>{prefix}save note_name</code></b>")
-
-
-@Client.on_message(filters.command(["note"], prefix) & filters.me)
-async def note_send(client: Client, message: Message):
-    if len(message.text.split()) >= 2:
-        await message.edit("<b>Loading...</b>")
+        await message.edit("<b>Loading...</b>", parse_mode=enums.ParseMode.HTML)
 
         note_name = f"{message.text.split(maxsplit=1)[1]}"
         find_note = db.get("core.notes", f"note{note_name}", False)
@@ -134,7 +134,8 @@ async def note_send(client: Client, message: Message):
                 await message.edit(
                     "<b>Sorry, but this note is unavaliable.\n\n"
                     f"You can delete this note with "
-                    f"<code>{prefix}clear {note_name}</code></b>"
+                    f"<code>{prefix}clear {note_name}</code></b>",
+                    parse_mode=enums.ParseMode.HTML,
                 )
                 return
 
@@ -147,12 +148,10 @@ async def note_send(client: Client, message: Message):
                     if _.photo:
                         if _.caption:
                             media_grouped_list.append(
-                                InputMediaPhoto(
-                                    _.photo.file_id, _.caption.markdown)
+                                InputMediaPhoto(_.photo.file_id, _.caption.markdown)
                             )
                         else:
-                            media_grouped_list.append(
-                                InputMediaPhoto(_.photo.file_id))
+                            media_grouped_list.append(InputMediaPhoto(_.photo.file_id))
                     elif _.video:
                         if _.caption:
                             if _.video.thumbs:
@@ -165,8 +164,7 @@ async def note_send(client: Client, message: Message):
                                 )
                             else:
                                 media_grouped_list.append(
-                                    InputMediaVideo(
-                                        _.video.file_id, _.caption.markdown)
+                                    InputMediaVideo(_.video.file_id, _.caption.markdown)
                                 )
                         elif _.video.thumbs:
                             media_grouped_list.append(
@@ -175,17 +173,14 @@ async def note_send(client: Client, message: Message):
                                 )
                             )
                         else:
-                            media_grouped_list.append(
-                                InputMediaVideo(_.video.file_id))
+                            media_grouped_list.append(InputMediaVideo(_.video.file_id))
                     elif _.audio:
                         if _.caption:
                             media_grouped_list.append(
-                                InputMediaAudio(
-                                    _.audio.file_id, _.caption.markdown)
+                                InputMediaAudio(_.audio.file_id, _.caption.markdown)
                             )
                         else:
-                            media_grouped_list.append(
-                                InputMediaAudio(_.audio.file_id))
+                            media_grouped_list.append(InputMediaAudio(_.audio.file_id))
                     elif _.document:
                         if _.caption:
                             if _.document.thumbs:
@@ -235,9 +230,14 @@ async def note_send(client: Client, message: Message):
                 )
             await message.delete()
         else:
-            await message.edit("<b>There is no such note</b>")
+            await message.edit(
+                "<b>There is no such note</b>", parse_mode=enums.ParseMode.HTML
+            )
     else:
-        await message.edit(f"<b>Example: <code>{prefix}note note_name</code></b>")
+        await message.edit(
+            f"<b>Example: <code>{prefix}note note_name</code></b>",
+            parse_mode=enums.ParseMode.HTML,
+        )
 
 
 @Client.on_message(filters.command(["notes"], prefix) & filters.me)
@@ -258,11 +258,18 @@ async def clear_note(_, message: Message):
         find_note = db.get("core.notes", f"note{note_name}", False)
         if find_note:
             db.remove("core.notes", f"note{note_name}")
-            await message.edit(f"<b>Note {note_name} deleted</b>")
+            await message.edit(
+                f"<b>Note {note_name} deleted</b>", parse_mode=enums.ParseMode.HTML
+            )
         else:
-            await message.edit("<b>There is no such note</b>")
+            await message.edit(
+                "<b>There is no such note</b>", parse_mode=enums.ParseMode.HTML
+            )
     else:
-        await message.edit(f"<b>Example: <code>{prefix}clear note_name</code></b>")
+        await message.edit(
+            f"<b>Example: <code>{prefix}clear note_name</code></b>",
+            parse_mode=enums.ParseMode.HTML,
+        )
 
 
 modules_help["notes"] = {

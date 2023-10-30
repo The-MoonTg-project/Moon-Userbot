@@ -10,11 +10,17 @@
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#  GNU General Public License for more details.
 
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from pyrogram import Client, ContinuePropagation, enums, errors, filters
+from pyrogram import Client, ContinuePropagation
+from pyrogram import enums as enums
+from pyrogram import errors, filters
 from pyrogram.types import (
     InputMediaAudio,
     InputMediaDocument,
@@ -144,10 +150,13 @@ async def filter_handler(client: Client, message: Message):
         chat_filters = get_filters_chat(message.chat.id)
         if name in chat_filters.keys():
             return await message.edit(
-                f"<b>Filter</b> <code>{name}</code> already exists."
+                f"<b>Filter</b> <code>{name}</code> already exists.",
+                parse_mode=enums.ParseMode.HTML,
             )
         if not message.reply_to_message:
-            return await message.edit("<b>Reply to message</b> please.")
+            return await message.edit(
+                "<b>Reply to message</b> please.", parse_mode=enums.ParseMode.HTML
+            )
 
         try:
             chat = await client.get_chat(db.get("core.notes", "chat_id", 0))
@@ -189,7 +198,9 @@ async def filter_handler(client: Client, message: Message):
                 if message.reply_to_message.text:
                     # manual copy
                     message_id = await client.send_message(
-                        chat_id, message.reply_to_message.text
+                        chat_id,
+                        message.reply_to_message.text,
+                        parse_mode=enums.ParseMode.HTML,
                     )
                 else:
                     await message.edit(
@@ -211,7 +222,7 @@ async def filter_handler(client: Client, message: Message):
             parse_mode=enums.ParseMode.HTML,
         )
     except Exception as e:
-        return await message.edit(format_exc(e))
+        return await message.edit(format_exc(e), parse_mode=enums.ParseMode.HTML)
 
 
 @Client.on_message(filters.command(["filters"], prefix) & filters.me)

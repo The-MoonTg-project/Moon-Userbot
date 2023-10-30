@@ -41,12 +41,17 @@ is_support = filters.create(lambda _, __, message: message.chat.is_support)
 async def anti_pm_handler(client: Client, message: Message):
     user_info = await client.resolve_peer(message.chat.id)
     if db.get("core.antipm", "spamrep", False):
-        await client.send(functions.messages.ReportSpam(peer=user_info))
-    if db.get("core.antipm", "block", False):
-        await client.send(functions.contacts.Block(id=user_info))
-    await client.send(
-        functions.messages.DeleteHistory(peer=user_info, max_id=0, revoke=True)
-    )
+        await client.send(
+            functions.messages.ReportSpam(peer=user_info),
+            parse_mode=enums.ParseMode.HTML,
+        )
+        await client.send(
+            functions.contacts.Block(id=user_info), parse_mode=enums.ParseMode.HTML
+        )
+        await client.send(
+            functions.messages.DeleteHistory(peer=user_info, max_id=0, revoke=True),
+            parse_mode=enums.ParseMode.HTML,
+        )
 
 
 @Client.on_message(filters.command(["antipm", "anti_pm"], prefix) & filters.me)

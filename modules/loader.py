@@ -5,6 +5,15 @@
 #  it under the terms of the GNU General Public License as published by
 #  the Free Software Foundation, either version 3 of the License, or
 #  (at your option) any later version.
+import hashlib
+import os
+
+import requests
+from pyrogram import Client, enums, filters
+from pyrogram.types import Message
+
+from utils.misc import modules_help, prefix
+from utils.scripts import restart
 
 #  This program is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,16 +22,6 @@
 
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-import hashlib
-import os
-
-import requests
-from pyrogram import Client, filters
-from pyrogram.types import Message
-
-from utils.scripts import restart
-from utils.misc import modules_help, prefix
 
 
 BASE_PATH = os.path.abspath(os.getcwd())
@@ -36,13 +35,15 @@ async def get_mod_hash(_, message: Message):
     resp = requests.get(url)
     if not resp.ok:
         await message.edit(
-            f"<b>Troubleshooting with downloading module <code>{url}</code></b>"
+            f"<b>Troubleshooting with downloading module <code>{url}</code></b>",
+            parse_mode=enums.ParseMode.HTML,
         )
         return
 
     await message.edit(
         f"<b>Module hash: <code>{hashlib.sha256(resp.content).hexdigest()}</code>\n"
-        f"Link: <code>{url}</code>\nFile: <code>{url.split('/')[-1]}</code></b>"
+        f"Link: <code>{url}</code>\nFile: <code>{url.split('/')[-1]}</code></b>",
+        parse_mode=enums.ParseMode.HTML,
     )
 
 
@@ -56,7 +57,9 @@ async def loadmod(_, message: Message):
         )
         and len(message.command) == 1
     ):
-        await message.edit("<b>Specify module to download</b>")
+        await message.edit(
+            "<b>Specify module to download</b>", parse_mode=enums.ParseMode.HTML
+        )
         return
 
     if len(message.command) > 1:
@@ -77,7 +80,8 @@ async def loadmod(_, message: Message):
 
             if not resp.ok:
                 await message.edit(
-                    f"<b>Troubleshooting with downloading module <code>{url}</code></b>"
+                    f"<b>Troubleshooting with downloading module <code>{url}</code></b>",
+                    parse_mode=enums.ParseMode.HTML,
                 )
                 return
 
@@ -88,13 +92,17 @@ async def loadmod(_, message: Message):
                     "<a href=https://github.com/The-MoonTg-project/custom_modules>"
                     "custom_modules</a> repository are supported!</b>",
                     disable_web_page_preview=True,
+                    parse_mode=enums.ParseMode.HTML,
                 )
 
             module_name = url.split("/")[-1].split(".")[0]
 
         resp = requests.get(url)
         if not resp.ok:
-            await message.edit(f"<b>Module <code>{module_name}</code> is not found</b>")
+            await message.edit(
+                f"<b>Module <code>{module_name}</code> is not found</b>",
+                parse_mode=enums.ParseMode.HTML,
+            )
             return
 
         if not os.path.exists(f"{BASE_PATH}/modules/custom_modules"):
@@ -125,7 +133,10 @@ async def loadmod(_, message: Message):
         else:
             os.rename(file_name, f"./modules/custom_modules/{module_name}.py")
 
-    await message.edit(f"<b>The module <code>{module_name}</code> is loaded!</b>")
+    await message.edit(
+        f"<b>The module <code>{module_name}</code> is loaded!</b>",
+        parse_mode=enums.ParseMode.HTML,
+    )
     restart()
 
 
@@ -143,19 +154,26 @@ async def unload_mods(_, message: Message):
 
     if os.path.exists(f"{BASE_PATH}/modules/custom_modules/{module_name}.py"):
         os.remove(f"{BASE_PATH}/modules/custom_modules/{module_name}.py")
-        await message.edit(f"<b>The module <code>{module_name}</code> removed!</b>")
+        await message.edit(
+            f"<b>The module <code>{module_name}</code> removed!</b>",
+            parse_mode=enums.ParseMode.HTML,
+        )
         restart()
     elif os.path.exists(f"{BASE_PATH}/modules/{module_name}.py"):
         await message.edit(
-            "<b>It is forbidden to remove built-in modules, it will disrupt the updater</b>"
+            "<b>It is forbidden to remove built-in modules, it will disrupt the updater</b>",
+            parse_mode=enums.ParseMode.HTML,
         )
     else:
-        await message.edit(f"<b>Module <code>{module_name}</code> is not found</b>")
+        await message.edit(
+            f"<b>Module <code>{module_name}</code> is not found</b>",
+            parse_mode=enums.ParseMode.HTML,
+        )
 
 
 @Client.on_message(filters.command(["loadallmods"], prefix) & filters.me)
 async def load_all_mods(_, message: Message):
-    await message.edit("<b>Fetching info...</b>")
+    await message.edit("<b>Fetching info...</b>", parse_mode=enums.ParseMode.HTML)
 
     if not os.path.exists(f"{BASE_PATH}/modules/custom_modules"):
         os.mkdir(f"{BASE_PATH}/modules/custom_modules")
