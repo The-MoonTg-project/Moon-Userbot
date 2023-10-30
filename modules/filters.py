@@ -18,7 +18,9 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from pyrogram import Client, ContinuePropagation, enums as enums, errors, filters
+from pyrogram import Client, ContinuePropagation
+from pyrogram import enums as enums
+from pyrogram import errors, filters
 from pyrogram.types import (
     InputMediaAudio,
     InputMediaDocument,
@@ -152,7 +154,9 @@ async def filter_handler(client: Client, message: Message):
                 parse_mode=enums.ParseMode.HTML,
             )
         if not message.reply_to_message:
-            return await message.edit("<b>Reply to message</b> please.", parse_mode=enums.ParseMode.HTML)
+            return await message.edit(
+                "<b>Reply to message</b> please.", parse_mode=enums.ParseMode.HTML
+            )
 
         try:
             chat = await client.get_chat(db.get("core.notes", "chat_id", 0))
@@ -194,7 +198,8 @@ async def filter_handler(client: Client, message: Message):
                 if message.reply_to_message.text:
                     # manual copy
                     message_id = await client.send_message(
-                        chat_id, message.reply_to_message.text,
+                        chat_id,
+                        message.reply_to_message.text,
                         parse_mode=enums.ParseMode.HTML,
                     )
                 else:
