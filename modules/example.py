@@ -11,18 +11,16 @@
 #  GNU General Public License for more details.
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
-from pyrogram import Client, enums, filters
+from pyrogram import Client, filters
 from pyrogram.types import Message
+
 from utils.misc import modules_help, prefix
+
 #  GNU General Public License for more details.
 
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from pyrogram import Client, enums, filters
-from pyrogram.types import Message
-
-from utils.misc import modules_help, prefix
 
 # if your module has packages from PyPi
 
@@ -39,17 +37,17 @@ async def example_edit(client: Client, message: Message):
     try:
         await message.edit("<code>This is an example module</code>")
     except Exception as e:
-        await message.edit(
-            f"<code>{e.__class__.__name__}: {str(e)}</code>"
-        )
+        await message.edit(f"<code>{e.__class__.__name__}: {str(e)}</code>")
+
+
 @Client.on_message(filters.command("example_send", prefix) & filters.me)
 async def example_send(client: Client, message: Message):
     try:
         await client.send_message(message.chat.id, "<b>This is an example module</b>")
     except Exception as e:
-        await message.edit(
-            f"<code>{e.__class__.__name__}: {str(e)}</code>"
-        )
+        await message.edit(f"<code>{e.__class__.__name__}: {str(e)}</code>")
+
+
 # This adds instructions for your module
 modules_help.update(
     {
