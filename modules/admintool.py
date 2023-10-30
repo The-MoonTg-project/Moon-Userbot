@@ -130,7 +130,8 @@ async def ban_command(client: Client, message: Message):
                 if "report_spam" in cause.lower().split():
                     await client.send(functions.channels.ReportSpam(
                         channel=channel,
-                    participant=user_id,
+                        participant=user_id
+                    ))
     # elif not message.reply_to_message and message.chat.type not in ["private", "channel"]:
         if len(cause.split()) > 1:
             try:
