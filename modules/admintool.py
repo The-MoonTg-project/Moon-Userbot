@@ -52,7 +52,7 @@ def update_cache():
 @Client.on_message(filters.group & ~filters.channel & ~filters.me)
 async def admintool_handler(_, message: Message):
     if message.sender_chat:
-        if (message.sender_chat.type == "supergroup" or 
+        if (message.sender_chat.type == "supergroup" or
             message.sender_chat.id == db_cache.get(f"linked{message.chat.id}", 0)):
             raise ContinuePropagation
 
@@ -62,7 +62,7 @@ async def admintool_handler(_, message: Message):
             await message.chat.ban_member(message.sender_chat.id)
 
     tmuted_users = db_cache.get(f"c{message.chat.id}", [])
-    if ((message.from_user and message.from_user.id in tmuted_users) or 
+    if ((message.from_user and message.from_user.id in tmuted_users) or
         (message.sender_chat and message.sender_chat.id in tmuted_users)):
         with suppress(RPCError):
             await message.delete()
@@ -88,7 +88,7 @@ async def admintool_handler(_, message: Message):
 
 async def check_username_or_id(data: Union[str, int]) -> str:
     data = str(data)
-    if ((not data.isdigit() and data[0] == "-" and not data[1:].isdigit()) or 
+    if ((not data.isdigit() and data[0] == "-" and not data[1:].isdigit()) or
         (not data.isdigit() and data[0] != "-")):
         return "channel"
     else:
@@ -131,7 +131,7 @@ async def ban_command(client: Client, message: Message):
                 await client.send(functions.channels.ReportSpam(
                     channel=channel,
                     participant=user_id,
-    elif not message.reply_to_message and message.chat.type not in ["private", "channel"]:
+    # elif not message.reply_to_message and message.chat.type not in ["private", "channel"]:
         if len(cause.split()) > 1:
             try:
                 if await check_username_or_id(cause.split(" ")[1]) == "channel":
@@ -324,7 +324,7 @@ async def unban_command(client: Client, message: Message):
             await message.edit(
                 f"<b>{name}</b> <code>unbanned!</code>"
                 + f"\n{'<b>Cause:</b> <i>' + cause.split(maxsplit=1)[1] + '</i>' if len(cause.split()) > 1 else ''}",
-                parse_mode=enums.ParseMode.HTML,
+                parse_mode=enums.ParseMode.HTML
             )
         except UserAdminInvalid:
             await message.edit("<b>No rights</b>", parse_mode=enums.ParseMode.HTML)
@@ -439,8 +439,8 @@ async def kick_command(client: Client, message: Message):
                 await message.edit(format_exc(e))
         else:
             await message.edit("<b>Reply on user msg</b>")
-    elif not message.reply_to_message and message.chat.type not in ["private", "channel"]:
-            await message.edit("<b>Reply on user msg</b>")
+    else:
+        await message.edit("<b>Reply on user msg</b>")
     elif not message.reply_to_message and message.chat.type not in [
         "private",
         "channel",
@@ -906,7 +906,7 @@ async def demote_command(client: Client, message: Message):
                     message.chat.id,
                     message.reply_to_message.from_user.id,
                     is_anonymous=False,
-                    can_manage_chat=False,
+                    can_manage_chat=False
                     can_change_info=False,
                     can_post_messages=False,
                     can_edit_messages=False,
@@ -1063,7 +1063,7 @@ async def anti_channels(client: Client, message: Message):
     if message.chat.type != "supergroup":
         await message.edit(
             "<b>Not supported in non-supergroup chats</b>",
-            parse_mode=enums.ParseMode.HTML,
+            parse_mode=enums.ParseMode.HTML
         )
         return
 
