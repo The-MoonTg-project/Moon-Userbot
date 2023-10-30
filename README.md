@@ -1,8 +1,4 @@
 # Moon-Userbot
-
-# ANNOUNCEMENT: Moon-Userbot is under maintainance due to pyrogram update and fixing errors due to new changes while there's great new for you also: 
-## We're participating in Hacktoberfest 2023 🎉, So if you're a pyrogram dev and want some PR's for you hacktoberfest fix the new issues in the repo and get a PR merged now😊
-
 <p align="center">
  <kbd><img src="https://telegra.ph/file/0c37c2fb0f194cc1c0344.jpg" width="400" alt="Moon-Userbot"/></kbd>
 
@@ -41,15 +37,16 @@
 ```
  cd Moon-Userbot/ && bash install.sh
 ```
-<h2> Termux (use <a href='https://f-droid.org/en/packages/com.termux/'>f-droid</a> version)</h2>
-**Full Installation instruction <a href='https://telegra.ph/Moon-Userbot-Installation---Termux-02-09'>Given here</a>**
+<h2> Termux (use <a href='https://github.com/termux/termux-app/releases'>GitHUb</a> version)</h2>
 
-**NOTE: If you choose MongoDB for your cloud then you need to setup mongo_db_url**
+> **Full Installation instruction <a href='https://telegra.ph/Moon-Userbot-Installation---Termux-02-09'>Given here</a>**
 
-**Recommend: _sqlite_**
+**NOTE: If you choose MongoDB for your cloud then you need to setup `mongo_db_url`**
+
+**Recommended: `sqlite`**
 
 ### Contributions 
-_Contributions of any type are welcome like modules etc. Feel free to do pull-request's with your changes, we'll review it within next 24hours_
+_Contributions of any type are welcome like custom_modules etc. Feel free to do pull-request's with your changes_
 
 **Working on your first Pull Request?** You can learn how from this *free* series [How to Contribute to an Open Source Project on GitHub](https://kcd.im/pull-request) 
 
