@@ -53,6 +53,7 @@ async def global_mention_clear(client: Client, message: Message):
         request = functions.messages.ReadMentions(peer=peer)
         await client.send(request, parse_mode=enums.ParseMode.HTML)
 
+
 @Client.on_message(filters.command(["clear_reacts"], prefix) & filters.me)
 async def solo_reaction_clear(client: Client, message: Message):
     await message.delete()
