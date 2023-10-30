@@ -10,11 +10,15 @@
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#  GNU General Public License for more details.
 
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from pyrogram import Client, filters
+from pyrogram import Client, enums, filters
 from pyrogram.types import Message
 
 from utils.misc import modules_help, prefix
@@ -25,7 +29,7 @@ async def say(_, message: Message):
     if len(message.command) == 1:
         return
     command = " ".join(message.command[1:])
-    await message.edit(f"<code>{command}</code>")
+    await message.edit(f"<code>{command}</code>", parse_mode=enums.ParseMode.HTML)
 
 
 modules_help["say"] = {
