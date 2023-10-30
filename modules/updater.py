@@ -15,16 +15,16 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import os
-import sys
 import subprocess
+import sys
 
-from pyrogram import Client, filters
+from pyrogram import Client
+from pyrogram import enums as enums
+from pyrogram import filters
 from pyrogram.types import Message
 
 from utils.misc import modules_help, prefix, requirements_list
 from utils.scripts import format_exc
-
-from pyrogram import enums as enums
 
 
 def restart(message: Message, restart_type):
@@ -50,21 +50,31 @@ async def restart_cmd(_, message: Message):
 @Client.on_message(filters.command("update", prefix) & filters.me)
 async def update(_, message: Message):
     try:
-        await message.edit("<b>Updating: 1/4 (updating pip)</b>", parse_mode=enums.ParseMode.HTML)
+        await message.edit(
+            "<b>Updating: 1/4 (updating pip)</b>", parse_mode=enums.ParseMode.HTML
+        )
         subprocess.run([sys.executable, "-m", "pip", "install", "-U", "pip"])
-        await message.edit("<b>Updating: 2/4 (git pull)</b>", parse_mode=enums.ParseMode.HTML)
+        await message.edit(
+            "<b>Updating: 2/4 (git pull)</b>", parse_mode=enums.ParseMode.HTML
+        )
         subprocess.run(["git", "pull"])
-        await message.edit("<b>Updating: 3/4 (updating libs from requirements.txt)</b>", parse_mode=enums.ParseMode.HTML)
+        await message.edit(
+            "<b>Updating: 3/4 (updating libs from requirements.txt)</b>",
+            parse_mode=enums.ParseMode.HTML,
+        )
         subprocess.run(
             [sys.executable, "-m", "pip", "install", "-U", "-r", "requirements.txt"]
         )
         await message.edit(
-            "<b>Updating: 4/4 (updating libs from requirements_list)</b>", parse_mode=enums.ParseMode.HTML
+            "<b>Updating: 4/4 (updating libs from requirements_list)</b>",
+            parse_mode=enums.ParseMode.HTML,
         )
         subprocess.run(
             [sys.executable, "-m", "pip", "install", "-U", *requirements_list]
         )
-        await message.edit("<b>Updating: done! Restarting...</b>", parse_mode=enums.ParseMode.HTML)
+        await message.edit(
+            "<b>Updating: done! Restarting...</b>", parse_mode=enums.ParseMode.HTML
+        )
     except Exception as e:
         await message.edit(format_exc(e), parse_mode=enums.ParseMode.HTML)
     else:
