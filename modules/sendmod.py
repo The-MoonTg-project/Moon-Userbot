@@ -5,7 +5,13 @@
 #  it under the terms of the GNU General Public License as published by
 #  the Free Software Foundation, either version 3 of the License, or
 #  (at your option) any later version.
-from pyrogram import enums
+import os
+
+from pyrogram import Client, enums, filters
+from pyrogram.types import Message
+
+from utils.misc import modules_help, prefix
+from utils.scripts import format_exc, format_module_help, format_small_module_help
 
 #  This program is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,19 +21,14 @@ from pyrogram import enums
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import os
-
-from pyrogram import Client, filters
-from pyrogram.types import Message
-
-from utils.misc import modules_help, prefix
-from utils.scripts import format_exc, format_module_help, format_small_module_help
-
 
 @Client.on_message(filters.command(["sendmod", "sm"], prefix) & filters.me)
 async def sendmod(client: Client, message: Message):
     if len(message.command) == 1:
-        await message.edit("<b>Module name to send is not provided</b>", parse_mode=enums.ParseMode.HTML)
+        await message.edit(
+            "<b>Module name to send is not provided</b>",
+            parse_mode=enums.ParseMode.HTML,
+        )
         return
 
     await message.edit("<b>Dispatching...</b>", parse_mode=enums.ParseMode.HTML)
@@ -49,9 +50,13 @@ async def sendmod(client: Client, message: Message):
                 )
             await message.delete()
         else:
-            await message.edit(f"<b>Module {module_name} not found!</b>", parse_mode=enums.ParseMode.HTML)
+            await message.edit(
+                f"<b>Module {module_name} not found!</b>",
+                parse_mode=enums.ParseMode.HTML,
+            )
     except Exception as e:
         await message.edit(format_exc(e), parse_mode=enums.ParseMode.HTML)
+
 
 modules_help["sendmod"] = {
     "sendmod [module_name]": "Send module to interlocutor",
