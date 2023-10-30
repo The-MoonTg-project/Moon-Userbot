@@ -50,12 +50,12 @@ async def get_user_inf(client: Client, message: Message):
 |-Deleted: <code>{user.deleted}</code>
 |-BIO: <code>{about}</code>
 </b>"""
-    await message.edit(user_info)
+    await message.edit(user_info, parse_mode=enums.ParseMode.HTML)
 
 
 @Client.on_message(filters.command("inffull", prefix) & filters.me)
 async def get_full_user_inf(client: Client, message: Message):
-    await message.edit("<b>Receiving the information...</b>")
+    await message.edit("<b>Receiving the information...</b>", parse_mode=enums.ParseMode.HTML)
 
     try:
         if len(message.command) >= 2:
@@ -104,10 +104,9 @@ async def get_full_user_inf(client: Client, message: Message):
 |-Phone calls available: <code>{full_user.phone_calls_available}</code>
 |-Phone calls private: <code>{full_user.phone_calls_private}</code>
 |-Blocked: <code>{full_user.blocked}</code></b>"""
-        await message.edit(user_info)
+        await message.edit(user_info, parse_mode=enums.ParseMode.HTML)
     except Exception as e:
-        await message.edit(format_exc(e))
-
+        await message.edit(format_exc(e), parse_mode=enums.ParseMode.HTML)
 
 modules_help["user_info"] = {
     "inf [reply|id|username]": "Get brief information about user",
