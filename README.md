@@ -23,7 +23,7 @@
 
 **Update the packages**
 ```
- apt-get upgrade -y
+ apt update && apt upgrade -y
 ```
 **Install Git[If installed ignore]**
 ```
