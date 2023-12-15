@@ -8,7 +8,7 @@ termux-wake-lock
 pkg update -y && pkg upgrade -y
 pkg install python3 git clang ffmpeg wget libjpeg-turbo libcrypt ndk-sysroot zlib openssl -y || exit 2
 
-python3 -m pip install -U pip
+
 LDFLAGS="-L${PREFIX}/lib/" CFLAGS="-I${PREFIX}/include/" pip3 install --upgrade wheel pillow
 
 if [[ -d "Moon-Userbot" ]]; then
