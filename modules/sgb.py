@@ -43,5 +43,5 @@ async def sg(client: Client, message: Message):
             await opt.copy(chat)
 
 modules_help["sangmata"] = {
-    "sgm": "reply to any user or id"
+    "sgb": "reply to any user or id"
 }
