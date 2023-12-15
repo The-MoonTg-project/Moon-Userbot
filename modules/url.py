@@ -105,11 +105,7 @@ async def upload_cmd(_, message: Message):
 
     if response.ok:
         file_size_mb = os.path.getsize(file_name) / 1024 / 1024
-        file_age = int(
-            min_file_age
-            + (max_file_age - min_file_age) *
-            ((1 - (file_size_mb / max_size_mb)) ** 2)
-        )
+        file_age = int(min_file_age + (max_file_age - min_file_age) * ((1 - (file_size_mb / max_size_mb)) ** 2))
         url = response.text.replace("https://", "")
         await message.edit(
             f"<b>Your URL: {url}\nYour file will live {file_age} days</b>",
@@ -118,7 +114,7 @@ async def upload_cmd(_, message: Message):
         )
     else:
         await message.edit(f"<b>API returned an error!\n" f"{response.text}\n Not allowed</b>", parse_mode=enums.ParseMode.HTML)
-        print(response.text)
+
 
     os.remove(file_name)
 
