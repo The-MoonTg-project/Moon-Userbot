@@ -104,7 +104,7 @@ async def stick2png(client: Client, message: types.Message):
         file_io = BytesIO(content)
         file_io.name = "sticker.png"
 
-        await client.send_document(message.chat.id, file_io)
+        await client.send_document(message.chat.id, file_io, parse_mode=enums.ParseMode.MARKDOWN)
     except Exception as e:
         await message.edit(format_exc(e), parse_mode=enums.ParseMode.HTML)
     else:
@@ -122,7 +122,7 @@ async def resize_cmd(client: Client, message: types.Message):
         resized.name = "image.png"
         os.remove(path)
 
-        await client.send_document(message.chat.id, resized)
+        await client.send_document(message.chat.id, resized, parse_mode=enums.ParseMode.MARKDOWN)
     except Exception as e:
         await message.edit(format_exc(e), parse_mode=enums.ParseMode.HTML)
     else:
