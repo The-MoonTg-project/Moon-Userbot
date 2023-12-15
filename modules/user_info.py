@@ -31,7 +31,7 @@ async def get_user_inf(client: Client, message: Message):
     else:
         peer = await client.resolve_peer("me")
 
-    response = await client.send(functions.users.GetFullUser(id=peer))
+    response = await client.invoke(functions.users.GetFullUser(id=peer))
 
     user = response.users[0]
     full_user = response.full_user
@@ -65,7 +65,7 @@ async def get_full_user_inf(client: Client, message: Message):
         else:
             peer = await client.resolve_peer("me")
 
-        response = await client.send(functions.users.GetFullUser(id=peer))
+        response = await client.invoke(functions.users.GetFullUser(id=peer))
 
         user = response.users[0]
         full_user = response.full_user
@@ -73,7 +73,7 @@ async def get_full_user_inf(client: Client, message: Message):
         await client.unblock_user("@creationdatebot")
         try:
             response = await interact_with(
-                await client.send_message("creationdatebot", f"/id {user.id}")
+                await client.send_message("creationdatebot", f"/id {user.id}", parse_mode=enums.ParseMode.HTML)
             )
         except RuntimeError:
             creation_date = "None"
