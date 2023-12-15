@@ -112,7 +112,7 @@ async def upload_cmd(_, message: Message):
         )
         url = response.text.replace("https://", "")
         await message.edit(
-            f"<b>Your URL: {url}\nYour file will live {file_age} days</b>",
+            f"<b>Your URL: {url}\nYour file will remain live for {file_age} days</b>",
             disable_web_page_preview=True,
             parse_mode=enums.ParseMode.HTML
         )
