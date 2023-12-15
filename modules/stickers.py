@@ -49,10 +49,10 @@ async def kang(client: Client, message: types.Message):
         emoji = "✨"
 
     await client.unblock_user("@stickers")
-    await interact_with(await client.send_message("@stickers", "/cancel"))
-    await interact_with(await client.send_message("@stickers", "/addsticker"))
+    await interact_with(await client.send_message("@stickers", "/cancel", parse_mode=enums.ParseMode.MARKDOWN))
+    await interact_with(await client.send_message("@stickers", "/addsticker", parse_mode=enums.ParseMode.MARKDOWN))
 
-    result = await interact_with(await client.send_message("@stickers", pack))
+    result = await interact_with(await client.send_message("@stickers", pack, parse_mode=enums.ParseMode.MARKDOWN))
     if ".TGS" in result.text:
         await message.edit("<b>Animated packs aren't supported</b>", parse_mode=enums.ParseMode.HTML)
         return
@@ -75,11 +75,11 @@ async def kang(client: Client, message: types.Message):
     resized = resize_image(path)
     os.remove(path)
 
-    await interact_with(await client.send_document("@stickers", resized))
-    response = await interact_with(await client.send_message("@stickers", emoji))
+    await interact_with(await client.send_document("@stickers", resized, parse_mode=enums.ParseMode.MARKDOWN))
+    response = await interact_with(await client.send_message("@stickers", emoji, parse_mode=enums.ParseMode.MARKDOWN))
     if "/done" in response.text:
         # ok
-        await interact_with(await client.send_message("@stickers", "/done"))
+        await interact_with(await client.send_message("@stickers", "/done", parse_mode=enums.ParseMode.MARKDOWN))
         await client.delete_messages("@stickers", interact_with_to_delete)
         await message.edit(
                     f"<b>Sticker added to <a href=https://t.me/addstickers/{pack}>pack</a></b>",
