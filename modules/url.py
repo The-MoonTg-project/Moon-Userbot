@@ -14,27 +14,29 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import os
-
+import urllib3
 from pyrogram import Client, filters, enums
 from pyrogram.types import Message
 import requests
 from utils.misc import modules_help, prefix
 from utils.scripts import format_exc
 
+http = urllib3.PoolManager()
 
 @Client.on_message(filters.command("short", prefix) & filters.me)
 async def short(_, message: Message):
-    if len(message.command) > 1:
-        link = message.text.split(maxsplit=1)[1]
-    elif message.reply_to_message:
-        link = message.reply_to_message.text
-    else:
-        await message.edit(f"<b>Usage: </b><code>{prefix}short [url to short]</code>", parse_mode=enums.ParseMode.HTML)
-        return
+  if len(message.command) > 1:
+      link = message.text.split(maxsplit=1)[1]
+  elif message.reply_to_message:
+      link = message.reply_to_message.text
+  else:
+      await message.edit(f"<b>Usage: </b><code>{prefix}short [url to short]</code>", parse_mode=enums.ParseMode.HTML)
+      return
 
-    shortened = requests.get("https://clck.ru/--", data={"url": link}).text
+  r = http.request('GET', 'https://clck.ru/--?url='+link)
 
-    await message.edit(shortened.replace("https://", ""), disable_web_page_preview=True, parse_mode=enums.ParseMode.HTML)
+  await message.edit(r.data.decode().replace("https://", "<b>Shortened Url:</b>"), disable_web_page_preview=True, parse_mode=enums.ParseMode.HTML)
+
 
 
 @Client.on_message(filters.command("urldl", prefix) & filters.me)
@@ -62,7 +64,7 @@ async def urldl(client: Client, message: Message):
                 f.write(chunk)
 
         await message.edit("<b>Uploading...</b>", parse_mode=enums.ParseMode.HTML)
-        await client.send_document(message.chat.id, file_name)
+        await client.send_document(message.chat.id, file_name, parse_mode=enums.ParseMode.HTML)
         await message.delete()
     except Exception as e:
         await message.edit(format_exc(e), parse_mode=enums.ParseMode.HTML)
@@ -73,7 +75,7 @@ async def urldl(client: Client, message: Message):
 @Client.on_message(filters.command("upload", prefix) & filters.me)
 async def upload_cmd(_, message: Message):
     max_size = 512 * 1024 * 1024
-    max_size_mb = 512
+    max_size_mb = 100
 
     min_file_age = 31
     max_file_age = 180
@@ -115,7 +117,8 @@ async def upload_cmd(_, message: Message):
             parse_mode=enums.ParseMode.HTML
         )
     else:
-        await message.edit(f"<b>API returned an error!\n" f"{response.text}</b>", parse_mode=enums.ParseMode.HTML)
+        await message.edit(f"<b>API returned an error!\n" f"{response.text}\n Not allowed</b>", parse_mode=enums.ParseMode.HTML)
+        print(response.text)
 
     os.remove(file_name)
 
@@ -126,7 +129,7 @@ async def webshot(client: Client, message: Message):
         user_link = message.command[1]
         await message.delete()
         full_link = f"https://webshot.deam.io/{user_link}/?delay=2000"
-        await client.send_document(message.chat.id, full_link, caption=f"{user_link}")
+        await client.send_document(message.chat.id, full_link, caption=f"{user_link}", parse_mode=enums.ParseMode.HTML)
     except Exception as e:
         await message.edit(format_exc(e), parse_mode=enums.ParseMode.HTML)
 
