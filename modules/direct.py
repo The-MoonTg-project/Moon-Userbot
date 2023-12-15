@@ -20,8 +20,8 @@ from pyrogram.types import Message
 
 from utils.misc import modules_help, prefix
 
-from utils.scripts import import_library
-lxml = import_library("lxml")
+# from utils.scripts import import_library
+# lxml = import_library("lxml")
 
 def subprocess_run(cmd):
     reply = ""
@@ -102,14 +102,14 @@ def gdrive(url: str) -> str:
     try:
         # In case of small file size, Google downloads directly
         dl_url = download.headers["location"]
-        page = BeautifulSoup(download.content, "lxml")
+        page = BeautifulSoup(download.content, "html.parser")
         if "accounts.google.com" in dl_url:  # non-public file
             reply += "`Link is not public!`\n"
             return reply
         name = "Direct Download Link"
     except KeyError:
         # In case of download warning page
-        page = BeautifulSoup(download.content, "lxml")
+        page = BeautifulSoup(download.content, "html.parser")
         if download.headers is not None:
             dl_url = download.headers.get("location")
     page_element = page.find("a", {"id": "uc-download-link"})
