@@ -41,3 +41,7 @@ async def sg(client: Client, message: Message):
         else:
             await lol.delete()
             await opt.copy(chat)
+
+modules_help["sangmata"] = {
+    "sgm": "reply to any user or id"
+}
