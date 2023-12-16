@@ -16,28 +16,37 @@
 
 from sys import version_info
 from .db import db
-from git import Repo
+import git
+
+__all__ = [
+    "modules_help",
+    "requirements_list",
+    "python_version",
+    "prefix",
+    "gitrepo",
+    "userbot_version",
+]
 
 
-class ModulesHelpDict(dict):
-    def append(self, obj: dict):
-        # convert help from old to new type
-        module_name = list(obj.keys())[0]
-        cmds = obj[module_name]
-        commands = {}
-        for cmd in cmds:
-            cmd_name = list(cmd.keys())[0]
-            cmd_desc = cmd[cmd_name]
-            commands[cmd_name] = cmd_desc
-        self[module_name] = commands
-
-
-modules_help = ModulesHelpDict()
+modules_help = {}
 requirements_list = []
 
 python_version = f"{version_info[0]}.{version_info[1]}.{version_info[2]}"
-userbot_version = "1.5.0"
 
 prefix = db.get("core.main", "prefix", ".")
 
-gitrepo = Repo(".")
+try:
+    gitrepo = git.Repo(".")
+except git.exc.InvalidGitRepositoryError:
+    repo = git.Repo.init()
+    origin = repo.create_remote(
+        "origin", "https://github.com/The-MoonTg-project/Moon-Userbot"
+    )
+    origin.fetch()
+    repo.create_head("master", origin.refs.master)
+    repo.heads.master.set_tracking_branch(origin.refs.master)
+    repo.heads.master.checkout(True)
+    gitrepo = git.Repo(".")
+
+commits_since_tag = list(gitrepo.iter_commits(f"{gitrepo.tags[-1].name}..HEAD"))
+userbot_version = f"1.0.{len(commits_since_tag)}"
