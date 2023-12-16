@@ -1,5 +1,5 @@
 #  Moon-Userbot - telegram userbot
-#  Copyright (C) 2020-present Moon Userbot Organization
+#  Copyright (C) 2020-present Dragon Userbot Organization
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -15,8 +15,7 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import asyncio
-
-from pyrogram import Client, filters
+from pyrogram import Client, filters, enums
 from pyrogram.types import Message
 
 from utils.misc import modules_help, prefix
@@ -33,15 +32,16 @@ async def del_msg(_, message: Message):
 @with_reply
 async def purge(client: Client, message: Message):
     chunk = []
-    async for msg in client.iter_history(
+    async for msg in client.get_chat_history(
         chat_id=message.chat.id,
-        offset_id=message.reply_to_message.message_id,
-        reverse=True,
+        limit=message.id - message.reply_to_message.id + 1,
     ):
-        chunk.append(msg.message_id)
+        if msg.id < message.reply_to_message.id:
+            break
+        chunk.append(msg.id)
         if len(chunk) >= 100:
             await client.delete_messages(message.chat.id, chunk)
-            chunk = []
+            chunk.clear()
             await asyncio.sleep(1)
 
     if len(chunk) > 0:
