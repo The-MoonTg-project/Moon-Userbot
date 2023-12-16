@@ -20,8 +20,7 @@ from pyrogram.types import Message
 
 from utils.misc import modules_help, prefix
 
-# from utils.scripts import import_library
-# lxml = import_library("lxml")
+
 
 def subprocess_run(cmd):
     reply = ""
