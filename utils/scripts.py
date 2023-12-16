@@ -33,13 +33,7 @@ from .misc import modules_help, prefix, requirements_list
 META_COMMENTS = re.compile(r"^ *# *meta +(\S+) *: *(.*?)\s*$", re.MULTILINE)
 interact_with_to_delete = []
 
-async def edit_or_reply(message, text, parse_mode=enums.ParseMode.MARKDOWN):
-    """Edit Message If Its From Self, Else Reply To Message"""
-    if not message:
-        return await message.edit(text, parse_mode=parse_mode)
-    if not message.from_user:
-        return await message.edit(text, parse_mode=parse_mode)
-    return await message.edit(text, parse_mode=parse_mode)
+
 
 def text(message: types.Message) -> str:
     """Find text in `types.Message` object"""
