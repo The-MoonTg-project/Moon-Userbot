@@ -1,21 +1,10 @@
 #  Moon-Userbot - telegram userbot
-#  Copyright (C) 2020-present Moon Userbot Organization
+#  Copyright (C) 2020-present Dragon Userbot Organization
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
 #  the Free Software Foundation, either version 3 of the License, or
 #  (at your option) any later version.
-from pyrogram import Client, enums, errors, filters
-from pyrogram.types import (
-    InputMediaAudio,
-    InputMediaDocument,
-    InputMediaPhoto,
-    InputMediaVideo,
-    Message,
-)
-
-from utils.db import db
-from utils.misc import modules_help, prefix
 
 #  This program is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,7 +14,18 @@ from utils.misc import modules_help, prefix
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+from pyrogram import Client, filters, errors, enums
+from pyrogram.types import (
+    Message,
+    InputMediaPhoto,
+    InputMediaVideo,
+    InputMediaAudio,
+    InputMediaDocument,
+)
 
+from utils.db import db
+from utils.misc import modules_help, prefix
+from pyrogram.types import Message
 #  from utils.scripts import with_reply
 
 
@@ -38,7 +38,7 @@ async def save_note(client: Client, message: Message):
     except (errors.RPCError, ValueError, KeyError):
         # group is not accessible or isn't created
         chat = await client.create_supergroup(
-            "Moon_Userbot_Notes_Filters", "Don't touch this group, please"
+            "Dragon_Userbot_Notes_Filters", "Don't touch this group, please"
         )
         db.set("core.notes", "chat_id", chat.id)
 
@@ -50,9 +50,9 @@ async def save_note(client: Client, message: Message):
             checking_note = db.get("core.notes", f"note{note_name}", False)
             if not checking_note:
                 get_media_group = [
-                    _.message_id
+                    _.id
                     for _ in await client.get_media_group(
-                        message.chat.id, message.reply_to_message.message_id
+                        message.chat.id, message.reply_to_message.id
                     )
                 ]
                 try:
@@ -62,65 +62,60 @@ async def save_note(client: Client, message: Message):
                 except errors.ChatForwardsRestricted:
                     await message.edit(
                         "<b>Forwarding messages is restricted by chat admins</b>",
-                        parse_mode=enums.ParseMode.HTML,
+                        parse_mode=enums.ParseMode.HTML
                     )
                     return
                 note = {
-                    "MESSAGE_ID": str(message_id[1].message_id),
+                    "MESSAGE_ID": str(message_id[1].id),
                     "MEDIA_GROUP": True,
                     "CHAT_ID": str(chat_id),
                 }
                 db.set("core.notes", f"note{note_name}", note)
-                await message.edit(
-                    f"<b>Note {note_name} saved</b>", parse_mode=enums.ParseMode.HTML
-                )
+                await message.edit(f"<b>Note {note_name} saved</b>", parse_mode=enums.ParseMode.HTML)
             else:
-                await message.edit(
-                    "<b>This note already exists</b>", parse_mode=enums.ParseMode.HTML
-                )
+                await message.edit("<b>This note already exists</b>", parse_mode=enums.ParseMode.HTML)
         else:
             checking_note = db.get("core.notes", f"note{note_name}", False)
             if not checking_note:
                 try:
                     message_id = await message.reply_to_message.forward(chat_id)
                 except errors.ChatForwardsRestricted:
-                    if message.reply_to_message.text:
-                        # manual copy
-                        message_id = await client.send_message(
-                            chat_id, message.reply_to_message.text, parse_mode=enums.ParseMode.HTML
-                        )
-                    else:
-                        await message.edit(
-                            "<b>Forwarding messages is restricted by chat admins</b>",
-                            parse_mode=enums.ParseMode.HTML,
-                        )
-                        return
+                    message_id = await message.copy(chat_id)
                 note = {
                     "MEDIA_GROUP": False,
-                    "MESSAGE_ID": str(message_id.message_id),
+                    "MESSAGE_ID": str(message_id.id),
                     "CHAT_ID": str(chat_id),
                 }
                 db.set("core.notes", f"note{note_name}", note)
-                await message.edit(
-                    f"<b>Note {note_name} saved</b>", parse_mode=enums.ParseMode.HTML
-                )
+                await message.edit(f"<b>Note {note_name} saved</b>", parse_mode=enums.ParseMode.HTML)
             else:
-                await message.edit(
-                    "<b>This note already exists</b>", parse_mode=enums.ParseMode.HTML
-                )
+                await message.edit("<b>This note already exists</b>", parse_mode=enums.ParseMode.HTML)
     elif len(message.text.split()) >= 3:
         note_name = message.text.split(maxsplit=1)[1].split()[0]
         checking_note = db.get("core.notes", f"note{note_name}", False)
         if not checking_note:
             message_id = await client.send_message(
-                chat_id, message.text.split(note_name)[1].strip(), parse_mode=enums.ParseMode.HTML
+                chat_id, message.text.split(note_name)[1].strip()
             )
             note = {
                 "MEDIA_GROUP": False,
-                "MESSAGE_ID": str(message_id.message_id),
+                "MESSAGE_ID": str(message_id.id),
                 "CHAT_ID": str(chat_id),
             }
             db.set("core.notes", f"note{note_name}", note)
+            await message.edit(f"<b>Note {note_name} saved</b>", parse_mode=enums.ParseMode.HTML)
+        else:
+            await message.edit("<b>This note already exists</b>", parse_mode=enums.ParseMode.HTML)
+    else:
+        await message.edit(
+            f"<b>Example: <code>{prefix}save note_name</code></b>",
+            parse_mode=enums.ParseMode.HTML
+        )
+
+
+@Client.on_message(filters.command(["note"], prefix) & filters.me)
+async def note_send(client: Client, message: Message):
+    if len(message.text.split()) >= 2:
         await message.edit("<b>Loading...</b>", parse_mode=enums.ParseMode.HTML)
 
         note_name = f"{message.text.split(maxsplit=1)[1]}"
@@ -135,7 +130,7 @@ async def save_note(client: Client, message: Message):
                     "<b>Sorry, but this note is unavaliable.\n\n"
                     f"You can delete this note with "
                     f"<code>{prefix}clear {note_name}</code></b>",
-                    parse_mode=enums.ParseMode.HTML,
+                    parse_mode=enums.ParseMode.HTML
                 )
                 return
 
@@ -148,10 +143,14 @@ async def save_note(client: Client, message: Message):
                     if _.photo:
                         if _.caption:
                             media_grouped_list.append(
-                                InputMediaPhoto(_.photo.file_id, _.caption.markdown)
+                                InputMediaPhoto(
+                                    _.photo.file_id, _.caption.markdown
+                                )
                             )
                         else:
-                            media_grouped_list.append(InputMediaPhoto(_.photo.file_id))
+                            media_grouped_list.append(
+                                InputMediaPhoto(_.photo.file_id)
+                            )
                     elif _.video:
                         if _.caption:
                             if _.video.thumbs:
@@ -164,7 +163,9 @@ async def save_note(client: Client, message: Message):
                                 )
                             else:
                                 media_grouped_list.append(
-                                    InputMediaVideo(_.video.file_id, _.caption.markdown)
+                                    InputMediaVideo(
+                                        _.video.file_id, _.caption.markdown
+                                    )
                                 )
                         elif _.video.thumbs:
                             media_grouped_list.append(
@@ -173,14 +174,20 @@ async def save_note(client: Client, message: Message):
                                 )
                             )
                         else:
-                            media_grouped_list.append(InputMediaVideo(_.video.file_id))
+                            media_grouped_list.append(
+                                InputMediaVideo(_.video.file_id)
+                            )
                     elif _.audio:
                         if _.caption:
                             media_grouped_list.append(
-                                InputMediaAudio(_.audio.file_id, _.caption.markdown)
+                                InputMediaAudio(
+                                    _.audio.file_id, _.caption.markdown
+                                )
                             )
                         else:
-                            media_grouped_list.append(InputMediaAudio(_.audio.file_id))
+                            media_grouped_list.append(
+                                InputMediaAudio(_.audio.file_id)
+                            )
                     elif _.document:
                         if _.caption:
                             if _.document.thumbs:
@@ -200,7 +207,8 @@ async def save_note(client: Client, message: Message):
                         elif _.document.thumbs:
                             media_grouped_list.append(
                                 InputMediaDocument(
-                                    _.document.file_id, _.document.thumbs[0].file_id
+                                    _.document.file_id,
+                                    _.document.thumbs[0].file_id,
                                 )
                             )
                         else:
@@ -211,16 +219,19 @@ async def save_note(client: Client, message: Message):
                     await client.send_media_group(
                         message.chat.id,
                         media_grouped_list,
-                        reply_to_message_id=message.reply_to_message.message_id,
-                    )
+                        reply_to_message_id=message.reply_to_message.id,
+                        parse_mode=enums.ParseMode.HTML,
+                        )
                 else:
-                    await client.send_media_group(message.chat.id, media_grouped_list)
+                    await client.send_media_group(
+                        message.chat.id, media_grouped_list
+                    )
             elif message.reply_to_message:
                 await client.copy_message(
                     message.chat.id,
                     int(find_note["CHAT_ID"]),
                     int(find_note["MESSAGE_ID"]),
-                    reply_to_message_id=message.reply_to_message.message_id,
+                    reply_to_message_id=message.reply_to_message.id,
                 )
             else:
                 await client.copy_message(
@@ -230,13 +241,11 @@ async def save_note(client: Client, message: Message):
                 )
             await message.delete()
         else:
-            await message.edit(
-                "<b>There is no such note</b>", parse_mode=enums.ParseMode.HTML
-            )
+            await message.edit("<b>There is no such note</b>", parse_mode=enums.ParseMode.HTML)
     else:
         await message.edit(
             f"<b>Example: <code>{prefix}note note_name</code></b>",
-            parse_mode=enums.ParseMode.HTML,
+            parse_mode=enums.ParseMode.HTML
         )
 
 
@@ -258,17 +267,13 @@ async def clear_note(_, message: Message):
         find_note = db.get("core.notes", f"note{note_name}", False)
         if find_note:
             db.remove("core.notes", f"note{note_name}")
-            await message.edit(
-                f"<b>Note {note_name} deleted</b>", parse_mode=enums.ParseMode.HTML
-            )
+            await message.edit(f"<b>Note {note_name} deleted</b>", parse_mode=enums.ParseMode.HTML)
         else:
-            await message.edit(
-                "<b>There is no such note</b>", parse_mode=enums.ParseMode.HTML
-            )
+            await message.edit("<b>There is no such note</b>", parse_mode=enums.ParseMode.HTML)
     else:
         await message.edit(
             f"<b>Example: <code>{prefix}clear note_name</code></b>",
-            parse_mode=enums.ParseMode.HTML,
+            parse_mode=enums.ParseMode.HTML
         )
 
 
