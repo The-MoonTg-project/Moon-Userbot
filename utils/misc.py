@@ -1,5 +1,5 @@
-#  Dragon-Userbot - telegram userbot
-#  Copyright (C) 2020-present Dragon Userbot Organization
+#  Moon-Userbot - telegram userbot
+#  Copyright (C) 2020-present Moon Userbot Organization
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
