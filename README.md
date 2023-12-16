@@ -23,11 +23,11 @@
 
 **Update the packages**
 ```
- apt update && apt upgrade -y
+ sudo apt update && sudo apt upgrade -y
 ```
 **Install Git[If installed ignore]**
 ```
- apt install git
+ sudo apt install git
 ```
 **Clone the repo**
 ```
@@ -35,7 +35,7 @@
 ```
 **Setup**
 ```
- cd Moon-Userbot/ && bash install.sh
+ cd Moon-Userbot/ && sudo bash install.sh
 ```
 <h2> Termux (use <a href='https://github.com/termux/termux-app/releases'>GitHUb</a> version)</h2>
 
