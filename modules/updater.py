@@ -1,5 +1,5 @@
 #  Moon-Userbot - telegram userbot
-#  Copyright (C) 2020-present Moon Userbot Organization
+#  Copyright (C) 2020-present Dragon Userbot Organization
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -15,70 +15,79 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import os
-import subprocess
 import sys
+import subprocess
 
-from pyrogram import Client
-from pyrogram import enums as enums
-from pyrogram import filters
+from pyrogram import Client, filters, enums
 from pyrogram.types import Message
 
 from utils.misc import modules_help, prefix, requirements_list
-from utils.scripts import format_exc
-
-
-def restart(message: Message, restart_type):
-    text = "1" if restart_type == "update" else "2"
-    os.execvp(
-        sys.executable,
-        [
-            sys.executable,
-            "main.py",
-            f"{message.chat.id}",
-            f" {message.message_id}",
-            f"{text}",
-        ],
-    )
+from utils.db import db
+from utils.scripts import format_exc, restart
 
 
 @Client.on_message(filters.command("restart", prefix) & filters.me)
 async def restart_cmd(_, message: Message):
+    db.set(
+        "core.updater",
+        "restart_info",
+        {
+            "type": "restart",
+            "chat_id": message.chat.id,
+            "message_id": message.id,
+        },
+    )
+
+    if "LAVHOST" in os.environ:
+        await message.edit("<b>Your lavHost is restarting...</b>", parse_mode=enums.ParseMode.HTML)
+        os.system("lavhost restart")
+        return
+
     await message.edit("<b>Restarting...</b>", parse_mode=enums.ParseMode.HTML)
-    restart(message, "restart")
+    restart()
 
 
 @Client.on_message(filters.command("update", prefix) & filters.me)
 async def update(_, message: Message):
+    db.set(
+        "core.updater",
+        "restart_info",
+        {
+            "type": "update",
+            "chat_id": message.chat.id,
+            "message_id": message.id,
+        },
+    )
+
+    if "LAVHOST" in os.environ:
+        await message.edit("<b>Your lavHost is updating...</b>", parse_mode=enums.ParseMode.HTML)
+        os.system("lavhost update")
+        return
+
+    await message.edit("<b>Updating...</b>", parse_mode=enums.ParseMode.HTML)
     try:
-        await message.edit(
-            "<b>Updating: 1/4 (updating pip)</b>", parse_mode=enums.ParseMode.HTML
-        )
         subprocess.run([sys.executable, "-m", "pip", "install", "-U", "pip"])
-        await message.edit(
-            "<b>Updating: 2/4 (git pull)</b>", parse_mode=enums.ParseMode.HTML
-        )
         subprocess.run(["git", "pull"])
-        await message.edit(
-            "<b>Updating: 3/4 (updating libs from requirements.txt)</b>",
-            parse_mode=enums.ParseMode.HTML,
-        )
         subprocess.run(
-            [sys.executable, "-m", "pip", "install", "-U", "-r", "requirements.txt"]
-        )
-        await message.edit(
-            "<b>Updating: 4/4 (updating libs from requirements_list)</b>",
-            parse_mode=enums.ParseMode.HTML,
+            [
+                sys.executable,
+                "-m",
+                "pip",
+                "install",
+                "-U",
+                "-r",
+                "requirements.txt",
+            ]
         )
         subprocess.run(
             [sys.executable, "-m", "pip", "install", "-U", *requirements_list]
         )
-        await message.edit(
-            "<b>Updating: done! Restarting...</b>", parse_mode=enums.ParseMode.HTML
-        )
     except Exception as e:
         await message.edit(format_exc(e), parse_mode=enums.ParseMode.HTML)
+        db.remove("core.updater", "restart_info")
     else:
-        restart(message, "update")
+        await message.edit("<b>Updating: done! Restarting...</b>", parse_mode=enums.ParseMode.HTML)
+        restart()
 
 
 modules_help["updater"] = {
