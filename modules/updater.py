@@ -68,6 +68,9 @@ async def update(_, message: Message):
     try:
         subprocess.run([sys.executable, "-m", "pip", "install", "-U", "pip"])
         subprocess.run(["git", "pull"])
+        subprocess.run(["git", "reset", "--hard"])
+        subprocess.run(["git", "fetch"])
+        subprocess.run(["git", "merge"])
         subprocess.run(
             [
                 sys.executable,
