@@ -1,4 +1,3 @@
-from utils.db import sqlite3
 #  Moon-Userbot - telegram userbot
 #  Copyright (C) 2020-present Moon Userbot Organization
 #
