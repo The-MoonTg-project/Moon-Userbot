@@ -14,7 +14,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from pyrogram import Client, filters
+from pyrogram import Client, filters, enums
 from pyrogram.errors import FloodWait
 from pyrogram.raw import functions, types
 from pyrogram.types import Message
@@ -37,7 +37,7 @@ async def global_mention_clear(client: Client, message: Message):
         result = await client.invoke(request)
     except FloodWait as e:
         await message.edit_text(
-            f"<b>FloodWait received. Wait {e.x} seconds before trying again</b>"
+            f"<b>FloodWait received. Wait {e.x} seconds before trying again</b>", parse_mode=enums.ParseMode.HTML
         )
         return
     await message.delete()
@@ -66,7 +66,7 @@ async def global_reaction_clear(client: Client, message: Message):
         result = await client.invoke(request)
     except FloodWait as e:
         await message.edit_text(
-            f"<b>FloodWait received. Wait {e.x} seconds before trying again</b>"
+            f"<b>FloodWait received. Wait {e.x} seconds before trying again</b>", parse_mode=enums.ParseMode.HTML
         )
         return
     await message.delete()
