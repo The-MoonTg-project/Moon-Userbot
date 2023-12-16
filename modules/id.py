@@ -66,5 +66,5 @@ async def id(client: Client, message: Message):
         await message.edit("**__" + text + "__**", parse_mode=enums.ParseMode.MARKDOWN)
 
 modules_help["id"] = {
-    "id []*": "simply run or reply to message",
+    "id": "simply run or reply to message",
 }
