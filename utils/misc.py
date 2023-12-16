@@ -49,4 +49,4 @@ except git.exc.InvalidGitRepositoryError:
     gitrepo = git.Repo(".")
 
 commits_since_tag = list(gitrepo.iter_commits(f"{gitrepo.tags[-1].name}..HEAD"))
-userbot_version = f"4.0.{len(commits_since_tag)}"
+userbot_version = f"1.0.{len(commits_since_tag)}"
