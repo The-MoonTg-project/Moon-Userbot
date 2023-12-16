@@ -1,5 +1,5 @@
 #  Moon-Userbot - telegram userbot
-#  Copyright (C) 2020-present Moon Userbot Organization
+#  Copyright (C) 2020-present Dragon Userbot Organization
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -89,7 +89,7 @@ async def admintool_handler(_, message: Message):
             await message.reply(
                 db_cache.get(f"welcome_text{message.chat.id}"),
                 disable_web_page_preview=True,
-                parse_mode=enums.ParseMode.HTML
+                parse_mode=enums.ParseMode.HTML,
             )
 
     raise ContinuePropagation
@@ -116,7 +116,7 @@ async def check_username_or_id(data: Union[str, int]) -> str:
     elif 0 < peer_id <= MAX_USER_ID:
         return "user"
 
-    raise ValueError(f"Peer id invalid: {peer_id}")
+    raise ValueError(f"Peer id invalid: {peer_id}", parse_mode=enums.ParseMode.HTML)
 
 
 async def get_user_and_name(message):
@@ -167,7 +167,7 @@ async def ban_command(client: Client, message: Message):
             await message.edit(
                 f"<b>{name}</b> <code>banned!</code>"
                 + f"\n{'<b>Cause:</b> <i>' + text_c.split(maxsplit=1)[1] + '</i>' if len(text_c.split()) > 1 else ''}",
-                parse_mode=enums.ParseMode.HTML
+                parse_mode=enums.ParseMode.HTML,
             )
         except UserAdminInvalid:
             await message.edit("<b>No rights</b>", parse_mode=enums.ParseMode.HTML)
@@ -228,7 +228,7 @@ async def ban_command(client: Client, message: Message):
                     await message.edit(
                         f"<b>{name}</b> <code>banned!</code>"
                         + f"\n{'<b>Cause:</b> <i>' + text_c.split(' ', maxsplit=2)[2] + '</i>' if len(text_c.split()) > 2 else ''}",
-                        parse_mode=enums.ParseMode.HTML
+                        parse_mode=enums.ParseMode.HTML,
                     )
                 except UserAdminInvalid:
                     await message.edit("<b>No rights</b>", parse_mode=enums.ParseMode.HTML)
@@ -661,8 +661,7 @@ async def unmute_command(client, message):
                 )
                 await message.edit(
                     f"<b>{message.reply_to_message.from_user.first_name}</b> <code>unmuted</code>"
-                    + f"\n{'<b>Cause:</b> <i>' + cause.split(' ', maxsplit=1)[1] + '</i>' if len(cause.split()) > 1 else ''}",
-                    parse_mode=enums.ParseMode.HTML
+                    + f"\n{'<b>Cause:</b> <i>' + cause.split(' ', maxsplit=1)[1] + '</i>' if len(cause.split()) > 1 else ''}", parse_mode=enums.ParseMode.HTML
                 )
             except UserAdminInvalid:
                 await message.edit("<b>No rights</b>", parse_mode=enums.ParseMode.HTML)
@@ -689,8 +688,7 @@ async def unmute_command(client, message):
                     )
                     await message.edit(
                         f"<b>{user_to_unmute.first_name}</b> <code>unmuted!</code>"
-                        + f"\n{'<b>Cause:</b> <i>' + cause.split(' ', maxsplit=2)[2] + '</i>' if len(cause.split()) > 2 else ''}",
-                        parse_mode=enums.ParseMode.HTML
+                        + f"\n{'<b>Cause:</b> <i>' + cause.split(' ', maxsplit=2)[2] + '</i>' if len(cause.split()) > 2 else ''}", parse_mode=enums.ParseMode.HTML
                     )
                 except UserAdminInvalid:
                     await message.edit("<b>No rights</b>", parse_mode=enums.ParseMode.HTML)
@@ -778,7 +776,7 @@ async def mute_command(client: Client, message: Message):
                     f"<b>{message.reply_to_message.from_user.first_name}</b> <code> was muted indefinitely</code>"
                     + f"\n{'<b>Cause:</b> <i>' + cause.split(' ', maxsplit=1)[1] + '</i>' if len(cause.split()) > 1 else ''}"
                 )
-            await message.edit(message_text)
+            await message.edit(message_text, parse_mode=enums.ParseMode.HTML)
         except UserAdminInvalid:
             await message.edit("<b>No rights</b>", parse_mode=enums.ParseMode.HTML)
         except ChatAdminRequired:
@@ -870,7 +868,7 @@ async def mute_command(client: Client, message: Message):
                             f"<b>{user_to_unmute.first_name}</b> <code> was muted indefinitely</code>"
                             + f"\n{'<b>Cause:</b> <i>' + cause.split(' ', maxsplit=2)[2] + '</i>' if len(cause.split()) > 2 else ''}"
                         )
-                    await message.edit(message_text)
+                    await message.edit(message_text, parse_mode=enums.ParseMode.HTML)
                 except UserAdminInvalid:
                     await message.edit("<b>No rights</b>", parse_mode=enums.ParseMode.HTML)
                 except ChatAdminRequired:
@@ -917,8 +915,7 @@ async def demote_command(client: Client, message: Message):
                 )
                 await message.edit(
                     f"<b>{message.reply_to_message.from_user.first_name}</b> <code>demoted!</code>"
-                    + f"\n{'<b>Cause:</b> <i>' + cause.split(' ', maxsplit=1)[1] + '</i>' if len(cause.split()) > 1 else ''}",
-                    parse_mode=enums.ParseMode.HTML
+                    + f"\n{'<b>Cause:</b> <i>' + cause.split(' ', maxsplit=1)[1] + '</i>' if len(cause.split()) > 1 else ''}", parse_mode=enums.ParseMode.HTML
                 )
             except UserAdminInvalid:
                 await message.edit("<b>No rights</b>", parse_mode=enums.ParseMode.HTML)
@@ -953,8 +950,7 @@ async def demote_command(client: Client, message: Message):
                     )
                     await message.edit(
                         f"<b>{promote_user.first_name}</b> <code>demoted!</code>"
-                        + f"\n{'<b>Cause:</b> <i>' + cause.split(' ', maxsplit=2)[2] + '</i>' if len(cause.split()) > 2 else ''}",
-                        parse_mode=enums.ParseMode.HTML
+                        + f"\n{'<b>Cause:</b> <i>' + cause.split(' ', maxsplit=2)[2] + '</i>' if len(cause.split()) > 2 else ''}", parse_mode=enums.ParseMode.HTML
                     )
                 except UserAdminInvalid:
                     await message.edit("<b>No rights</b>", parse_mode=enums.ParseMode.HTML)
@@ -1001,8 +997,7 @@ async def promote_command(client: Client, message: Message):
                     )
                 await message.edit(
                     f"<b>{message.reply_to_message.from_user.first_name}</b> <code>promoted!</code>"
-                    + f"\n{'<b>Prefix:</b> <i>' + cause.split(' ', maxsplit=1)[1] + '</i>' if len(cause.split()) > 1 else ''}",
-                    parse_mode=enums.ParseMode.HTML
+                    + f"\n{'<b>Prefix:</b> <i>' + cause.split(' ', maxsplit=1)[1] + '</i>' if len(cause.split()) > 1 else ''}", parse_mode=enums.ParseMode.HTML
                 )
             except UserAdminInvalid:
                 await message.edit("<b>No rights</b>", parse_mode=enums.ParseMode.HTML)
@@ -1054,28 +1049,25 @@ async def promote_command(client: Client, message: Message):
         else:
             await message.edit("<b>user_id or username</b>", parse_mode=enums.ParseMode.HTML)
     else:
-        await message.edit("<b>Unsupported</b>")
+        await message.edit("<b>Unsupported</b>", parse_mode=enums.ParseMode.HTML)
 
 
 @Client.on_message(filters.command(["antich"], prefix))
 async def anti_channels(client: Client, message: Message):
     if message.chat.type != "supergroup":
-        await message.edit("<b>Not supported in non-supergroup chats</b>",
-        parse_mode=enums.ParseMode.HTML)
+        await message.edit("<b>Not supported in non-supergroup chats</b>", parse_mode=enums.ParseMode.HTML)
         return
 
     if len(message.command) == 1:
         if db.get("core.ats", f"antich{message.chat.id}", False):
             await message.edit(
                 "<b>Blocking channels in this chat is enabled.\n"
-                f"Disable with: </b><code>{prefix}antich disable</code>",
-                parse_mode=enums.ParseMode.HTML
+                f"Disable with: </b><code>{prefix}antich disable</code>", parse_mode=enums.ParseMode.HTML
             )
         else:
             await message.edit(
                 "<b>Blocking channels in this chat is disabled.\n"
-                f"Enable with: </b><code>{prefix}antich enable</code>",
-                parse_mode=enums.ParseMode.HTML
+                f"Enable with: </b><code>{prefix}antich enable</code>", parse_mode=enums.ParseMode.HTML
             )
     elif message.command[1] in ["enable", "on", "1", "yes", "true"]:
         db.set("core.ats", f"antich{message.chat.id}", True)
@@ -1114,8 +1106,7 @@ async def delete_history(client: Client, message: Message):
 
                 await message.edit(
                     f"<code>History from <b>{name}</b> was deleted!</code>"
-                    + f"\n{'<b>Cause:</b> <i>' + cause.split(maxsplit=1)[1] + '</i>' if len(cause.split()) > 1 else ''}",
-                    parse_mode=enums.ParseMode.HTML
+                    + f"\n{'<b>Cause:</b> <i>' + cause.split(maxsplit=1)[1] + '</i>' if len(cause.split()) > 1 else ''}", parse_mode=enums.ParseMode.HTML
                 )
             except UserAdminInvalid:
                 await message.edit("<b>No rights</b>", parse_mode=enums.ParseMode.HTML)
@@ -1155,8 +1146,7 @@ async def delete_history(client: Client, message: Message):
                     )
                     await message.edit(
                         f"<code>History from </code><b>{name}</b><code> was deleted!</code>"
-                        + f"\n{'<b>Cause:</b> <i>' + cause.split(' ', maxsplit=2)[2] + '</i>' if len(cause.split()) > 2 else ''}",
-                        parse_mode=enums.ParseMode.HTML
+                        + f"\n{'<b>Cause:</b> <i>' + cause.split(' ', maxsplit=2)[2] + '</i>' if len(cause.split()) > 2 else ''}", parse_mode=enums.ParseMode.HTML
                     )
                 except UserAdminInvalid:
                     await message.edit("<b>No rights</b>", parse_mode=enums.ParseMode.HTML)
@@ -1242,13 +1232,11 @@ async def ro(client: Client, message: Message):
                 message.chat.id, ChatPermissions()
             )
         except (UserAdminInvalid, ChatAdminRequired):
-            await message.edit("<b>No rights</b>",
-            parse_mode=enums.ParseMode.HTML)
+            await message.edit("<b>No rights</b>", parse_mode=enums.ParseMode.HTML)
         else:
             await message.edit(
                 "<b>Read-only mode activated!\n"
-                f"Turn off with:</b><code>{prefix}unro</code>",
-                parse_mode=enums.ParseMode.HTML
+                f"Turn off with:</b><code>{prefix}unro</code>", parse_mode=enums.ParseMode.HTML
             )
     except Exception as e:
         await message.edit(format_exc(e), parse_mode=enums.ParseMode.HTML)
@@ -1302,8 +1290,7 @@ async def antiraid(client: Client, message: Message):
             db.set("core.ats", f"linked{message.chat.id}", 0)
         await message.edit(
             "<b>Anti-raid mode enabled!\n"
-            f"Disable with: </b><code>{prefix}antiraid off</code>",
-            parse_mode=enums.ParseMode.HTML
+            f"Disable with: </b><code>{prefix}antiraid off</code>", parse_mode=enums.ParseMode.HTML
         )
     elif len(message.command) > 1 and message.command[1] == "off":
         db.set("core.ats", f"antiraid{message.chat.id}", False)
@@ -1324,8 +1311,7 @@ async def antiraid(client: Client, message: Message):
                 db.set("core.ats", f"linked{message.chat.id}", 0)
             await message.edit(
                 "<b>Anti-raid mode enabled!\n"
-                f"Disable with: </b><code>{prefix}antiraid off</code>",
-                parse_mode=enums.ParseMode.HTML
+                f"Disable with: </b><code>{prefix}antiraid off</code>", parse_mode=enums.ParseMode.HTML
             )
 
     update_cache()
@@ -1342,8 +1328,7 @@ async def welcome(_, message: Message):
         db.set("core.ats", f"welcome_text{message.chat.id}", text)
 
         await message.edit(
-            f"<b>Welcome enabled in this chat\nText:</b> <code>{text}</code>",
-            parse_mode=enums.ParseMode.HTML
+            f"<b>Welcome enabled in this chat\nText:</b> <code>{text}</code>", parse_mode=enums.ParseMode.HTML
         )
     else:
         db.set("core.ats", f"welcome_enabled{message.chat.id}", False)
