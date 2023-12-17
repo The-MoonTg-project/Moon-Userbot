@@ -145,13 +145,11 @@ async def webshot(client: Client, message: Message):
     if len(message.command) > 1:
         url = message.text.split(maxsplit=1)[1]
         if not url.startswith("https://"):
-            await message.edit_text("Invalid URL. Please make sure the URL starts with 'https://'")
-            return
+            url = "https://" + message.text.split(maxsplit=1)[1]
     elif message.reply_to_message:
         url = message.reply_to_message.text
         if not url.startswith("https://"):
-            await message.edit_text("Invalid URL. Please make sure the URL starts with 'https://'")
-            return
+            url = "https://" + message.text.split(maxsplit=1)[1]
     else:
         await message.edit_text(f"<b>Usage: </b><code>{prefix}webshot/{prefix}ws [url/reply to url]</code>", parse_mode=enums.ParseMode.HTML)
         return
@@ -164,7 +162,7 @@ async def webshot(client: Client, message: Message):
             await message.delete()
             await client.send_photo(chat_id, screenshot_data, caption=f"Screenshot of {url}")
         else:
-            await message.reply_text("Failed to generate screenshot.")
+            await message.reply_text("<code>Failed to generate screenshot...\nMake sure url is correct</code>")
     except Exception as e:
         await message.reply_text(f"An error occurred: {format_exc(e)}")
 
