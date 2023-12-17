@@ -67,8 +67,8 @@ async def update(_, message: Message):
     await message.edit("<b>Updating...</b>", parse_mode=enums.ParseMode.HTML)
     try:
         subprocess.run([sys.executable, "-m", "pip", "install", "-U", "pip"])
-        subprocess.run(["git", "reset", "--hard"])
         subprocess.run(["git", "pull"])
+        subprocess.run(["git", "reset", "--hard"])
         subprocess.run(
             [
                 sys.executable,
