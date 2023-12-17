@@ -45,6 +45,11 @@ else
 fi
 
 echo
+echo "Enter APIFLASH_KEY for webshot plugin"
+echo "You can get it here -> https://apiflash.com/dashboard/access_keys"
+read -r -p "APIFLASH_KEY > " apiflash_key
+
+echo
 echo "Choose database type:"
 echo "[1] MongoDB db_url"
 echo "[2] MongoDB localhost"
@@ -91,6 +96,7 @@ DATABASE_TYPE=${db_type}
 DATABASE_NAME=${db_name}
 # only for mongodb
 DATABASE_URL=${db_url}
+APIFLASH_KEY=${apiflash_key}
 EOL
 
 chown -R $SUDO_USER:$SUDO_USER .

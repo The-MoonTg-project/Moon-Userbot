@@ -40,6 +40,11 @@ else
   read -r -p "API_HASH > " api_hash
 fi
 
+echo
+echo "Enter APIFLASH_KEY for webshot plugin"
+echo "You can get it here -> https://apiflash.com/dashboard/access_keys"
+read -r -p "APIFLASH_KEY > " apiflash_key
+
 echo "Choose database type:"
 echo "[1] MongoDB (your url)"
 echo "[2] Sqlite"
@@ -67,6 +72,8 @@ DATABASE_NAME=${db_name}
 
 # only for mongodb
 DATABASE_URL=${db_url}
+
+APIFLASH_KEY=${apiflash_key}
 EOL
 
 python3 install.py 3 || exit 3
@@ -74,5 +81,5 @@ python3 install.py 3 || exit 3
 echo
 echo "============================"
 echo "Great! Moon-Userbot installed successfully!"
-echo "Start with: \"python3 main.py\""
+echo "Start with: \"cd Moon-Userbot && python3 main.py\""
 echo "============================"

@@ -21,6 +21,22 @@ import requests
 from utils.misc import modules_help, prefix
 from utils.scripts import format_exc
 
+import io
+import requests
+
+from utils.config import apiflash_key
+
+
+
+def generate_screenshot(url):
+    api_url = f'https://api.apiflash.com/v1/urltoimage?access_key={apiflash_key}&url={url}&format=png'
+    response = requests.get(api_url)
+    if response.status_code == 200:
+        return io.BytesIO(response.content)
+    else:
+        return None
+
+
 http = urllib3.PoolManager()
 
 @Client.on_message(filters.command("short", prefix) & filters.me)
@@ -123,20 +139,39 @@ async def upload_cmd(_, message: Message):
     os.remove(file_name)
 
 
-@Client.on_message(filters.command("webshot", prefix) & filters.me)
-async def webshot(client: Client, message: Message):
-    try:
-        user_link = message.command[1]
-        await message.delete()
-        full_link = f"https://webshot.deam.io/{user_link}/?delay=2000"
-        await client.send_document(message.chat.id, full_link, caption=f"{user_link}", parse_mode=enums.ParseMode.HTML)
-    except Exception as e:
-        await message.edit(format_exc(e), parse_mode=enums.ParseMode.HTML)
 
+@Client.on_message(filters.command(["ws", "webshot"], prefix) & filters.me)
+async def webshot(client: Client, message: Message):
+    if len(message.command) > 1:
+        url = message.text.split(maxsplit=1)[1]
+        if not url.startswith("https://"):
+            await message.edit_text("Invalid URL. Please make sure the URL starts with 'https://'")
+            return
+    elif message.reply_to_message:
+        url = message.reply_to_message.text
+        if not url.startswith("https://"):
+            await message.edit_text("Invalid URL. Please make sure the URL starts with 'https://'")
+            return
+    else:
+        await message.edit_text(f"<b>Usage: </b><code>{prefix}webshot/{prefix}ws [url/reply to url]</code>", parse_mode=enums.ParseMode.HTML)
+        return
+
+    chat_id = message.chat.id
+
+    try:
+        screenshot_data = generate_screenshot(url)
+        if screenshot_data:
+            await message.delete()
+            await client.send_photo(chat_id, screenshot_data, caption=f"Screenshot of {url}")
+        else:
+            await message.reply_text("Failed to generate screenshot.")
+    except Exception as e:
+        await message.reply_text(f"An error occurred: {format_exc(e)}")
 
 modules_help["url"] = {
     "short [url]*": "short url",
     "urldl [url]*": "download url content",
     "upload [file|reply]*": "upload file to internet",
     "webshot [link]*": "Screenshot of web page",
+    "ws [reply to link]*": "Screenshot of web page",
 }
