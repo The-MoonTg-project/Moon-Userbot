@@ -82,7 +82,7 @@ def _check_rmbg(func):
     @wraps(func)
     async def check_rmbg(client: Client, message: Message):
         if not rmbg_key:
-            await edit_or_reply(message, "`Is Your RMBG Api rmbg_key Valid Or You Didn't Add It??`", parse_mode=enums.ParseMode.MARKDOWN)
+            await edit_or_reply(message, "`Is Your RMBG Api 'rmbg_key' Valid Or You Didn't Add It??`", parse_mode=enums.ParseMode.MARKDOWN)
         else:
             await func(client, message)
     return check_rmbg
@@ -153,7 +153,7 @@ async def rembg(client: Client, message: Message):
             await message.delete()
             await client.send_photo(chat_id, photo=background_removed_data, caption="Background removed!")
         else:
-            await message.reply_text("Failed to remove the background.")
+            await message.reply_text("`Is Your RMBG Api 'rmbg_key' Valid Or You Didn't Add It??`", parse_mode=enums.ParseMode.MARKDOWN)
     except Exception as e:
         await message.reply_text(f"An error occurred: {format_exc(e)}")
     finally:
