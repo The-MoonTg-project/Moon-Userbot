@@ -49,6 +49,19 @@ echo "Enter APIFLASH_KEY for webshot plugin"
 echo "You can get it here -> https://apiflash.com/dashboard/access_keys"
 read -r -p "APIFLASH_KEY > " apiflash_key
 
+if [[ $apiflash_key = "" ]]; then
+  echo "NOTE: API Not set you'll get errors with webshot & ws module"
+fi
+
+echo
+echo "Enter RMBG_KEY for remove background module"
+echo "You can get it here -> https://www.remove.bg/dashboard#api-key"
+read -r -p "RMBG_KEY > " rmbg_key
+
+if [[ $rmbg_key = "" ]]; then
+  echo "NOTE: API Not set you'll not be able to use remove background modules"
+fi
+
 echo
 echo "Choose database type:"
 echo "[1] MongoDB db_url"
@@ -97,6 +110,7 @@ DATABASE_NAME=${db_name}
 # only for mongodb
 DATABASE_URL=${db_url}
 APIFLASH_KEY=${apiflash_key}
+RMBG_KEY=${rmbg_key}
 EOL
 
 chown -R $SUDO_USER:$SUDO_USER .
