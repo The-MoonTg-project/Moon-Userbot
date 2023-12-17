@@ -46,13 +46,7 @@ echo "You can get it here -> https://apiflash.com/dashboard/access_keys"
 
 
 echo
-echo "Enter RMBG_KEY for remove background module"
-echo "You can get it here -> https://www.remove.bg/dashboard#api-key"
-read -r -p "RMBG_KEY > " rmbg_key
 
-if [[ $rmbg_key = "" ]]; then
-  echo "NOTE: API Not set you'll not be able to use remove background modules"
-fi
 
 echo "Choose database type:"
 echo "[1] MongoDB (your url)"
