@@ -63,6 +63,15 @@ if [[ $rmbg_key = "" ]]; then
 fi
 
 echo
+echo "Enter VT_KEY for VirusTotal"
+echo "You can get it here -> https://www.remove.bg/dashboard#api-key"
+read -r -p "VT_KEY > " vt_key
+
+if [[ $vt_key = "" ]]; then
+  echo "NOTE: API Not set you'll not be able to use VirusTotal module"
+fi
+
+echo
 echo "Choose database type:"
 echo "[1] MongoDB db_url"
 echo "[2] MongoDB localhost"
@@ -111,6 +120,7 @@ DATABASE_NAME=${db_name}
 DATABASE_URL=${db_url}
 APIFLASH_KEY=${apiflash_key}
 RMBG_KEY=${rmbg_key}
+VT_KEY=${vt_key}
 EOL
 
 chown -R $SUDO_USER:$SUDO_USER .
