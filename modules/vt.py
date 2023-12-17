@@ -27,8 +27,8 @@ async def scan_my_file(client, message):
             return await ms_.edit("`Please Reply To File To Scan For Viruses`", parse_mode=enums.ParseMode.MARKDOWN)
         if not vak:
             return await ms_.edit("`You Need To Set VIRUSTOTAL_API_KEY For Functing Of This Plugin.`", parse_mode=enums.ParseMode.MARKDOWN)
-        if int(message.reply_to_message.document.file_size) > 650000000:
-            return await ms_.edit("`File Too Large , Limit is 650 Mb`", parse_mode=enums.ParseMode.MARKDOWN)
+        if int(message.reply_to_message.document.file_size) > 250000000:
+            return await ms_.edit("`File Too Large , Limit is 25 Mb`", parse_mode=enums.ParseMode.MARKDOWN)
         c_time = time.time()
         downloaded_file_name = await message.reply_to_message.download(
             progress=progress,
