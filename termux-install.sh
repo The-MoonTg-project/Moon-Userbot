@@ -43,11 +43,7 @@ fi
 echo
 echo "Enter APIFLASH_KEY for webshot plugin"
 echo "You can get it here -> https://apiflash.com/dashboard/access_keys"
-read -r -p "APIFLASH_KEY > " apiflash_key
 
-if [[ $apiflash_key = "" ]]; then
-  echo "NOTE: API Not set you'll not be able to use .webshot plugin"
-fi
 
 echo
 echo "Enter RMBG_KEY for remove background module"
