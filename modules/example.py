@@ -14,7 +14,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from pyrogram import Client, enums, filters
+from pyrogram import Client, filters
 from pyrogram.types import Message
 
 from utils.misc import modules_help, prefix
@@ -32,11 +32,10 @@ from utils.misc import modules_help, prefix
 @Client.on_message(filters.command("example_edit", prefix) & filters.me)
 async def example_edit(client: Client, message: Message):
     try:
-        await message.edit("<code>This is an example module</code>", parse_mode=enums.ParseMode.HTML)
+        await message.edit("<code>This is an example module</code>")
     except Exception as e:
         await message.edit(
-            f"<code>[{e.error_code}: {enums.MessageType.TEXT}] - {e.error_details}</code>",
-            parse_mode=enums.ParseMode.HTML
+            f"<code>[{e.error_code}: {enums.MessageType.TEXT}] - {e.error_details}</code>"
         )
 
 
@@ -46,8 +45,7 @@ async def example_send(client: Client, message: Message):
         await client.send_message(message.chat.id, "<b>This is an example module</b>")
     except Exception as e:
         await message.edit(
-            f"<code>[{e.error_code}: {enums.MessageType.TEXT}] - {e.error_details}</code>",
-            parse_mode=enums.ParseMode.HTML
+            f"<code>[{e.error_code}: {enums.MessageType.TEXT}] - {e.error_details}</code>"
         )
 
 
