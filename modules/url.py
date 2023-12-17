@@ -21,7 +21,7 @@ import requests
 from utils.misc import modules_help, prefix
 from utils.scripts import format_exc
 
-import io
+from io import BytesIO
 import requests
 
 from utils.config import apiflash_key
@@ -32,7 +32,7 @@ def generate_screenshot(url):
     api_url = f'https://api.apiflash.com/v1/urltoimage?access_key={apiflash_key}&url={url}&format=png'
     response = requests.get(api_url)
     if response.status_code == 200:
-        return io.BytesIO(response.content)
+        return BytesIO(response.content)
     else:
         return None
 
