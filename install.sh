@@ -72,6 +72,15 @@ if [[ $vt_key = "" ]]; then
 fi
 
 echo
+echo "Enter GEMINI_KEY if you want to use AI"
+echo "You can get it here -> https://makersuite.google.com/app/apikey"
+read -r -p "GEMINI_KEY > " gemini_key
+
+if [[ $gemini_key = "" ]]; then
+  echo "NOTE: API Not set you'll not be able to use AI modules"
+fi
+
+echo
 echo "Choose database type:"
 echo "[1] MongoDB db_url"
 echo "[2] MongoDB localhost"
@@ -121,6 +130,7 @@ DATABASE_URL=${db_url}
 APIFLASH_KEY=${apiflash_key}
 RMBG_KEY=${rmbg_key}
 VT_KEY=${vt_key}
+GEMINI_KEY=${gemini_key}
 EOL
 
 chown -R $SUDO_USER:$SUDO_USER .
