@@ -59,6 +59,17 @@ if [[ $rmbg_key = "" ]]; then
 fi
 
 echo
+echo "Enter GEMINI_KEY if you want to use AI"
+echo "NOTE: Don't Use unless you've enough storage in your device"
+echo "MIN. REQ. STORAGE: 128GB"
+echo "You can get it here -> https://makersuite.google.com/app/apikey"
+read -r -p "GEMINI_KEY > " gemini_key
+
+if [[ $gemini_key = "" ]]; then
+  echo "NOTE: API Not set you'll not be able to use AI modules"
+fi
+
+echo
 echo "Enter VT_KEY for VirusTotal"
 echo "You can get it here -> https://www.remove.bg/dashboard#api-key"
 read -r -p "VT_KEY > " vt_key
@@ -98,6 +109,7 @@ DATABASE_URL=${db_url}
 APIFLASH_KEY=${apiflash_key}
 RMBG_KEY=${rmbg_key}
 VT_KEY=${vt_key}
+GEMINI_KEY=${gemini_key}
 EOL
 
 python3 install.py 3 || exit 3
