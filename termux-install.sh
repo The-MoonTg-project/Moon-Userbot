@@ -71,7 +71,7 @@ fi
 
 echo
 echo "Enter VT_KEY for VirusTotal"
-echo "You can get it here -> https://www.remove.bg/dashboard#api-key"
+echo "You can get it here -> https://www.virustotal.com/"
 read -r -p "VT_KEY > " vt_key
 
 if [[ $vt_key = "" ]]; then
