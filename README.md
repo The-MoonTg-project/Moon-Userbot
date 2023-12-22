@@ -14,7 +14,15 @@
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://makeapullrequest.com)
 </p>
 
-#### _A Simple, Fast, Customizable Userbot for Telegram made after Dragon-Userbot abandoned._
+#### _A Simple, Fast, Customizable, Ai powered Userbot for Telegram made after Dragon-Userbot abandoned._
+
+## Ai powers:
+- Gemini Pro Ai [ ✅ ]
+  - Ask/Chat with Ai
+  - Get details from image
+  - Cooking instructions
+- Upscaling [❌ Work in progress]
+- Text to Image [❌ Work in progress]
 
 
 <h1>Installation</h1>
