@@ -21,8 +21,7 @@
   - Ask/Chat with Ai
   - Get details from image
   - Cooking instructions
-- Upscaling [❌ Work in progress]
-- Text to Image [❌ Work in progress]
+
 
 
 <h1>Installation</h1>
