@@ -21,6 +21,7 @@
   - Ask/Chat with Ai
   - Get details from image
   - Cooking instructions
+- SDXL [ ✅ ]
 - Upscaling [❌ Work in progress]
 - Text to Image [❌ Work in progress]
 
