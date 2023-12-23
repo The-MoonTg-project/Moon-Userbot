@@ -63,7 +63,7 @@ async def vdxl(c: Client, message: Message):
         with open(f"generated_image_{i}.png", "wb") as f:
             f.write(response.content)
         await message.delete()
-        await c.send_photo(chat_id, photo=f"generated_image_{i}.png", caption=f"<b>Prompt:</b><code>{prompt}</code>\n<b>Model:</b><code>sdxl-turbo</code>")
+        await c.send_photo(chat_id, photo=f"generated_image_{i}.png", caption=f"<b>Prompt:</b><code>{prompt}</code>")
     except Exception as e:
         await message.edit_text(f"An error occurred: {format_exc(e)}")
     finally:
