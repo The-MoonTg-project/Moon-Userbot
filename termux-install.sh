@@ -78,6 +78,15 @@ if [[ $vt_key = "" ]]; then
   echo "NOTE: API Not set you'll not be able to use VirusTotal module"
 fi
 
+echo
+echo "Enter VCA_API_KEY for aiutils"
+echo "Learn How to Get One --> https://github.com/VisionCraft-org/VisionCraft?tab=readme-ov-file#obtaining-an-api-key"
+read -r -p "VCA_API_KEY > " vca_api_key
+
+if [[ $vca_api_key = "" ]]; then
+  echo "NOTE: API Not set you'll not be able to use aiutils module/pligins"
+fi
+
 echo "Choose database type:"
 echo "[1] MongoDB (your url)"
 echo "[2] Sqlite"
@@ -110,6 +119,7 @@ APIFLASH_KEY=${apiflash_key}
 RMBG_KEY=${rmbg_key}
 VT_KEY=${vt_key}
 GEMINI_KEY=${gemini_key}
+VCA_API_KEY=${vca_api_key}
 EOL
 
 python3 install.py 3 || exit 3
