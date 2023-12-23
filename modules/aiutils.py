@@ -34,7 +34,7 @@ async def vdxl(c: Client, message: Message):
          prompt = message.reply_to_message.text
         else:
          await message.edit_text(
-            f"<b>Usage: </b><code>{prefix}sdxl [prompt/reply to message]</code>"
+            f"<b>Usage: </b><code>{prefix}vdxl [prompt/reply to prompt]</code>"
         )
          return
 
@@ -90,6 +90,6 @@ async def upscale(client: Client, message: Message):
         os.remove('upscaled_image.png')
 
 modules_help["aiutils"] = {
-    "vdxl [prompt]*": "Text to Image with SDXL model",
+    "vdxl [prompt/reply to promot]*": "Text to Image with SDXL model",
     "upscale [cap/reply to image]*": "As the name says",
 }
