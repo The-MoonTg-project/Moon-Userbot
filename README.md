@@ -22,8 +22,8 @@
   - Get details from image
   - Cooking instructions
 - SDXL [ ✅ ]
-- Upscaling [❌ Work in progress]
-- Text to Image [❌ Work in progress]
+- Upscaling [✅]
+- Text to Image [✅]
 
 
 <h1>Installation</h1>
