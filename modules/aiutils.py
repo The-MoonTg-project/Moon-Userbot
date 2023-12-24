@@ -49,25 +49,33 @@ async def vdxl(c: Client, message: Message):
         "enhance": False
         }
 
-# Send the request to generate images
+        # Send the request to generate images
         response = requests.post(f"{api_url}/generate-xl", json=data, verify=False)
 
-# Extract the image URLs from the response
-        image_urls = response.json()["images"]
+        # Extract the image URLs from the response
+        if "images" in response.json():
+            image_urls = response.json()["images"]
+        else:
+            await message.edit_text("No images found in the response... Possibly Server is Down")
+            return
 
-# Download and save the generated images
+        # Download and save the generated images
         for i, image_url in enumerate(image_urls):
-    # Get the image data from the URL
+            # Get the image data from the URL
             response = requests.get(image_url)
-    # Save the image locally
-        with open(f"generated_image_{i}.png", "wb") as f:
-            f.write(response.content)
+            # Save the image locally
+            with open(f"generated_image_{i}.png", "wb") as f:
+                f.write(response.content)
+
         await message.delete()
-        await c.send_photo(chat_id, photo=f"generated_image_{i}.png", caption=f"<b>Prompt:</b><code>{prompt}</code>")
+        for i, image_url in enumerate(image_urls):
+            await c.send_photo(chat_id, photo=f"generated_image_{i}.png", caption=f"<b>Prompt:</b><code>{prompt}</code>")
+
     except Exception as e:
         await message.edit_text(f"An error occurred: {format_exc(e)}")
     finally:
-        os.remove(f"generated_image_{i}.png")
+        for i, image_url in enumerate(image_urls):
+            os.remove(f"generated_image_{i}.png")
 
 
 @Client.on_message(filters.command("upscale", prefix) & filters.me)
