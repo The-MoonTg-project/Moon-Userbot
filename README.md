@@ -21,7 +21,7 @@
   - Ask/Chat with Ai
   - Get details from image
   - Cooking instructions
-  - Ai Marketer 
+
 - SDXL [ ✅ ]
 - Upscaling [✅]
 - Text to Image [✅]
