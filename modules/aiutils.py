@@ -8,7 +8,7 @@ from utils.misc import modules_help, prefix
 from utils.scripts import format_exc, edit_or_reply
 
 # Define the API endpoint
-api_url = "https://visioncraftapi--vladalek05.repl.co"
+api_url = "https://visioncraft-aiapi.koyeb.app/"
 
 def upscale_request(image):
     b = base64.b64encode(image).decode('utf-8')
