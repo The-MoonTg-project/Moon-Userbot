@@ -16,7 +16,7 @@ def upscale_request(image):
         "token": vca_api_key,
         "image": b
     }
-    url = 'https://visioncraftapi.vladalek05.repl.co/beta/upscale'
+    url = 'https://visioncraft-aiapi.koyeb.app/beta/upscale'
     headers = {"content-type": "application/json"}
 
     resp = requests.post(url, json=payload, headers=headers)
