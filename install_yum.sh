@@ -11,7 +11,8 @@ fi
 
 yum check-update
 yum upgrade
-yum install python3 python3-pip git ffmpeg wget gnupg -y || exit 2
+yum localinstall --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfusion-free-release-7.noarch.rpm https://download1.rpmfusion.org/nonfree/el/rpmfusion-nonfree-release-7.noarch.rpm
+yum install python3 python3-pip git ffmpeg ffmpeg-devel wget gnupg -y || exit 2
 
 su -c "python3 -m pip install -U pip" $SUDO_USER
 su -c "python3 -m pip install -U wheel pillow" $SUDO_USER
@@ -30,7 +31,7 @@ if [[ -f ".env" ]] && [[ -f "my_account.session" ]]; then
   exit
 fi
 
-su -c "python3 -m pip install -U -r requirements.txt" $SUDO_USER || exit 2
+su -c "python3 -m pip install -U -r requirements_yum.txt" $SUDO_USER || exit 2
 
 echo
 echo "Enter API_ID and API_HASH"
