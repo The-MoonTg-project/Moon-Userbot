@@ -1,0 +1,15 @@
+pyrofork
+tgcrypto
+wheel
+pygments
+ffmpeg-python
+pymongo
+Pillow>=9.0.0
+pytube
+click
+pymongo[srv]
+dnspython
+requests
+environs
+GitPython
+beautifulsoup4
