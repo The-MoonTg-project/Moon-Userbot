@@ -41,7 +41,7 @@ async def vdxl(c: Client, message: Message):
         data = {
     "model": "sdxl-turbo",
     "prompt": prompt,
-    "negative_prompt": "bad quality, bad legs, bad ears, bad nose, blur, nsfw",
+    "negative_prompt": "",
     "image_count": 1,
     "token": vca_api_key,
     "width": 1024,
