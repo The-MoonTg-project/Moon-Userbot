@@ -8,7 +8,7 @@ from utils.misc import modules_help, prefix
 from utils.scripts import format_exc, edit_or_reply
 
 # Define the API endpoint
-api_url = "https://visioncraft-aiapi.koyeb.app/"
+api_url = "https://visioncraft-aiapi.koyeb.app"
 
 def upscale_request(image):
     b = base64.b64encode(image).decode('utf-8')
@@ -39,25 +39,26 @@ async def vdxl(c: Client, message: Message):
          return
 
         data = {
-        "model": "sdxl-turbo",
-        "prompt": prompt,
-        "negative_prompt": "",
-        "image_count": 1,
-        "token": vca_api_key,
-        "width": 1024,
-        "height": 1024,
-        "enhance": False
-        }
-
+    "model": "sdxl-turbo",
+    "prompt": prompt,
+    "negative_prompt": "bad quality",
+    "image_count": 1,
+    "token": vca_api_key,
+    "width": 1024,
+    "height": 768,
+    "enhance": False
+}
         # Send the request to generate images
         response = requests.post(f"{api_url}/generate-xl", json=data, verify=False)
 
+        image_urls = response.json()["images"]
+
         # Extract the image URLs from the response
-        if "images" in response.json():
-            image_urls = response.json()["images"]
-        else:
-            await message.edit_text("No images found in the response... Possibly Server is Down")
-            return
+        #if "images" in response.json():
+         #   image_urls = response.json()["images"]
+        #else:
+         #   await message.edit_text("No images found in the response... Possibly Server is Down")
+          #  return
 
         # Download and save the generated images
         for i, image_url in enumerate(image_urls):
@@ -67,8 +68,8 @@ async def vdxl(c: Client, message: Message):
             with open(f"generated_image_{i}.png", "wb") as f:
                 f.write(response.content)
 
-        await message.delete()
-        for i, image_url in enumerate(image_urls):
+            await message.delete()
+        #for i, image_url in enumerate(image_urls):
             await c.send_photo(chat_id, photo=f"generated_image_{i}.png", caption=f"<b>Prompt:</b><code>{prompt}</code>")
 
     except Exception as e:
