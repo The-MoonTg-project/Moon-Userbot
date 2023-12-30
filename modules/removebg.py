@@ -123,7 +123,7 @@ async def rmbg(client: Client, message: Message):
         end = datetime.now()
         ms = (end - start).seconds
         await pablo.edit(
-            "<code>Removed image's Background in {} seconds, powered by</code><b>@moonuserbot</b>".format(ms)
+            "<code>Removed image's Background in {} seconds, powered by</code> <b>@moonuserbot</b>".format(ms)
         )
     else:
         await pablo.edit(
