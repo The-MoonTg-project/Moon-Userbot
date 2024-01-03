@@ -77,7 +77,7 @@ async def scan_my_large_file(client, message):
     rponse = requests.get(url1, headers=headers)
     try:
       # result = rponse.text
-      #  print(result)
+      
        r_json = rponse.json()
        upl_data = r_json["data"]
 
