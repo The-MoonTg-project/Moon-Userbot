@@ -87,9 +87,15 @@ async def scan_my_large_file(client, message):
     # print(rponse.text)
 
     url = upl_data
-    params = {"apikey": vak}
+
     files = {"file": (downloaded_file_name, open(downloaded_file_name, "rb"))}
-    response = requests.post(url, files=files, params=params)
+    headers = {
+        "accept": "application/json",
+        "x-apikey": vak
+    }
+    response = requests.post(url, files=files, headers=headers)
+    print(response.text)
+    
     try:
       #  result = response.text
       #  print(result)
