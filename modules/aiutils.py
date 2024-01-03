@@ -99,6 +99,6 @@ async def upscale(client: Client, message: Message):
         os.remove('upscaled_image.png')
 
 modules_help["aiutils"] = {
-    "vdxl [prompt/reply to promot]*": "Text to Image with SDXL model",
+    "vdxl [prompt/reply to prompt]*": "Text to Image with SDXL model",
     "upscale [cap/reply to image]*": "As the name says",
 }
