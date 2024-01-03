@@ -112,7 +112,7 @@ async def scan_my_large_file(client, message):
 
     try:
       #  result = response.text
-      #  print(result)
+
        r_json = response_result.json()
        md5 = r_json["meta"]["file_info"]["md5"]
       #  print(md5)
