@@ -41,7 +41,7 @@ async def scan_my_file(client, message):
     response = requests.post(url, files=files, params=params)
     try:
       #  result = response.text
-      #  print(result)
+
        r_json = response.json()
        md5 = r_json["md5"]
 
