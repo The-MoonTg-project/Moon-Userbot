@@ -95,14 +95,14 @@ async def scan_my_large_file(client, message):
     }
     response = requests.post(url, files=files, headers=headers)
     print(response.text)
-    
+
     try:
       #  result = response.text
       #  print(result)
        r_json = response.json()
-       md5 = r_json["md5"]
+       id = r_json["data"]["id"]
       #  print(md5)
     except Exception as e:
       return await ms_.edit(format_exc(e))
-    await ms_.edit(f"<b><u>Scanned {message.reply_to_message.document.file_name}</b></u>. <b>You Can Visit :</b> <a href=\"https://www.virustotal.com/gui/file/{md5}\">Here</a> <b>In 5-10 Min To See File Report</b>")
+    await ms_.edit(f"<b><u>Scanned {message.reply_to_message.document.file_name}</b></u>. <b>You Can Visit :</b> <a href=\"https://www.virustotal.com/gui/file/{id}\">Here</a> <b>In 5-10 Min To See File Report</b>")
     os.remove(downloaded_file_name)
