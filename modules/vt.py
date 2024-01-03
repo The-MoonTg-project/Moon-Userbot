@@ -80,7 +80,7 @@ async def scan_my_large_file(client, message):
       #  print(result)
        r_json = rponse.json()
        upl_data = r_json["data"]
-       print(upl_data)
+      #  print(upl_data)
     except Exception as e:
       return await ms_.edit(format_exc(e))
 
@@ -94,7 +94,7 @@ async def scan_my_large_file(client, message):
         "x-apikey": vak
     }
     response = requests.post(url, files=files, headers=headers)
-    print(response.text)
+    # print(response.text)
 
     r_json = response.json()
     analysis_url = r_json["data"]["links"]["self"]
@@ -108,7 +108,7 @@ async def scan_my_large_file(client, message):
 
     response_result = requests.get(url, headers=headers)
 
-    print(response_result.text)
+    # print(response_result.text)
 
     try:
       #  result = response.text
@@ -120,3 +120,8 @@ async def scan_my_large_file(client, message):
       return await ms_.edit(format_exc(e))
     await ms_.edit(f"<b><u>Scanned {message.reply_to_message.document.file_name}</b></u>. <b>You Can Visit :</b> <a href=\"https://www.virustotal.com/gui/file/{md5}\">Here</a> <b>In 5-10 Min To See File Report</b>")
     os.remove(downloaded_file_name)
+
+modules_help["virustotal"] = {
+    "vt [reply to file]*": "Scan for viruses on Virus Total (for lower file size <32MB)",
+    "vtl [reply to file]*": "Scan for viruses on Virus Total (for lower file size >=32MB)",
+}
