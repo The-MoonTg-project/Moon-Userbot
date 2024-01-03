@@ -115,7 +115,7 @@ async def scan_my_large_file(client, message):
 
        r_json = response_result.json()
        md5 = r_json["meta"]["file_info"]["md5"]
-      #  print(md5)
+      
     except Exception as e:
       return await ms_.edit(format_exc(e))
     await ms_.edit(f"<b><u>Scanned {message.reply_to_message.document.file_name}</b></u>. <b>You Can Visit :</b> <a href=\"https://www.virustotal.com/gui/file/{md5}\">Here</a> <b>In 5-10 Min To See File Report</b>")
