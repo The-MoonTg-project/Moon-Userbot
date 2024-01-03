@@ -43,5 +43,5 @@ async def scan_my_file(client, message):
        scanned_url = r_json["permalink"]
     except:
       return await ms_.edit(f"`[{response.status_code}] - Unable To Scan File.`")
-    await ms_.edit(f"<b><u>Scanned {message.reply_to_message.document.file_name}</b></u>. <b>You Can Visit :</b><a href=\"{scanned_url}\">Here</a>\n<b>In 5-10 Min To See File Report</b>")
+    await ms_.edit(f"<b><u>Scanned {message.reply_to_message.document.file_name}</b></u>. <b>You Can Visit :</b> <a href=\"{scanned_url}\">Here</a> <b>In 5-10 Min To See File Report</b>")
     os.remove(downloaded_file_name)
