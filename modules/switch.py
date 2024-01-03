@@ -47,5 +47,5 @@ async def switch(client: Client, message: Message):
 
 
 modules_help["switch"] = {
-    "sw [reply/text for switch]*": "Useful when tou forgot to change the keyboard layout",
+    "sw [reply/text for switch]*": "Useful when you forgot to change the keyboard layout",
 }
