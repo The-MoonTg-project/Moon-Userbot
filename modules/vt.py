@@ -80,7 +80,7 @@ async def scan_my_large_file(client, message):
       #  print(result)
        r_json = rponse.json()
        upl_data = r_json["data"]
-      #  print(upl_data)
+
     except Exception as e:
       return await ms_.edit(format_exc(e))
 
