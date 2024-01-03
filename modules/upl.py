@@ -65,6 +65,6 @@ async def urldl(client: Client, message: Message):
        os.remove(link)
 
 modules_help["uplud"] = {
-   "upl": f"[filepath]/[reply to path]*"
+   "upl": f"[filepath]/[reply to path]*",
    "uplr": f"[filepath]/[reply to path]* remove file after upload"
 }
