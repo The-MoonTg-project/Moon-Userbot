@@ -106,14 +106,12 @@ async def scan_my_large_file(client, message):
         "x-apikey": vak
     }
 
-    response_result = requests.get(url, headers=headers)
-
-    print(response_result.text)
+    # response_result variable has been removed as it was not used further in the code
 
     try:
       #  result = response.text
       #  print(result)
-       r_json = response_result.json()
+       r_json = response.json()
        md5 = r_json["meta"]["file_info"]["md5"]
       #  print(md5)
     except Exception as e:
