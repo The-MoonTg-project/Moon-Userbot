@@ -111,7 +111,7 @@ async def rmbg(client: Client, message: Message):
         allow_redirects=True,
         stream=True,
     )
-    os.remove(cool)
+    
     output_file_name = r
     contentType = output_file_name.headers.get("content-type")
     if "image" in contentType:
