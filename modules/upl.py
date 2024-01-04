@@ -7,7 +7,7 @@ from utils.scripts import format_exc
 
 
 @Client.on_message(filters.command("upl", prefix) & filters.me)
-async def urldl(client: Client, message: Message):
+async def upl(client: Client, message: Message):
    if len(message.command) > 1:
         link = message.text.split(maxsplit=1)[1]
    elif message.reply_to_message:
@@ -35,7 +35,7 @@ async def urldl(client: Client, message: Message):
        await message.edit(format_exc(e), parse_mode=enums.ParseMode.HTML)
 
 @Client.on_message(filters.command("uplr", prefix) & filters.me)
-async def urldl(client: Client, message: Message):
+async def uplr(client: Client, message: Message):
    if len(message.command) > 1:
         link = message.text.split(maxsplit=1)[1]
    elif message.reply_to_message:
