@@ -20,6 +20,7 @@ from pyrogram.types import Message
 
 from utils.db import db
 from utils.misc import modules_help, prefix
+from utils.config import pm_limit
 
 anti_pm_enabled = filters.create(
     lambda _, __, ___: db.get("core.antipm", "status", False)
@@ -32,6 +33,8 @@ in_contact_list = filters.create(
 is_support = filters.create(lambda _, __, message: message.chat.is_support)
 
 
+message_counts = {}
+
 @Client.on_message(
     filters.private
     & ~filters.me
@@ -41,14 +44,48 @@ is_support = filters.create(lambda _, __, message: message.chat.is_support)
     & anti_pm_enabled
 )
 async def anti_pm_handler(client: Client, message: Message):
+    m_n = 0
+    warns = db.get("core.antipm", "warns")
+    user_id = message.from_user.id
+    id = message.chat.id
+    b_f = await client.get_me()
+    u_n = b_f.username
+    user = await client.get_users(id)
+    u_f = user.first_name
     user_info = await client.resolve_peer(message.chat.id)
+    default_text = f"""<b>Hello, {u_f}!
+This is the Assistant Of {u_n}.</b>
+<i>My Boss is away or busy as of now, You can wait for him to respond.
+Do not spam further messages else I may have to block you!</i>
+
+<b>This is an automated message by the assistant.</b>
+<b><u>Currently You Have <code>{warns}</code> Warnings.</u></b>
+"""
     if db.get("core.antipm", "spamrep", False):
         await client.invoke(functions.messages.ReportSpam(peer=user_info))
     if db.get("core.antipm", "block", False):
         await client.invoke(functions.contacts.Block(id=user_info))
-    await client.invoke(
-        functions.messages.DeleteHistory(peer=user_info, max_id=0, revoke=True)
-    )
+    await client.send_message(message.chat.id, f"{default_text}")
+   
+    if user_id in message_counts:
+        message_counts[user_id] += 1
+        m_n = db.get("core.antipm", "warns")
+        m_n_n = m_n + 1
+        db.set("core.antipm", "warns", m_n_n)
+    else:
+        message_counts[user_id] = 1
+        m_n_n = 1
+        db.set("core.antipm", "warns", m_n_n)
+
+    if message_counts[user_id] > pm_limit:
+        await client.send_message(message.chat.id, f"<b>Ehm...! That was your Last warn, Bye Bye see you L0L</b>")
+        await client.invoke(functions.contacts.Block(id=user_info))
+        del message_counts[user_id]
+        db.set("core.antipm", "warns", 0)
+    # await client.delete_messages(message.chat.id, message.id)
+    # await client.invoke(
+    #     functions.messages.DeleteHistory(peer=user_info, max_id=0, revoke=True)
+    # )
 
 
 @Client.on_message(filters.command(["antipm", "anti_pm"], prefix) & filters.me)
@@ -124,8 +161,29 @@ async def antipm_block(_, message: Message):
         )
 
 
+@Client.on_message(filters.command(["a"], prefix) & filters.me)
+async def add_contact(client: Client, message: Message):
+   # Extract the phone number from the message text
+   id = message.chat.id
+
+   user = await client.get_users(id)
+   # Add the contact
+   await client.add_contact(id, user.first_name)
+   await message.edit("User Approved!")
+
+@Client.on_message(filters.command(["d"], prefix) & filters.me)
+async def del_contact(client: Client, message: Message):
+   # Extract the phone number from the message text
+   id = message.chat.id
+
+   # Add the contact
+   await client.delete_contacts(id)
+   await message.edit("User DisApproved!")
+
 modules_help["antipm"] = {
-    "antipm [enable|disable]*": "When enabled, deletes all messages from users who are not in the contact book",
+    "antipm [enable|disable]*": "Enable Pm permit",
     "antipm_report [enable|disable]*": "Enable spam reporting",
     "antipm_block [enable|disable]*": "Enable user blocking",
+    "a": "Approve User",
+    "d": "DisApprove User"
 }

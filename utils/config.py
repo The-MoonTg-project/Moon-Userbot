@@ -16,5 +16,7 @@ vt_key = env.str("VT_KEY")
 gemini_key = env.str("GEMINI_KEY")
 vca_api_key = env.str("VCA_API_KEY")
 
+pm_limit = env.int("PM_LIMIT")
+
 test_server = env.bool("TEST_SERVER", False)
 modules_repo_branch = env.str("MODULES_REPO_BRANCH", "master")

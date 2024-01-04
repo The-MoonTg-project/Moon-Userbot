@@ -41,6 +41,15 @@ else
 fi
 
 echo
+echo "SET PM PERMIT warn limit"
+read -r -p "PM_LIMIT warn limit > " pm_limit
+
+if [[ $pm_limit = "" ]]; then
+  pm_limit="3"
+  echo "limit not provided by user set to default"
+fi
+
+echo
 echo "Enter APIFLASH_KEY for webshot plugin"
 echo "You can get it here -> https://apiflash.com/dashboard/access_keys"
 read -r -p "APIFLASH_KEY > " apiflash_key
@@ -120,6 +129,7 @@ RMBG_KEY=${rmbg_key}
 VT_KEY=${vt_key}
 GEMINI_KEY=${gemini_key}
 VCA_API_KEY=${vca_api_key}
+PM_LIMIT=${pm_limit}
 EOL
 
 python3 install.py 3 || exit 3
