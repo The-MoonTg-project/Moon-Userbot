@@ -126,6 +126,7 @@ async def rmbg(client: Client, message: Message):
         await pablo.edit(
             "<code>Removed image's Background in {} seconds, powered by </code> <b>@moonuserbot</b>".format(ms)
         )
+        os.remove("BG_rem.png")
     else:
         await pablo.edit(
             "ReMove.BG API returned Errors. Please report to @moonub_chat\n`{}".format(
