@@ -95,7 +95,7 @@ async def upscale(client: Client, message: Message):
         with open('upscaled_image.png', 'wb') as f:
             f.write(upscaled_image)
         await message.delete()
-        await client.send_document(message.chat.id, 'upscaled_image.png', caption="Upscaled!")
+        await client.send_document(message.chat.id, 'upscaled_image.png', caption="Upscaled!", reply_to_message_id=message.id)
         os.remove('upscaled_image.png')
 
 modules_help["aiutils"] = {

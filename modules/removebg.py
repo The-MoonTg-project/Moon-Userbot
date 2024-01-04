@@ -119,11 +119,12 @@ async def rmbg(client: Client, message: Message):
             remove_bg_image.name = "BG_rem.png"
             await client.send_document(
                 message.chat.id,
-                remove_bg_image)
+                remove_bg_image,
+                reply_to_message_id=message.id)
         end = datetime.now()
         ms = (end - start).seconds
         await pablo.edit(
-            "<code>Removed image's Background in {} seconds, powered by</code> <b>@moonuserbot</b>".format(ms)
+            "<code>Removed image's Background in {} seconds, powered by </code> <b>@moonuserbot</b>".format(ms)
         )
     else:
         await pablo.edit(
