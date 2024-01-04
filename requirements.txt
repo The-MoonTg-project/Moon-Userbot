@@ -1,6 +1,7 @@
 pyrofork
 tgcrypto
 wheel
+flask
 humanize
 pygments
 ffmpeg-python
