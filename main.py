@@ -35,20 +35,35 @@ script_path = os.path.dirname(os.path.realpath(__file__))
 if script_path != os.getcwd():
     os.chdir(script_path)
 
-app = Client(
-    "my_account",
-    api_id=config.api_id,
-    api_hash=config.api_hash,
-    hide_password=True,
-    workdir=script_path,
-    app_version=userbot_version,
-    device_model=f"Moon-Userbot @ {gitrepo.head.commit.hexsha[:7]}",
-    system_version=platform.version() + " " + platform.machine(),
-    sleep_threshold=30,
-    test_mode=config.test_server,
-    parse_mode=ParseMode.HTML,
-)
-
+if not config.STRINGSESSION:
+    app = Client(
+        "my_account",
+        api_id=config.api_id,
+        api_hash=config.api_hash,
+        hide_password=True,
+        workdir=script_path,
+        app_version=userbot_version,
+        device_model=f"Moon-Userbot @ {gitrepo.head.commit.hexsha[:7]}",
+        system_version=platform.version() + " " + platform.machine(),
+        sleep_threshold=30,
+        test_mode=config.test_server,
+        parse_mode=ParseMode.HTML,
+    )
+elif config.STRINGSESSION:
+    app = Client(
+        "my_account",
+        api_id=config.api_id,
+        api_hash=config.api_hash,
+        session_string=config.STRINGSESSION,
+        hide_password=True,
+        workdir=script_path,
+        app_version=userbot_version,
+        device_model=f"Moon-Userbot @ {gitrepo.head.commit.hexsha[:7]}",
+        system_version=platform.version() + " " + platform.machine(),
+        sleep_threshold=30,
+        test_mode=config.test_server,
+        parse_mode=ParseMode.HTML,
+    )
 
 async def main():
     logging.basicConfig(level=logging.INFO)

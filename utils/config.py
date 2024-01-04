@@ -10,6 +10,8 @@ except FileNotFoundError:
 api_id = int(os.getenv("API_ID", env.int("API_ID")))
 api_hash = os.getenv("API_HASH", env.str("API_HASH"))
 
+STRINGSESSION = os.getenv("STRINGSESSION", env.str("STRINGSESSION"))
+
 db_type = os.getenv("DATABASE_TYPE", env.str("DATABASE_TYPE"))
 db_url = os.getenv("DATABASE_URL", env.str("DATABASE_URL", ""))
 db_name = os.getenv("DATABASE_NAME", env.str("DATABASE_NAME"))

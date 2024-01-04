@@ -139,6 +139,7 @@ esac
 cat > .env << EOL
 API_ID=${api_id}
 API_HASH=${api_hash}
+STRINGSESSION=
 # sqlite/sqlite3 or mongo/mongodb
 DATABASE_TYPE=${db_type}
 # file name for sqlite3, database name for mongodb
