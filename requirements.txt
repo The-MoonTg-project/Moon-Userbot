@@ -1,6 +1,7 @@
 pyrofork
 tgcrypto
 wheel
+humanize
 pygments
 ffmpeg-python
 pymongo
