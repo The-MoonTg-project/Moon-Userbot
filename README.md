@@ -1,4 +1,4 @@
-# Moon-Userbot
+# 🌕 Moon-Userbot
 <p align="center">
  <kbd><img src="https://telegra.ph/file/0c37c2fb0f194cc1c0344.jpg" width="400" alt="Moon-Userbot"/></kbd>
 
@@ -16,7 +16,7 @@
 
 #### _A Simple, Fast, Customizable, Ai powered Userbot for Telegram made after Dragon-Userbot abandoned._
 
-## Ai powers:
+## 🤖 Ai powers:
 - Gemini Pro Ai [ ✅ ]
   - Ask/Chat with Ai
   - Get details from image
@@ -27,15 +27,15 @@
 - Text to Image [✅]
 
 
-<h1>Installation</h1>
+<h1>🚀 Installation</h1>
 
-<h3>Necessary Vars</h3>
+<h3>🏕️ Necessary Vars</h3>
  
  - `API_ID` - Get it from [my.telegram.org](my.telegram.org)
  
  - `API_HASH` - Get it from [my.telegram.org](my.telegram.org)
 
-<h3>Optional Vars</h3>
+<h3>⛺ Optional Vars</h3>
  
  - `STRINGSESSION` - only If you want to use on cloud hosts use [string_gen.py](https://github.com/The-MoonTg-project/Moon-Userbot/blob/main/string_gen.py) to generate
  
@@ -49,6 +49,10 @@
  
  - `VCA_API_KEY` - ONLY, If you want to use ai tools like sdxl,upscale plugin You can get it from [here](https://github.com/VisionCraft-org/VisionCraft?tab=readme-ov-file#obtaining-an-api-key)
 
+<h2>☁️ Cloud Host</h2>
+<a href="https://app.koyeb.com/deploy?type=git&repository=github.com/The-MoonTg-project/Moon-Userbot&branch=main&name=gemini"><img src="https://www.koyeb.com/static/images/deploy/button.svg">
+
+<h2>🖥️ Local Host</h2>
 <h2>Linux, Windows [only wsl]</h2> 
 
 **Update the packages**
@@ -67,7 +71,7 @@
 ```
  cd Moon-Userbot/ && sudo bash install.sh
 ```
-<h2> Termux (use <a href='https://github.com/termux/termux-app/releases'>GitHUb</a> version)</h2>
+<h2>📱 Termux (use <a href='https://github.com/termux/termux-app/releases'>GitHUb</a> version)</h2>
 
 > **Full Installation instruction <a href='https://telegra.ph/Moon-Userbot-Installation---Termux-02-09'>Given here</a>**
 
@@ -75,12 +79,12 @@
 
 **Recommended: `sqlite`**
 
-### Contributions 
+### 🐩 Contributions 
 _Contributions of any type are welcome like custom_modules etc. Feel free to do pull-request's with your changes_
 
 **Working on your first Pull Request?** You can learn how from this *free* series [How to Contribute to an Open Source Project on GitHub](https://kcd.im/pull-request) 
 
-<h2>Support</h2> 
+<h2>👨🏻‍💻 Support</h2> 
  <li><a href='https://t.me/moonuserbot'>Channel</a> with latest news on the official telegram [en]</li> 
   
  <li><a href='https://t.me/moonub_modules'>Modules Channel</a> with custom modules [en] </li> 
@@ -88,14 +92,14 @@ _Contributions of any type are welcome like custom_modules etc. Feel free to do 
  <li><a href='https://t.me/moonub_chat'>Discussion</a> in the official telegram chat [en]</li> 
  
 
-<h2>Credits</h2> 
+<h2>👨🏻‍💼 Credits</h2> 
  <nav> 
  <li><a href='https://github.com/Dragon-Userbot/Dragon-Userbot'>Dragon-Userbot</a></li> 
  
  <li><a href='https://github.com/AbhiTheModder'>AbhiTheModder</a></li>
  </nav> 
  
- <h4>Written on <a href='https://github.com/pyrogram/pyrogram'>Pyrogram❤️</a> and <a href='https://github.com/MarshalX/tgcalls/tree/main/pytgcalls'>pytgcalls❤️</a></h4>
+ <h4>Written on <a href='https://github.com/Mayuri-Chan/pyrofork'>Pyrogram[Pyrofork]❤️</a> and <a href='https://github.com/MarshalX/tgcalls/tree/main/pytgcalls'>pytgcalls❤️</a></h4>
  
  
 
