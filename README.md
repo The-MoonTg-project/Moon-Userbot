@@ -29,6 +29,18 @@
 
 <h1>Installation</h1>
 
+<h3>Necessary Vars</h3>
+- `API_ID` - Get it from my.telegram.org
+- `API_HASH` - Get it from my.telegram.org
+
+<h3>Optional Vars</h3>
+- `STRINGSESSION` - only If you want to use on cloud hosts use [string_gen.py](https://github.com/The-MoonTg-project/Moon-Userbot/blob/main/string_gen.py) to generate
+- `APIFLASH_KEY` - ONLY,  If you want to use web screnshot plugin You can get it from [here](https://apiflash.com/dashboard/access_keys)
+- `RMBG_KEY` - ONLY, If you want to use removbg plugin You can get it from [here](https://www.remove.bg/dashboard#api-key)
+- `VT_KEY` - ONLY, If you want to use VirusTotal plugin You can get it from [here](https://www.virustotal.com/gui/)
+- `GEMINI_KEY` - ONLY, If you want to use gemini ai plugin You can get it from [here](https://makersuite.google.com/app/apikey)
+- `VCA_API_KEY` - ONLY, If you want to use ai tools like sdxl,upscale plugin You can get it from [here](https://github.com/VisionCraft-org/VisionCraft?tab=readme-ov-file#obtaining-an-api-key)
+
 <h2>Linux, Windows [only wsl]</h2> 
 
 **Update the packages**
