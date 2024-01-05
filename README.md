@@ -37,8 +37,8 @@
 
  - `PM_LIMIT` - set your pm permit warn limit
  - `DATABASE_URL` - ONLY for MongoDB, your mongodb url
- - `DATABASE_NAME` - set to `db.sqlite3`
- - `DATABASE_TYPE` - set to `sqlite3`
+ - `DATABASE_NAME` - set to `db.sqlite3` if want to use sqlite3 db else leave blank
+ - `DATABASE_TYPE` - set to `sqlite3` if want to use sqlite3 db else leave blank
 
 <h3>⛺ Optional Vars</h3>
  
