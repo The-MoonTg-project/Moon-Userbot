@@ -48,5 +48,8 @@ except git.exc.InvalidGitRepositoryError:
     repo.heads.master.checkout(True)
     gitrepo = git.Repo(".")
 
-commits_since_tag = list(gitrepo.iter_commits(f"{gitrepo.tags[-1].name}..HEAD"))
+if len(gitrepo.tags) > 0:
+   commits_since_tag = list(gitrepo.iter_commits(f"{gitrepo.tags[-1].name}..HEAD"))
+else:
+   commits_since_tag = []
 userbot_version = f"2.0.{len(commits_since_tag)}"
