@@ -36,6 +36,9 @@
  - `API_HASH` - Get it from [my.telegram.org](my.telegram.org)
 
  - `PM_LIMIT` - set your pm permit warn limit
+ - `DATABASE_URL` - ONLY for MongoDB, your mongodb url
+ - `DATABASE_NAME` - set to `db.sqlite3`
+ - `DATABASE_TYPE` - set to `sqlite3`
 
 <h3>⛺ Optional Vars</h3>
  
