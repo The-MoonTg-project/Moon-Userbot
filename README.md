@@ -35,7 +35,7 @@
  
  - `API_HASH` - Get it from [my.telegram.org](my.telegram.org)
 
- - `PM_LIMIT` - set your pm permit warn limit
+
 
 <h3>⛺ Optional Vars</h3>
  
