@@ -35,6 +35,8 @@
  
  - `API_HASH` - Get it from [my.telegram.org](my.telegram.org)
 
+ - `PM_LIMIT` - set your pm permit warn limit
+
 <h3>⛺ Optional Vars</h3>
  
  - `STRINGSESSION` - only If you want to use on cloud hosts use [string_gen.py](https://github.com/The-MoonTg-project/Moon-Userbot/blob/main/string_gen.py) to generate OR
