@@ -31,9 +31,9 @@
 
 <h3>🏕️ Necessary Vars</h3>
  
- - `API_ID` - Get it from [my.telegram.org](my.telegram.org)
+ - `API_ID` - Get it from my.telegram.org
  
- - `API_HASH` - Get it from [my.telegram.org](my.telegram.org)
+ - `API_HASH` - Get it from my.telegram.org
 
  - `PM_LIMIT` - set your pm permit warn limit
  - `DATABASE_URL` - ONLY for MongoDB, your mongodb url
