@@ -57,6 +57,8 @@
 
 <h2>☁️ Cloud Host</h2>
 <a href="https://app.koyeb.com/deploy?type=git&repository=github.com/The-MoonTg-project/Moon-Userbot&branch=main&name=gemini"><img src="https://www.koyeb.com/static/images/deploy/button.svg">
+ 
+**YT Video [How to deploy]: https://youtu.be/2m_yB7EllYc**
 
 <h2>🖥️ Local Host</h2>
 <h2>Linux, Windows [only wsl]</h2> 
