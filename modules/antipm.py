@@ -168,7 +168,7 @@ async def add_contact(client: Client, message: Message):
    user = await client.get_users(id)
    # Add the contact
    await client.add_contact(id, user.first_name)
-   db.set("core.antipm", "warns", 0)
+   
    await message.edit("User Approved!")
 
 @Client.on_message(filters.command(["d"], prefix) & filters.me)
