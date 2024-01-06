@@ -1,6 +1,9 @@
-pyrogram
+pyrofork
 tgcrypto
 wheel
+gunicorn
+flask
+humanize
 pygments
 ffmpeg-python
 pymongo
