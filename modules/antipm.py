@@ -45,7 +45,7 @@ message_counts = {}
 )
 async def anti_pm_handler(client: Client, message: Message):
     m_n = 0
-    warns = db.get("core.antipm", "warns")
+    warns = db.get("core.antipm", "warns", m_n)
     user_id = message.from_user.id
     id = message.chat.id
     b_f = await client.get_me()
@@ -169,6 +169,7 @@ async def add_contact(client: Client, message: Message):
    user = await client.get_users(id)
    # Add the contact
    await client.add_contact(id, user.first_name)
+   db.set("core.antipm", "warns", 0)
    await message.edit("User Approved!")
 
 @Client.on_message(filters.command(["d"], prefix) & filters.me)
