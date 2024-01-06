@@ -49,7 +49,7 @@ async def anti_pm_handler(client: Client, message: Message):
     user_id = message.from_user.id
     id = message.chat.id
     b_f = await client.get_me()
-    u_n = b_f.username
+    u_n = b_f.first_name
     user = await client.get_users(id)
     u_f = user.first_name
     user_info = await client.resolve_peer(message.chat.id)
