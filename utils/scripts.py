@@ -26,7 +26,8 @@ import importlib
 import subprocess
 from io import BytesIO
 from types import ModuleType
-from typing import Dict
+from typing import Dict, Tuple
+import shlex
 
 from PIL import Image
 from pyrogram.errors import FloodWait, MessageNotModified
@@ -138,6 +139,54 @@ async def progress(current, total, message, start, type_of_ps, file_name=None):
                 await asyncio.sleep(e.x)
             except MessageNotModified:
                 pass
+
+async def run_cmd(prefix: str) -> Tuple[str, str, int, int]:
+    """Run Commands"""
+    args = shlex.split(prefix)
+    process = await asyncio.create_subprocess_exec(
+        *args, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+    )
+    stdout, stderr = await process.communicate()
+    return (
+        stdout.decode("utf-8", "replace").strip(),
+        stderr.decode("utf-8", "replace").strip(),
+        process.returncode,
+        process.pid,
+    )
+
+def mediainfo(media):
+    xx = str((str(media)).split("(", maxsplit=1)[0])
+    m = ""
+    if xx == "MessageMediaDocument":
+        mim = media.document.mime_type
+        if mim == "application/x-tgsticker":
+            m = "sticker animated"
+        elif "image" in mim:
+            if mim == "image/webp":
+                m = "sticker"
+            elif mim == "image/gif":
+                m = "gif as doc"
+            else:
+                m = "pic as doc"
+        elif "video" in mim:
+            if "DocumentAttributeAnimated" in str(media):
+                m = "gif"
+            elif "DocumentAttributeVideo" in str(media):
+                i = str(media.document.attributes[0])
+                if "supports_streaming=True" in i:
+                    m = "video"
+                m = "video as doc"
+            else:
+                m = "video"
+        elif "audio" in mim:
+            m = "audio"
+        else:
+            m = "document"
+    elif xx == "MessageMediaPhoto":
+        m = "pic"
+    elif xx == "MessageMediaWebPage":
+        m = "web"
+    return m
 
 async def edit_or_reply(message, text, parse_mode=enums.ParseMode.MARKDOWN):
     """Edit Message If Its From Self, Else Reply To Message"""
