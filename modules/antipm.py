@@ -44,7 +44,6 @@ message_counts = {}
     & anti_pm_enabled
 )
 async def anti_pm_handler(client: Client, message: Message):
-    m_n = 0
     warns = db.get("core.antipm", "warns", m_n)
     user_id = message.from_user.id
     id = message.chat.id
