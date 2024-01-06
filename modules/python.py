@@ -35,9 +35,9 @@ from utils.scripts import format_exc
 @Client.on_message(
     filters.command(["ex", "exec", "py", "exnoedit"], prefix) & filters.me
 )
-def user_exec(client: Client, message: Message):
+async def user_exec(client: Client, message: Message):
     if len(message.command) == 1:
-        message.edit(
+        await message.edit(
             "<b>Code to execute isn't provided</b>", parse_mode=enums.ParseMode.HTML
         )
         return
@@ -47,7 +47,7 @@ def user_exec(client: Client, message: Message):
     code = message.text.split(maxsplit=1)[1]
     stdout = StringIO()
 
-    message.edit("<b>Executing...</b>", parse_mode=enums.ParseMode.HTML)
+    await message.edit("<b>Executing...</b>", parse_mode=enums.ParseMode.HTML)
 
     try:
         with redirect_stdout(stdout):
@@ -59,18 +59,18 @@ def user_exec(client: Client, message: Message):
             f"<code>{stdout.getvalue()}</code>"
         )
         if message.command[0] == "exnoedit":
-            message.reply(text, parse_mode=enums.ParseMode.HTML)
+            await message.reply(text, parse_mode=enums.ParseMode.HTML)
         else:
-            message.edit(text, parse_mode=enums.ParseMode.HTML)
+            await message.edit(text, parse_mode=enums.ParseMode.HTML)
     except Exception as e:
-        message.edit(format_exc(e), parse_mode=enums.ParseMode.HTML)
+        await message.edit(format_exc(e), parse_mode=enums.ParseMode.HTML)
 
 
 # noinspection PyUnusedLocal
 @Client.on_message(filters.command(["ev", "eval"], prefix) & filters.me)
-def user_eval(client: Client, message: Message):
+async def user_eval(client: Client, message: Message):
     if len(message.command) == 1:
-        message.edit("<b>Code to eval isn't provided</b>", parse_mode=enums.ParseMode.HTML)
+        await message.edit("<b>Code to eval isn't provided</b>", parse_mode=enums.ParseMode.HTML)
         return
 
     reply = message.reply_to_message
@@ -79,7 +79,7 @@ def user_eval(client: Client, message: Message):
 
     try:
         result = eval(code)
-        message.edit(
+        await message.edit(
             "<b>Expression:</b>\n"
             f"<code>{code}</code>\n\n"
             "<b>Result</b>:\n"
@@ -87,7 +87,7 @@ def user_eval(client: Client, message: Message):
             parse_mode=enums.ParseMode.HTML,
         )
     except Exception as e:
-        message.edit(format_exc(e), parse_mode=enums.ParseMode.HTML)
+        await message.edit(format_exc(e), parse_mode=enums.ParseMode.HTML)
 
 
 modules_help["python"] = {
