@@ -5,22 +5,19 @@ from pyrogram.types import Message
 
 from utils.config import vca_api_key
 from utils.misc import modules_help, prefix
-from utils.scripts import format_exc, edit_or_reply
+from utils.scripts import format_exc, edit_or_reply, import_library
+
+lexica = import_library("lexica", "lexica-api")
+from lexica import Client as lcl
 
 # Define the API endpoint
 api_url = "https://visioncraft-aiapi.koyeb.app"
 
-def upscale_request(image):
-    b = base64.b64encode(image).decode('utf-8')
-    payload = {
-        "token": vca_api_key,
-        "image": b
-    }
-    url = 'https://visioncraft-aiapi.koyeb.app/beta/upscale'
-    headers = {"content-type": "application/json"}
-
-    resp = requests.post(url, json=payload, headers=headers)
-    return resp.content
+def upscale_request(image: bytes) -> bytes:
+    client = lcl()
+    imageBytes = client.upscale(image)
+    with open('upscaled.png', 'wb') as f:
+        f.write(imageBytes)
 
 @Client.on_message(filters.command("vdxl", prefix) & filters.me)
 async def vdxl(c: Client, message: Message):
@@ -92,11 +89,9 @@ async def upscale(client: Client, message: Message):
         await message.edit("<code>Processing...</code>", parse_mode=enums.ParseMode.HTML)
         image = open(photo_data, 'rb').read()
         upscaled_image = upscale_request(image)
-        with open('upscaled_image.png', 'wb') as f:
-            f.write(upscaled_image)
-        await message.delete()
-        await client.send_document(message.chat.id, 'upscaled_image.png', caption="Upscaled!", reply_to_message_id=message.id)
-        os.remove('upscaled_image.png')
+        # await message.delete()
+        await client.send_document(message.chat.id, 'upscaled.png', caption="Upscaled!", reply_to_message_id=message.id)
+        os.remove('upscaled.png')
 
 modules_help["aiutils"] = {
     "vdxl [prompt/reply to prompt]*": "Text to Image with SDXL model",
