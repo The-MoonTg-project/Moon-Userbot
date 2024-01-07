@@ -16,6 +16,5 @@ shell
 squotes
 stickers
 support
-switch
 url
 user_info
