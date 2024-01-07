@@ -20,4 +20,4 @@ jobs:
         with:
           context: ./
           push: true
-          tags: qbtaumai/moonubcloud:latest-cloud
+          tags: qbtaumai/moonuserbot:latest-cloud
