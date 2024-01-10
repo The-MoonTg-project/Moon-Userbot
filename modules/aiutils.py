@@ -11,7 +11,7 @@ lexica = import_library("lexica", "lexica-api")
 from lexica import Client as lcl
 
 # Define the API endpoint
-api_url = "https://visioncraft-aiapi.koyeb.app"
+api_url = "https://api-visioncraft.koyeb.app"
 
 def upscale_request(image: bytes) -> bytes:
     client = lcl()
