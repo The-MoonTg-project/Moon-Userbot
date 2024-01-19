@@ -36,14 +36,15 @@ async def vdxl(c: Client, message: Message):
          return
 
         data = {
-    "model": "sdxl-turbo",
+    "model": "juggernaut-xl-V5",
     "prompt": prompt,
     "negative_prompt": "",
     "image_count": 1,
     "token": vca_api_key,
     "width": 1024,
     "height": 768,
-    "enhance": False
+    "enhance": True,
+    "watermark": False
 }
         # Send the request to generate images
         response = requests.post(f"{api_url}/generate-xl", json=data, verify=False)
