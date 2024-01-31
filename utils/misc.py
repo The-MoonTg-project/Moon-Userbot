@@ -43,9 +43,9 @@ except git.exc.InvalidGitRepositoryError:
         "origin", "https://github.com/The-MoonTg-project/Moon-Userbot"
     )
     origin.fetch()
-    repo.create_head("main", origin.refs.master)
-    repo.heads.master.set_tracking_branch(origin.refs.master)
-    repo.heads.master.checkout(True)
+    repo.create_head("main", origin.refs.main)
+    repo.heads.main.set_tracking_branch(origin.refs.main)
+    repo.heads.main.checkout(True)
     gitrepo = git.Repo(".")
 
 if len(gitrepo.tags) > 0:
