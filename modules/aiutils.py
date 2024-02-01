@@ -54,7 +54,7 @@ async def vdxl(c: Client, message: Message):
         
         # Check the generation process
         while True:
-            response = requests.post("https://visioncraft-rs24.koyeb.app/job-status", json={"job_id": job_id, "watermark": False})
+            response = requests.post("https://visioncraft-rs24.koyeb.app/job-status", json={"job_id": job_id})
             if response.json()["image"]:
                 image_url = response.json()["image"]
                 break
