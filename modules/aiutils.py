@@ -43,8 +43,7 @@ async def vdxl(c: Client, message: Message):
             "width": 1024,
             "height": 768,
             "cfg_scale": 8,
-            "steps": 30,
-            "watermark": False
+            "steps": 30
         }
         
         # Send the request to generate images
@@ -55,7 +54,7 @@ async def vdxl(c: Client, message: Message):
         
         # Check the generation process
         while True:
-            response = requests.post("https://visioncraft-rs24.koyeb.app/job-status", json={"job_id": job_id})
+            response = requests.post("https://visioncraft-rs24.koyeb.app/job-status", json={"job_id": job_id, "watermark": False})
             if response.json()["image"]:
                 image_url = response.json()["image"]
                 break
