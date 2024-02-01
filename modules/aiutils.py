@@ -36,45 +36,44 @@ async def vdxl(c: Client, message: Message):
          return
 
         data = {
-    "model": "juggernaut-xl-V5",
-    "prompt": prompt,
-    "negative_prompt": "",
-    "image_count": 1,
-    "token": vca_api_key,
-    "width": 1024,
-    "height": 768,
-    "enhance": True,
-    "cfg_scale": 8,
-    "watermark": False
-}
-        # Send the request to generate images
-        response = requests.post(f"{api_url}/generate-xl", json=data, verify=False)
+            "model": "juggernaut-xl-V5",
+            "prompt": prompt,
+            "negative_prompt": "",
+            "token": vca_api_key,
+            "width": 1024,
+            "height": 768,
+            "cfg_scale": 8,
+            "steps": 30,
+            "watermark": False
+        }
         
+        # Send the request to generate images
+        response = requests.post(f"{api_url}/generate-xl", json=data)
+        
+        # Extract the request id from the response
         job_id = response.json()["job_id"]
-
+        
+        # Check the generation process
         while True:
             response = requests.post("https://visioncraft-rs24.koyeb.app/job-status", json={"job_id": job_id})
             if response.json()["image"]:
-            image_url = response.json()["image"]
-            break
-
-        # Download and save the generated images
-        for i, image_url in enumerate(image_urls):
-            # Get the image data from the URL
-            response = requests.get(image_url)
-            # Save the image locally
-            with open(f"generated_image_{i}.png", "wb") as f:
-                f.write(response.content)
+                image_url = response.json()["image"]
+                break
+        
+        # Get the image data from the URL
+        response = requests.get(image_url)
+        # Save the image locally
+        with open(f"generated_image.png", "wb") as f:
+            f.write(response.content)
 
             await message.delete()
         #for i, image_url in enumerate(image_urls):
-            await c.send_photo(chat_id, photo=f"generated_image_{i}.png", caption=f"<b>Prompt:</b><code>{prompt}</code>")
+            await c.send_photo(chat_id, photo=f"generated_image.png", caption=f"<b>Prompt:</b><code>{prompt}</code>")
 
     except Exception as e:
         await message.edit_text(f"An error occurred: {format_exc(e)}")
     finally:
-        for i, image_url in enumerate(image_urls):
-            os.remove(f"generated_image_{i}.png")
+        os.remove(f"generated_image.png")
 
 
 @Client.on_message(filters.command("upscale", prefix) & filters.me)
