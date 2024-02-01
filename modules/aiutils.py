@@ -44,19 +44,19 @@ async def vdxl(c: Client, message: Message):
     "width": 1024,
     "height": 768,
     "enhance": True,
+    "cfg_scale": 8,
     "watermark": False
 }
         # Send the request to generate images
         response = requests.post(f"{api_url}/generate-xl", json=data, verify=False)
+        
+        job_id = response.json()["job_id"]
 
-        image_urls = response.json()["images"]
-
-        # Extract the image URLs from the response
-        #if "images" in response.json():
-         #   image_urls = response.json()["images"]
-        #else:
-         #   await message.edit_text("No images found in the response... Possibly Server is Down")
-          #  return
+        while True:
+            response = requests.post("https://visioncraft-rs24.koyeb.app/job-status", json={"job_id": job_id})
+            if response.json()["image"]:
+            image_url = response.json()["image"]
+            break
 
         # Download and save the generated images
         for i, image_url in enumerate(image_urls):
