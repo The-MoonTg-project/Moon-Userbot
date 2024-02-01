@@ -44,7 +44,7 @@ async def vdxl(c: Client, message: Message):
     "width": 1024,
     "height": 768,
     "enhance": True,
-    "cfg_scale": 8,
+
     "watermark": False
 }
         # Send the request to generate images
