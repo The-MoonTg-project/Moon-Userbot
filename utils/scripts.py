@@ -207,7 +207,7 @@ def restart() -> None:
 
 def format_exc(e: Exception, suffix="") -> str:
     traceback.print_exc()
-    err = traceback.fotmat_exc()
+    err = traceback.format_exc()
     if isinstance(e, errors.RPCError):
         return (
             f"<b>Telegram API error!</b>\n"
