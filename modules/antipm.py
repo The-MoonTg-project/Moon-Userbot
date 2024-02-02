@@ -64,28 +64,26 @@ Do not spam further messages else I may have to block you!</i>
     if db.get("core.antipm", "spamrep", False):
         await client.invoke(functions.messages.ReportSpam(peer=user_info))
     if db.get("core.antipm", "block", False):
-        await client.invoke(functions.contacts.Block(id=user_info))
-    await client.send_message(message.chat.id, f"{default_text}")
+        await client.block_user(user_info)
+    
+    if db.get("core.antipm", f"disallowusers{id}") == user_id != db.get("core.antipm", f"allowusers{id}") or db.get("core.antipm", f"disallowusers{id}") != user_id != db.get("core.antipm", f"allowusers{id}") :
+        await client.send_message(message.chat.id, f"{default_text}")
    
-    if user_id in message_counts:
-        message_counts[user_id] += 1
-        m_n = db.get("core.antipm", "warns")
-        m_n_n = m_n + 1
-        db.set("core.antipm", "warns", m_n_n)
-    else:
-        message_counts[user_id] = 1
-        m_n_n = 1
-        db.set("core.antipm", "warns", m_n_n)
-
-    if message_counts[user_id] > pm_limit:
-        await client.send_message(message.chat.id, f"<b>Ehm...! That was your Last warn, Bye Bye see you L0L</b>")
-        await client.invoke(functions.contacts.Block(id=user_info))
-        del message_counts[user_id]
-        db.set("core.antipm", "warns", 0)
-    # await client.delete_messages(message.chat.id, message.id)
-    # await client.invoke(
-    #     functions.messages.DeleteHistory(peer=user_info, max_id=0, revoke=True)
-    # )
+        if user_id in message_counts:
+            message_counts[user_id] += 1
+            m_n = db.get("core.antipm", "warns")
+            m_n_n = m_n + 1
+            db.set("core.antipm", "warns", m_n_n)
+        else:
+            message_counts[user_id] = 1
+            m_n_n = 1
+            db.set("core.antipm", "warns", m_n_n)
+    
+        if message_counts[user_id] > pm_limit:
+            await client.send_message(message.chat.id, f"<b>Ehm...! That was your Last warn, Bye Bye see you L0L</b>")
+            await client.block_user(user_info)
+            del message_counts[user_id]
+            db.set("core.antipm", "warns", 0)
 
 
 @Client.on_message(filters.command(["antipm", "anti_pm"], prefix) & filters.me)
@@ -163,22 +161,20 @@ async def antipm_block(_, message: Message):
 
 @Client.on_message(filters.command(["a"], prefix) & filters.me)
 async def add_contact(client: Client, message: Message):
-   # Extract the phone number from the message text
    id = message.chat.id
 
    user = await client.get_users(id)
-   # Add the contact
-   await client.add_contact(id, user.first_name)
+   db.set("core.antipm", f"allowusers{id}", id)
    db.set("core.antipm", "warns", 0)
    await message.edit("User Approved!")
 
 @Client.on_message(filters.command(["d"], prefix) & filters.me)
 async def del_contact(client: Client, message: Message):
-   # Extract the phone number from the message text
    id = message.chat.id
 
-   # Add the contact
-   await client.delete_contacts(id)
+   user = await client.get_users(id)
+   db.set("core.antipm", f"disallowusers{id}", id)
+   db.remove("core.antipm", f"allowusers{id}")
    await message.edit("User DisApproved!")
 
 modules_help["antipm"] = {
