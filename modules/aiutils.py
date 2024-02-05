@@ -36,28 +36,23 @@ async def vdxl(c: Client, message: Message):
          return
 
         data = {
-            "model": "juggernaut-xl-V5",
             "prompt": prompt,
+            "model": "juggernaut-xl-V7",
             "negative_prompt": "",
             "token": vca_api_key,
             "width": 1024,
             "height": 768,
+            "steps": 30,
             "cfg_scale": 8,
-            "steps": 30
+            "nsfw_filter": False
+            "watermark": False
         }
         
         # Send the request to generate images
         response = requests.post(f"{api_url}/generate-xl", json=data)
         
-        # Extract the request id from the response
-        job_id = response.json()["job_id"]
-        
-        # Check the generation process
-        while True:
-            response = requests.post("https://visioncraft-rs24.koyeb.app/job-status", json={"job_id": job_id, "watermark": False})
-            if response.json()["image"]:
-                image_url = response.json()["image"]
-                break
+        # Extract the image URLs from the response
+        image_url = response.json()["images"][0]
         
         # Get the image data from the URL
         response = requests.get(image_url)
