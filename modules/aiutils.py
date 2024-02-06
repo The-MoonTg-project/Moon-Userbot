@@ -44,7 +44,7 @@ async def vdxl(c: Client, message: Message):
             "height": 768,
             "steps": 30,
             "cfg_scale": 8,
-            "nsfw_filter": False
+            "nsfw_filter": False,
             "watermark": False
         }
         
