@@ -37,7 +37,7 @@ async def vdxl(c: Client, message: Message):
 
         data = {
             "prompt": prompt,
-            "model": "juggernaut-xl-V7",
+            "model": "sdxl-turbo",
             "negative_prompt": "",
             "token": vca_api_key,
             "width": 1024,
