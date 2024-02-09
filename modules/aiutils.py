@@ -50,15 +50,13 @@ async def vdxl(c: Client, message: Message):
         
         # Send the request to generate images
         response = requests.post(f"{api_url}/generate-xl", json=data)
-        
-        # Extract the image URLs from the response
-        image_url = response.json()["images"][0]
-        
-        # Get the image data from the URL
-        response = requests.get(image_url)
+
+        # Get the image from the response
+        image = response.content
+
         # Save the image locally
         with open(f"generated_image.png", "wb") as f:
-            f.write(response.content)
+            f.write(image)
 
             await message.delete()
         #for i, image_url in enumerate(image_urls):
