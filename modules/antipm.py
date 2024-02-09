@@ -81,7 +81,7 @@ Do not spam further messages else I may have to block you!</i>
     
         if message_counts[user_id] > pm_limit:
             await client.send_message(message.chat.id, f"<b>Ehm...! That was your Last warn, Bye Bye see you L0L</b>")
-            await client.block_user(user_info)
+            await client.block_user(user_id)
             del message_counts[user_id]
             db.set("core.antipm", "warns", 0)
 
