@@ -1277,9 +1277,9 @@ async def unro(client: Client, message: Message):
 
 @Client.on_message(filters.command("antiraid", prefix) & filters.me)
 async def antiraid(client: Client, message: Message):
-    if message.chat.type != "supergroup":
-        await message.edit("<b>Not supported in non-supergroup chats</b>", parse_mode=enums.ParseMode.HTML)
-        return
+    # if message.chat.type != "supergroup":
+    #     await message.edit("<b>Not supported in non-supergroup chats</b>", parse_mode=enums.ParseMode.HTML)
+    #     return
 
     if len(message.command) > 1 and message.command[1] == "on":
         db.set("core.ats", f"antiraid{message.chat.id}", True)
