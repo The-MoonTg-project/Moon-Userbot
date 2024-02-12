@@ -23,7 +23,6 @@ async def sg(client: Client, message: Message):
         await lol.edit("**Please unblock @SangMata_beta_bot and try again**", parse_mode=enums.ParseMode.MARKDOWN)
         return
     id = "@SangMata_beta_bot"
-    chat = message.chat.id
     await client.send_message(id, user_id, parse_mode=enums.ParseMode.MARKDOWN)
     await asyncio.sleep(2)
     async for opt in client.get_chat_history("@SangMata_beta_bot", limit=1):
