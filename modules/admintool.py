@@ -31,62 +31,6 @@ from pyrogram.errors import (
 from pyrogram.raw import functions, types
 from pyrogram.types import Message, ChatPermissions, ChatPrivileges
 from pyrogram.utils import (
-    get_channel_id,
-    MAX_USER_ID,
-    MIN_CHAT_ID,
-    MAX_CHANNEL_ID,
-    MIN_CHANNEL_ID,
-)
-
-from utils.db import db
-from utils.scripts import text, format_exc, with_reply
-from utils.misc import modules_help, prefix
-
-
-db_cache: dict = db.get_collection("core.ats")
-
-
-def update_cache():
-    db_cache.clear()
-    db_cache.update(db.get_collection("core.ats"))
-
-
-@Client.on_message(filters.group & ~filters.me)
-async def admintool_handler(_, message: Message):
-    if message.sender_chat:
-        if (
-            message.sender_chat.type == "supergroup"
-            or message.sender_chat.id
-            == db_cache.get(f"linked{message.chat.id}", 0)
-        ):
-            raise ContinuePropagation
-
-    if message.sender_chat and db_cache.get(f"antich{message.chat.id}", False):
-        with suppress(RPCError):
-            await message.delete()
-            await message.chat.ban_member(message.sender_chat.id)
-
-    tmuted_users = db_cache.get(f"c{message.chat.id}", [])
-    if (
-        message.from_user
-        and message.from_user.id in tmuted_users
-        or message.sender_chat
-        and message.sender_chat.id in tmuted_users
-    ):
-        with suppress(RPCError):
-            await message.delete()
-
-    if db_cache.get(f"antiraid{message.chat.id}", False):
-        with suppress(RPCError):
-            await message.delete()
-            if message.from_user:
-                await message.chat.ban_member(message.from_user.id)
-            elif message.sender_chat:
-                await message.chat.ban_member(message.sender_chat.id)
-
-    if message.new_chat_members:
-        if db_cache.get(f"welcome_enabled{message.chat.id}", False):
-            await message.reply(
                 db_cache.get(f"welcome_text{message.chat.id}"),
                 disable_web_page_preview=True,
                 parse_mode=enums.ParseMode.HTML,
