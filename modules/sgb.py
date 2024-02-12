@@ -4,6 +4,8 @@ from pyrogram import Client, enums, filters
 from pyrogram.types import Message
 from pyrogram.errors import RPCError
 
+from utils.scripts import edit_or_reply
+
 from utils.misc import modules_help, prefix
 from utils.scripts import edit_or_reply
 
