@@ -51,7 +51,7 @@ async def vdxl(c: Client, message: Message):
         data = {
             "prompt": prompt,
             "model": "sdxl-turbo",
-            "negative_prompt": "bad quality"
+            "negative_prompt": "bad quality",
             "token": vca_api_key,
             "width": 1024,
             "height": 1024,
