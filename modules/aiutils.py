@@ -11,7 +11,7 @@ lexica = import_library("lexica", "lexica-api")
 from lexica import Client as lcl
 
 # Define the API endpoint
-api_url = "https://visioncraft-rs24.koyeb.app"
+api_url = "https://api.visioncraft.top"
 
 def upscale_request_lexica(image: bytes) -> bytes:
     client = lcl()
@@ -29,9 +29,8 @@ def upscale_request_vc(image):
     headers = {"content-type": "application/json"}
 
     resp = requests.post(url, json=payload, headers=headers)
-    image_url = resp.json()["images"][0]
-    content = requests.get(image_url)
-    return content.content
+    content = resp.content
+    return content
 
 @Client.on_message(filters.command("vdxl", prefix) & filters.me)
 async def vdxl(c: Client, message: Message):
@@ -52,13 +51,14 @@ async def vdxl(c: Client, message: Message):
         data = {
             "prompt": prompt,
             "model": "sdxl-turbo",
-            "negative_prompt": "",
+            "negative_prompt": "bad quality"
             "token": vca_api_key,
             "width": 1024,
-            "height": 768,
-            "steps": 30,
-            "cfg_scale": 8,
-            "nsfw_filter": False,
+            "height": 1024,
+            # "steps": 30,
+            # "cfg_scale": 8,
+            "sampler": "euler",
+            "scheduler": "normal",
             "watermark": False
         }
         
