@@ -86,7 +86,16 @@ echo "You can get it here -> https://makersuite.google.com/app/apikey"
 read -r -p "GEMINI_KEY > " gemini_key
 
 if [[ $gemini_key = "" ]]; then
-  echo "NOTE: API Not set you'll not be able to use AI modules"
+  echo "NOTE: API Not set you'll not be able to use Gemini AI modules"
+fi
+
+echo
+echo "Enter COHERE_KEY if you want to use AI"
+echo "You can get it here -> https://dashboard.cohere.com/api-keys"
+read -r -p "COHERE_KEY > " cohere_key
+
+if [[ $cohere_key = "" ]]; then
+  echo "NOTE: API Not set you'll not be able to use Coral AI modules"
 fi
 
 echo
@@ -151,6 +160,7 @@ RMBG_KEY=${rmbg_key}
 VT_KEY=${vt_key}
 GEMINI_KEY=${gemini_key}
 VCA_API_KEY=${vca_api_key}
+COHERE_KEY=${cohere_key}
 PM_LIMIT=${pm_limit}
 EOL
 

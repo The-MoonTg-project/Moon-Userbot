@@ -70,6 +70,14 @@ class MongoDatabase(Database):
     def close(self):
         self._client.close()
 
+    def add_chat_history(self, message):
+        chat_history = db.get("core.cohere", "chat_history", default=[])
+        chat_history.append(message)
+        db.set("core.cohere", "chat_history", chat_history)
+
+    def get_chat_history(self):
+        return db.get("core.cohere", "chat_history", default=[])
+
 
 class SqliteDatabase(Database):
     def __init__(self, file):
@@ -162,6 +170,14 @@ class SqliteDatabase(Database):
     def close(self):
         self._conn.commit()
         self._conn.close()
+
+    def add_chat_history(self, message):
+        chat_history = db.get("core.cohere", "chat_history", default=[])
+        chat_history.append(message)
+        db.set("core.cohere", "chat_history", chat_history)
+
+    def get_chat_history(self):
+        return db.get("core.cohere", "chat_history", default=[])
 
 
 if config.db_type in ["mongo", "mongodb"]:
