@@ -16,3 +16,4 @@ requests
 environs
 GitPython
 beautifulsoup4
+aiohttp
