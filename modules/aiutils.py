@@ -127,14 +127,20 @@ async def vdxl(c: Client, message: Message):
         response = await generate_images(api_url, data)
 
         try:
-            image_url = response["images"]
+            image_urls = response["images"]
+            if isinstance(image_urls, list) and image_urls:
+                # Extract the first URL from the list
+                image_url = image_urls[0]
+                # print(image_url)
 
-            # Download and save the generated images
-            async with aiohttp.ClientSession() as session:
-                await download_image(session, image_url, f"generated_image.png")
-                await message.delete()
-                await c.send_document(chat_id, document=f"generated_image.png", caption=f"<b>Prompt: </b><code>{prompt}</code>")
-                await os.remove(f"generated_image.png")
+                # Download and save the generated images
+                async with aiohttp.ClientSession() as session:
+                    await download_image(session, image_url, f"generated_image.png")
+                    await message.delete()
+                    await c.send_document(chat_id, document=f"generated_image.png", caption=f"<b>Prompt: </b><code>{prompt}</code>")
+                    await os.remove(f"generated_image.png")
+            else:
+                await message.edit_text("No valid URL's found in response")
         except KeyError:
             try:
                 error = response["error"]
