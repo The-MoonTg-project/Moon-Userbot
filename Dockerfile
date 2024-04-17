@@ -3,4 +3,4 @@ WORKDIR /app
 COPY . /app
 RUN apt -qq update && apt -qq install -y git wget ffmpeg mediainfo
 RUN pip install -r requirements.txt
-CMD ["bash", "cloud.sh"]
+CMD ["python", "main.py"]
