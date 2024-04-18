@@ -1,4 +1,4 @@
-FROM python:3.12
+FROM python:3.11
 WORKDIR /app
 COPY . /app
 RUN apt -qq update && apt -qq install -y git wget ffmpeg mediainfo
