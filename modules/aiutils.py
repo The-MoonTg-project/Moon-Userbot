@@ -137,7 +137,7 @@ async def vdxl(c: Client, message: Message):
                 async with aiohttp.ClientSession() as session:
                     await download_image(session, image_url, f"generated_image.png")
                     await message.delete()
-                    await c.send_document(chat_id, document=f"generated_image.png", caption=f"<b>Prompt: </b><code>{prompt}</code>")
+                    await c.send_document(chat_id, document=f"generated_image.png", caption=f"<b>Prompt: </b><code>{prompt}</code>\n<b>Model: </b><code>{model}</code>")
                     await os.remove(f"generated_image.png")
             else:
                 await message.edit_text("No valid URL's found in response")
