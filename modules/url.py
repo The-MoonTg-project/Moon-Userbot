@@ -14,15 +14,16 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import os
+import requests
+import time
+import traceback
 import urllib3
 from pyrogram import Client, filters, enums
 from pyrogram.types import Message
-import requests
 from utils.misc import modules_help, prefix
-from utils.scripts import format_exc
+from utils.scripts import format_exc, progress, edit_or_reply
 
 from io import BytesIO
-import requests
 
 from utils.config import apiflash_key
 
@@ -53,8 +54,6 @@ async def short(_, message: Message):
 
   await message.edit(r.data.decode().replace("https://", "<b>Shortened Url:</b>"), disable_web_page_preview=True, parse_mode=enums.ParseMode.HTML)
 
-
-
 @Client.on_message(filters.command("urldl", prefix) & filters.me)
 async def urldl(client: Client, message: Message):
     if len(message.command) > 1:
@@ -72,21 +71,33 @@ async def urldl(client: Client, message: Message):
     file_name = "downloads/" + link.split("/")[-1]
 
     try:
-        resp = requests.get(link)
+        resp = requests.get(link, stream=True)
         resp.raise_for_status()
 
+        # Get the total file size
+        total_size = int(resp.headers.get('content-length', 0))
+
         with open(file_name, "wb") as f:
+            downloaded = 0
+            chunk_count = 0
+            update_frequency = 800
             for chunk in resp.iter_content(chunk_size=8192):
                 f.write(chunk)
+                downloaded += len(chunk)
+                chunk_count += 1
+                progress_dl = (downloaded / total_size) * 100
+                if chunk_count % update_frequency == 0:
+                    await message.edit_text(f"<b>Downloading...</b>\nProgress: {progress_dl:.2f}%")
 
-        await message.edit("<b>Uploading...</b>", parse_mode=enums.ParseMode.HTML)
-        await client.send_document(message.chat.id, file_name, parse_mode=enums.ParseMode.HTML)
+        ms_ = await message.edit("<b>Uploading...</b>", parse_mode=enums.ParseMode.HTML)
+        c_time = time.time()
+        await client.send_document(message.chat.id, file_name, progress=progress, progress_args=(ms_, c_time, '`Uploading...`'), parse_mode=enums.ParseMode.MARKDOWN)
         await message.delete()
     except Exception as e:
-        await message.edit(format_exc(e), parse_mode=enums.ParseMode.HTML)
+        await message.edit(f"<b>Error:</b> {traceback.format_exc(e)}", parse_mode=enums.ParseMode.HTML)
     finally:
-        os.remove(file_name)
-
+        if os.path.exists(file_name):
+            os.remove(file_name)
 
 @Client.on_message(filters.command("upload", prefix) & filters.me)
 async def upload_cmd(_, message: Message):
@@ -96,20 +107,28 @@ async def upload_cmd(_, message: Message):
     min_file_age = 31
     max_file_age = 180
 
-    await message.edit("<b>Downloading...</b>", parse_mode=enums.ParseMode.HTML)
+    ms_ = await message.edit("`Downloading...`", parse_mode=enums.ParseMode.MARKDOWN)
+    c_time = time.time()
 
     try:
-        file_name = await message.download()
+        file_name = await message.download(
+            progress=progress,
+            progress_args=(ms_, c_time, '`Downloading...`')
+            )
     except ValueError:
         try:
-            file_name = await message.reply_to_message.download()
+            file_name = await message.reply_to_message.download(
+                progress=progress,
+                progress_args=(ms_, c_time, '`Downloading...`')
+                )
         except ValueError:
             await message.edit("<b>File to upload not found</b>", parse_mode=enums.ParseMode.HTML)
             return
 
     if os.path.getsize(file_name) > max_size:
         await message.edit(f"<b>Files longer than {max_size_mb}MB isn't supported</b>", parse_mode=enums.ParseMode.HTML)
-        os.remove(file_name)
+        if os.path.exists(file_name):
+            os.remove(file_name)
         return
 
     await message.edit("<b>Uploading...</b>", parse_mode=enums.ParseMode.HTML)
@@ -135,8 +154,8 @@ async def upload_cmd(_, message: Message):
     else:
         await message.edit(f"<b>API returned an error!\n" f"{response.text}\n Not allowed</b>", parse_mode=enums.ParseMode.HTML)
         print(response.text)
-
-    os.remove(file_name)
+    if os.path.exists(file_name):
+        os.remove(file_name)
 
 
 

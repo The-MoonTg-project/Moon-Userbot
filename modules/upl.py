@@ -62,7 +62,8 @@ async def uplr(client: Client, message: Message):
    except Exception as e:
        await message.edit(format_exc(e), parse_mode=enums.ParseMode.HTML)
    finally:
-       os.remove(link)
+       if os.path.exists(link):
+        os.remove(link)
 
 modules_help["uplud"] = {
    "upl": f"[filepath]/[reply to path]*",

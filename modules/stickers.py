@@ -73,7 +73,8 @@ async def kang(client: Client, message: types.Message):
         return
 
     resized = resize_image(path)
-    os.remove(path)
+    if os.path.exists(path):
+        os.remove(path)
 
     await interact_with(await client.send_document("@stickers", resized, parse_mode=enums.ParseMode.MARKDOWN))
     response = await interact_with(await client.send_message("@stickers", emoji, parse_mode=enums.ParseMode.MARKDOWN))
@@ -99,7 +100,8 @@ async def stick2png(client: Client, message: types.Message):
         path = await message.reply_to_message.download()
         with open(path, "rb") as f:
             content = f.read()
-        os.remove(path)
+        if os.path.exists(path):
+            os.remove(path)
 
         file_io = BytesIO(content)
         file_io.name = "sticker.png"
@@ -120,7 +122,8 @@ async def resize_cmd(client: Client, message: types.Message):
         path = await message.reply_to_message.download()
         resized = resize_image(path)
         resized.name = "image.png"
-        os.remove(path)
+        if os.path.exists(path):
+            os.remove(path)
 
         await client.send_document(message.chat.id, resized, parse_mode=enums.ParseMode.MARKDOWN)
     except Exception as e:

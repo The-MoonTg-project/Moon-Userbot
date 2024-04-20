@@ -111,7 +111,8 @@ async def rmbg(client: Client, message: Message):
         allow_redirects=True,
         stream=True,
     )
-    os.remove(cool)
+    if os.path.exists(cool):
+        os.remove(cool)
     output_file_name = r
     contentType = output_file_name.headers.get("content-type")
     if "image" in contentType:
@@ -126,7 +127,8 @@ async def rmbg(client: Client, message: Message):
         await pablo.edit(
             "<code>Removed image's Background in {} seconds, powered by </code> <b>@moonuserbot</b>".format(ms)
         )
-        os.remove("BG_rem.png")
+        if os.path.exists("BG_rem.png"):
+            os.remove("BG_rem.png")
     else:
         await pablo.edit(
             "ReMove.BG API returned Errors. Please report to @moonub_chat\n`{}".format(
@@ -159,7 +161,8 @@ async def rembg(client: Client, message: Message):
     except Exception as e:
         await message.reply_text(f"An error occurred: {format_exc(e)}")
     finally:
-        os.remove(photo_data)
+        if os.path.exists(photo_data):
+            os.remove(photo_data)
 
 
 modules_help["removebg"] = {
