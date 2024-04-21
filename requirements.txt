@@ -17,3 +17,4 @@ environs
 GitPython
 beautifulsoup4
 aiohttp
+aiofiles

@@ -21,7 +21,12 @@
   - Ask/Chat with Ai
   - Get details from image
   - Cooking instructions
-  - Ai Marketer 
+  - Ai Marketer
+- Cohere Coral Ai [ ✅ ]
+  - Ask/Chat with Ai
+  - UP-TO Date Info
+  - Site-Search Support
+  - Chat History Support
 - SDXL [ ✅ ]
 - Upscaling [✅]
 - Text to Image [✅]
@@ -54,6 +59,8 @@
  - `VT_KEY` - ONLY, If you want to use VirusTotal plugin You can get it from [here](https://www.virustotal.com/gui/)
  
  - `GEMINI_KEY` - ONLY, If you want to use gemini ai plugin You can get it from [here](https://makersuite.google.com/app/apikey)
+
+ - `COHERE_KEY` - ONLY, If you want to use cohere ai plugin You can get it from [here](https://dashboard.cohere.com/api-keys)
  
  - `VCA_API_KEY` - ONLY, If you want to use ai tools like sdxl,upscale plugin You can get it from [here](https://github.com/VisionCraft-org/VisionCraft?tab=readme-ov-file#obtaining-an-api-key)
 
