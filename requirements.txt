@@ -18,3 +18,4 @@ GitPython
 beautifulsoup4
 aiohttp
 aiofiles
+rentry
