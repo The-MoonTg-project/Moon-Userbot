@@ -90,17 +90,19 @@ async def vdxl(c: Client, message: Message):
 
         await message.edit_text("<code>Please Wait...</code>")
 
-        if len(message.command) >= 2:
+        if len(message.command) > 2:
          model, prompt = message.text.split(maxsplit=2)[1:]
          if model not in models:
-            await message.edit_text(f"<b>Usage: </b><code>{prefix}vdxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>")
+          await message.edit_text(f"<b>Usage: </b><code>{prefix}vdxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>")
+          return
 
         elif message.reply_to_message and len(message.command) > 1:
          model = message.text.split(maxsplit=1)[1]
          if model in models:
             prompt = message.reply_to_message.text
          else:
-            await message.edit_text(f"<b>Usage: </b><code>{prefix}vdxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>")
+          await message.edit_text(f"<b>Usage: </b><code>{prefix}vdxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>")
+          return
 
         else:
          await message.edit_text(
