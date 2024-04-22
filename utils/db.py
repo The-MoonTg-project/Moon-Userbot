@@ -71,12 +71,12 @@ class MongoDatabase(Database):
         self._client.close()
 
     def add_chat_history(self, message):
-        chat_history = db.get("core.cohere", "chat_history", default=[])
+        chat_history = db.get("core.cohere", "chat_history", expected_value=[])
         chat_history.append(message)
         db.set("core.cohere", "chat_history", chat_history)
 
     def get_chat_history(self):
-        return db.get("core.cohere", "chat_history", default=[])
+        return db.get("core.cohere", "chat_history", expected_value=[])
 
 
 class SqliteDatabase(Database):
