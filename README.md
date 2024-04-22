@@ -27,6 +27,8 @@
   - UP-TO Date Info
   - Site-Search Support
   - Chat History Support
+- ChatGPT 3.5 Turbo [ ✅ ]
+  - Ask/Chat with Ai
 - SDXL [ ✅ ]
 - Upscaling [✅]
 - Text to Image [✅]
