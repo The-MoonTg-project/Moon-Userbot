@@ -141,15 +141,15 @@ async def tsearch(client: Client, message: Message):
         results = []
 
         for i in range(min(limit, len(result['results']))):
-            description = result['results'][i]['description']
-            genre = result['results'][i]['genre']
-            category = result['results'][i]['category']
-            title = result['results'][i]['name']
-            link = result['results'][i]['magnetLink']
-            language = result['results'][i]['language']
-            size = result['results'][i]['size']
+            descriptions = result['results'][i]['description']
+            genres = result['results'][i]['genre']
+            categorys = result['results'][i]['category']
+            titles = result['results'][i]['name']
+            links = result['results'][i]['magnetLink']
+            languages = result['results'][i]['language']
+            sizes = result['results'][i]['size']
 
-            r = f"<b>Title:</b> <code>{title}</code>\n<b>Category:</b> <code>{category}</code>\n<b>Language:</b> <code>{language}</code>\n<b>Size:</b> <code>{size}</code>\n<b>Genres:</b> <code>{genre}</code>\n<b>Description:</b> {description}\n<b>Magnet Link:</b> <code>{link}</code><br>"
+            r = f"<b>Title:</b> <code>{titles}</code>\n<b>Category:</b> <code>{categorys}</code>\n<b>Language:</b> <code>{languages}</code>\n<b>Size:</b> <code>{sizes}</code>\n<b>Genres:</b> <code>{genres}</code>\n<b>Description:</b> {descriptions}\n<b>Magnet Link:</b> <code>{links}</code><br>"
             results.append(r)
 
         all_results_content = '<br>'.join(results)
