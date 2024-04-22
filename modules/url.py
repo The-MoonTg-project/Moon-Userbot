@@ -14,14 +14,17 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import os
-import requests
 import time
-import traceback
+import requests
 import urllib3
+import mimetypes
+
 from pyrogram import Client, filters, enums
 from pyrogram.types import Message
+from pyrogram.errors import MessageNotModified
+
 from utils.misc import modules_help, prefix
-from utils.scripts import format_exc, progress, edit_or_reply
+from utils.scripts import format_exc, progress
 
 from io import BytesIO
 
@@ -42,23 +45,23 @@ http = urllib3.PoolManager()
 
 @Client.on_message(filters.command("short", prefix) & filters.me)
 async def short(_, message: Message):
-  if len(message.command) > 1:
-      link = message.text.split(maxsplit=1)[1]
-  elif message.reply_to_message:
-      link = message.reply_to_message.text
-  else:
-      await message.edit(f"<b>Usage: </b><code>{prefix}short [url to short]</code>", parse_mode=enums.ParseMode.HTML)
-      return
-
-  r = http.request('GET', 'https://clck.ru/--?url='+link)
-
-  await message.edit(r.data.decode().replace("https://", "<b>Shortened Url:</b>"), disable_web_page_preview=True, parse_mode=enums.ParseMode.HTML)
+    if len(message.command) > 1:
+        link = message.text.split(maxsplit=1)[1]
+    elif message.reply_to_message:
+        link = message.reply_to_message.text
+    else:
+        await message.edit(f"<b>Usage: </b><code>{prefix}short [url to short]</code>", parse_mode=enums.ParseMode.HTML)
+        return  
+    r = http.request('GET', 'https://clck.ru/--?url='+link) 
+    await message.edit(r.data.decode().replace("https://", "<b>Shortened Url:</b>"), disable_web_page_preview=True, parse_mode=enums.ParseMode.HTML)
 
 @Client.on_message(filters.command("urldl", prefix) & filters.me)
 async def urldl(client: Client, message: Message):
     if len(message.command) > 1:
+        message_id = None
         link = message.text.split(maxsplit=1)[1]
     elif message.reply_to_message:
+        message_id = message.reply_to_message.id
         link = message.reply_to_message.text
     else:
         await message.edit(
@@ -68,18 +71,37 @@ async def urldl(client: Client, message: Message):
         return
 
     await message.edit("<b>Downloading...</b>", parse_mode=enums.ParseMode.HTML)
+
+    ext = '.' + link.split('.')[-1]
+
+    resp = requests.get(link, stream=True)
+    resp.raise_for_status()
+
+    content_type = resp.headers.get('Content-Type').split(';')[0]
+    extension = mimetypes.guess_extension(content_type)
+
     try:
         os.makedirs('downloads')
-        file_name = "downloads/" + link.split("/")[-1]
+        if ext == extension:
+            file_name = "downloads/" + link.split("/")[-1]
+        else:
+            file_name = "downloads/" + link.split("/")[-1] + extension
+    except FileNotFoundError:
+        if ext == extension:
+            file_name = "downloads/" + link.split("/")[-1]
+        else:
+            file_name = "downloads/" + link.split("/")[-1] + extension
     except FileExistsError:
-        file_name = "downloads/" + link.split("/")[-1]
+        if ext == extension:
+            file_name = "downloads/" + link.split("/")[-1]
+        else:
+            file_name = "downloads/" + link.split("/")[-1] + extension
+
 
     try:
-        resp = requests.get(link, stream=True)
-        resp.raise_for_status()
-
         # Get the total file size
         total_size = int(resp.headers.get('content-length', 0))
+        print(total_size)
 
         with open(file_name, "wb") as f:
             downloaded = 0
@@ -88,17 +110,23 @@ async def urldl(client: Client, message: Message):
             for chunk in resp.iter_content(chunk_size=8192):
                 f.write(chunk)
                 downloaded += len(chunk)
-                chunk_count += 1
+                chunk_count += 10
                 progress_dl = (downloaded / total_size) * 100
+                print(progress_dl)
                 if chunk_count % update_frequency == 0:
-                    await message.edit_text(f"<b>Downloading...</b>\nProgress: {progress_dl:.2f}%")
+                    try:
+                        await message.edit_text(f"<b>Downloading...</b>\n<b>Progress:</b> {progress_dl:.2f}%")
+                    except MessageNotModified:
+                        continue
 
-        ms_ = await message.edit("<b>Uploading...</b>", parse_mode=enums.ParseMode.HTML)
+        ms_ = await message.edit("<b>Uploading...</b>")
         c_time = time.time()
-        await client.send_document(message.chat.id, file_name, progress=progress, progress_args=(ms_, c_time, '`Uploading...`'), parse_mode=enums.ParseMode.MARKDOWN)
+        await client.send_document(message.chat.id, file_name, progress=progress, progress_args=(ms_, c_time, '`Uploading...`'), reply_to_message_id=message_id, parse_mode=enums.ParseMode.MARKDOWN)
         await message.delete()
+    except ZeroDivisionError:
+        await message.edit_text("<b>File to download not found</b>")
     except Exception as e:
-        await message.edit(f"<b>Error:</b> {traceback.format_exc(e)}", parse_mode=enums.ParseMode.HTML)
+        await message.edit_text(format_exc(e))
     finally:
         if os.path.exists(file_name):
             os.remove(file_name)
