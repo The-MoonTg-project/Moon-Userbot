@@ -30,6 +30,7 @@
 - ChatGPT 3.5 Turbo [ ✅ ]
   - Ask/Chat with Ai
 - SDXL [ ✅ ]
+- DALL-E 3 [ ✅ ]
 - Upscaling [✅]
 - Text to Image [✅]
 

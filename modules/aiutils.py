@@ -1,21 +1,25 @@
-import requests, base64, os
-import aiohttp
 import asyncio
+import requests
+import base64
+import os
+import aiohttp
 
 from pyrogram import Client, enums, filters
 from pyrogram.types import Message
 
 from utils.config import vca_api_key
 from utils.misc import modules_help, prefix
-from utils.scripts import format_exc, edit_or_reply, import_library
+from utils.scripts import format_exc, import_library
 
 lexica = import_library("lexica", "lexica-api")
 from lexica import Client as lcl
 
+api_url = "https://visioncraft.top"
+
 async def fetch_models():
-    """Get all available SD 1.X models"""
+    """Get all available SDXL models"""
     async with aiohttp.ClientSession() as session:
-        async with session.get('https://visioncraft.top/models') as response:
+        async with session.get('https://visioncraft.top/sd/models') as response:
             return await response.json()
 
 async def fetch_upscale_models():
@@ -25,32 +29,40 @@ async def fetch_upscale_models():
             return await response.json()
 
 async def generate_gifs(api_url, data):
+    """Helper Function to generate GIF"""
     async with aiohttp.ClientSession() as session:
         async with session.post(f"{api_url}/generate-gif", json=data, verify_ssl=False) as response:
             return await response.json()
 
 async def generate_images(api_url, data):
+    """Helper Function to generate image using SDXL"""
     async with aiohttp.ClientSession() as session:
-        async with session.post(f"{api_url}/generate", json=data) as response:
-            return await response.json()
+        async with session.post(f"{api_url}/sd", json=data) as response:
+            return await response.read()
+
+async def generate_dalle(api_url, data):
+    """Helper Function to generate image using DALL-E 3"""
+    async with aiohttp.ClientSession() as session:
+        async with session.post(f"{api_url}/dalle", json=data) as response:
+            return await response.read()
 
 async def download_image(session, image_url, filename):
+    """Get The Image Data From Response"""
     async with session.get(image_url) as response:
         image_data = await response.read()
         with open(filename, "wb") as f:
             f.write(image_data)
 
 def upscale_request_lexica(image: bytes) -> bytes:
+    """Request Maker Helper function to upscale image for Lexica API"""
     client = lcl()
     imageBytes = client.upscale(image)
-    with open('upscaled.png', 'wb') as f:
-        f.write(imageBytes)
+    return imageBytes
 
 async def upscale_request_vc(api_url, api_key, image_data):
-    # Encode the image data to base64
+    """Request Maker Helper function to upscale image for VisionCraft API"""
     image_base64 = base64.b64encode(image_data).decode('utf-8')
 
-    # Set up the payload
     payload = {
         "token": api_key,
         "image": image_base64,
@@ -66,10 +78,10 @@ async def upscale_request_vc(api_url, api_key, image_data):
             return await response.read()
 
 async def transcribe_audio(api_url, api_key, audio_data, language, task):
-    # Encode the audio data to base64
+    """Request Maker Helper function to transcribe audio"""
+
     audio_base64 = base64.b64encode(audio_data).decode("utf-8")
 
-    # Set up the payload
     payload = {
         "token": api_key,
         "audio": audio_base64,
@@ -83,9 +95,9 @@ async def transcribe_audio(api_url, api_key, audio_data, language, task):
 
 @Client.on_message(filters.command("vdxl", prefix) & filters.me)
 async def vdxl(c: Client, message: Message):
+    """Text to Image Generation Using SDXL"""
     try:
         chat_id = message.chat.id
-        api_url = "https://visioncraft.top"
         models = await fetch_models()
 
         await message.edit_text("<code>Please Wait...</code>")
@@ -123,26 +135,15 @@ async def vdxl(c: Client, message: Message):
             "sampler": "Euler",
             "upscale": True
         }
-        
 
-        # Generate images asynchronously
         response = await generate_images(api_url, data)
 
         try:
-            image_urls = response["images"]
-            if isinstance(image_urls, list) and image_urls:
-                # Extract the first URL from the list
-                image_url = image_urls[0]
-                # print(image_url)
-
-                # Download and save the generated images
-                async with aiohttp.ClientSession() as session:
-                    await download_image(session, image_url, f"generated_image.png")
-                    await message.delete()
-                    await c.send_document(chat_id, document=f"generated_image.png", caption=f"<b>Prompt: </b><code>{prompt}</code>\n<b>Model: </b><code>{model}</code>")
-                    await os.remove(f"generated_image.png")
-            else:
-                await message.edit_text("No valid URL's found in response")
+            with open("generated_image.png", "wb") as f:
+                f.write(response)
+            await message.delete()
+            await c.send_document(chat_id, document="generated_image.png", caption=f"<b>Prompt: </b><code>{prompt}</code>\n<b>Model: </b><code>{model}</code>")
+            os.remove(f"generated_image.png")
         except KeyError:
             try:
                 error = response["error"]
@@ -154,11 +155,56 @@ async def vdxl(c: Client, message: Message):
     except Exception as e:
         await message.edit_text(f"An error occurred: {format_exc(e)}")
 
-@Client.on_message(filters.command("vgif", prefix) & filters.me)
-async def vgif(c: Client, message: Message):
+@Client.on_message(filters.command("dalle", prefix) & filters.me)
+async def dalle(c: Client, message: Message):
+    """Text to Image Generation Using DALL-E 3"""
     try:
         chat_id = message.chat.id
-        api_url = "https://visioncraft.top"
+
+        await message.edit_text("<code>Please Wait...</code>")
+
+        if len(message.command) >= 2:
+         prompt = message.text.split(maxsplit=1)[1]
+        elif message.reply_to_message:
+         prompt = message.reply_to_message.text
+        else:
+         await message.edit_text(
+            f"<b>Usage: </b><code>{prefix}vgif [prompt/reply to prompt]*</code>"
+        )
+         return
+
+        data = {
+            "prompt": prompt,
+            "token": vca_api_key,
+            "size": "1024x1024"
+        }
+
+        response = await generate_dalle(api_url, data)
+
+        try:
+            with open(f"generated_image.png", "wb") as f:
+                f.write(response)
+            await message.delete()
+            await c.send_document(chat_id, document="generated_image.png", caption=f"<b>Prompt: </b><code>{prompt}</code>\n<b>Model: </b><code>DALL-E 3</code>")
+            os.remove(f"generated_image.png")
+        except KeyError:
+            try:
+                error = response["error"]
+                await message.edit_text(f"<code>{error}</code>")
+            except KeyError:
+                detail = response["detail"]
+                await message.edit_text(f"<code>{detail}</code>")
+
+    except Exception as e:
+        await message.edit_text(f"An error occurred: {format_exc(e)}")
+
+
+@Client.on_message(filters.command("vgif", prefix) & filters.me)
+async def vgif(c: Client, message: Message):
+    """Text2GIF Using VisionCraft API"""
+    try:
+        chat_id = message.chat.id
+        
 
         await message.edit_text("<code>Please Wait...</code>")
 
@@ -180,20 +226,16 @@ async def vgif(c: Client, message: Message):
             "cfg_scale": 8,
             "sampler": "Euler"
         }
-        
 
-        # Generate images asynchronously
         response = await generate_gifs(api_url, data)
 
         try:
             image_url = response["images"][0]
-
-            # Download and save the generated images
             async with aiohttp.ClientSession() as session:
-                await download_image(session, image_url, f"generated_image.gif")
+                await download_image(session, image_url, "generated_image.gif")
                 await message.delete()
-                await c.send_media_group(chat_id, media=f"generated_image.gif")
-                await os.remove(f"generated_image.gif")
+                await c.send_animation(chat_id, animation="generated_image.gif", caption=f"<b>Prompt: </b><code>{prompt}</code>")
+                os.remove("generated_image.gif")
         except KeyError:
             try:
                 error = response["error"]
@@ -208,55 +250,58 @@ async def vgif(c: Client, message: Message):
 
 @Client.on_message(filters.command("lupscale", prefix) & filters.me)
 async def lupscale(client: Client, message: Message):
+    """Upscale Image Using Lexica API"""
+    try:
+        photo_data = await message.download()
+    except ValueError:
         try:
-            photo_data = await message.download()
+            photo_data = await message.reply_to_message.download()
         except ValueError:
-            try:
-                photo_data = await message.reply_to_message.download()
-            except ValueError:
-                await message.edit("<b>File not found</b>", parse_mode=enums.ParseMode.HTML)
-                return
-        await message.edit("<code>Processing...</code>", parse_mode=enums.ParseMode.HTML)
-        image = open(photo_data, 'rb').read()
-        upscaled_image = upscale_request_lexica(image)
-        # await message.delete()
-        await client.send_document(message.chat.id, 'upscaled.png', caption="Upscaled!", reply_to_message_id=message.id)
-        os.remove('upscaled.png')
+            await message.edit("<b>File not found</b>", parse_mode=enums.ParseMode.HTML)
+            return
+    await message.edit("<code>Processing...</code>", parse_mode=enums.ParseMode.HTML)
+    image = open(photo_data, 'rb').read()
+    upscaled_image = upscale_request_lexica(image)
+    with open('upscaled.png', 'wb') as f:
+        f.write(upscaled_image)
+    # await message.delete()
+    await client.send_document(message.chat.id, 'upscaled.png', caption="Upscaled!", reply_to_message_id=message.id)
+    os.remove('upscaled.png')
 
 @Client.on_message(filters.command("upscale", prefix) & filters.me)
 async def upscale(c: Client, message: Message):
+    """Default Upscaler of Moon-Userbot: Uses VisionCraft APi"""
+    try:
+        photo_data = await message.download()
+        message_id = message.id
+    except ValueError:
         try:
-            photo_data = await message.download()
-            message_id = message.id
+            photo_data = await message.reply_to_message.download()
+            message_id = message.reply_to_message.id
         except ValueError:
-            try:
-                photo_data = await message.reply_to_message.download()
-                message_id = message.reply_to_message.id
-            except ValueError:
-                await message.edit("<b>File not found</b>", parse_mode=enums.ParseMode.HTML)
-                return
-        i = await message.edit("<code>Processing...</code>", parse_mode=enums.ParseMode.HTML)
-
-        api_url = "https://visioncraft.top"
-        api_key = vca_api_key
-
-        image = open(photo_data, 'rb').read()
-        upscaled_image_data = await upscale_request_vc(api_url, api_key, image)
-        with open('upscaled_image.png', 'wb') as file:
-            file.write(upscaled_image_data)
-            await i.delete()
-            await c.send_document(message.chat.id, 'upscaled_image.png', caption="Upscaled!", reply_to_message_id=message_id)
-            os.remove('upscaled_image.png')
+            await message.edit("<b>File not found</b>", parse_mode=enums.ParseMode.HTML)
+            return
+    i = await message.edit("<code>Processing...</code>", parse_mode=enums.ParseMode.HTML)
+    
+    api_key = vca_api_key
+    image = open(photo_data, 'rb').read()
+    upscaled_image_data = await upscale_request_vc(api_url, api_key, image)
+    with open('upscaled_image.png', 'wb') as file:
+        file.write(upscaled_image_data)
+        await i.delete()
+        await c.send_document(message.chat.id, 'upscaled_image.png', caption="Upscaled!", reply_to_message_id=message_id)
+        os.remove('upscaled_image.png')
 
 @Client.on_message(filters.command("whisp", prefix) & filters.me)
 async def whisp(c: Client, message: Message):
+    """Get Text From Audio: Uses VisionCraft API"""
     try:
         audio_data = await message.reply_to_message.download()
         message_id = message.reply_to_message.id
         try:
             if audio_data == enums.MessageMediaType.AUDIO or enums.MessageMediaType.VOICE:
                 i = await message.edit("<code>Processing...</code>", parse_mode=enums.ParseMode.HTML)
-                api_url = "https://visioncraft.top"
+                
                 api_key = vca_api_key
                 audio = open(audio_data, 'rb').read()
                 language = 'auto'
@@ -285,5 +330,6 @@ modules_help["aiutils"] = {
     "vgif [prompt/reply to prompt]*": "Text to GIF",
     "upscale [cap/reply to image]*": "Upscale Image through VisionCraft API",
     "lupscale [cap/reply to image]*": "Upscale Image through Lexica API",
-    "whisp": "Audio transcription or translation"
+    "whisp": "Audio transcription or translation",
+    "dalle [prompt/reply to prompt]": "Generate image using DALL-E 3",
 }
