@@ -10,7 +10,15 @@ from pyrogram.errors import (
     UsernameInvalid,
 )
 from pyrogram.raw import functions, types
-from pyrogram.types import Message, ChatPermissions, ChatPrivileges
+from pyrogram.types import (
+    Message,
+    ChatPermissions,
+    ChatPrivileges,
+    InputMediaPhoto,
+    InputMediaVideo,
+    InputMediaAudio,
+    InputMediaDocument,
+)
 from pyrogram.utils import (
     get_channel_id,
     MAX_USER_ID,
@@ -1044,3 +1052,127 @@ class AntiRaidHandler:
             )
         else:
             await self.message.edit("<b>Anti-raid mode disabled</b>")
+
+class NoteSendHandler:
+    def __init__(self, client: Client, message: Message):
+        self.client = client
+        self.message = message
+        self.chat_id = message.chat.id
+        self.prefix = prefix
+
+    async def handle_note_send(self):
+        if len(self.message.text.split()) >= 2:
+            await self.message.edit("<b>Loading...</b>", parse_mode=enums.ParseMode.HTML)
+
+            note_name = self.message.text.split(maxsplit=1)[1]
+            find_note = db.get("core.notes", f"note{note_name}", False)
+            if find_note:
+                try:
+                    await self.send_note(find_note)
+                except errors.RPCError:
+                    await self.message.edit(
+                        "<b>Sorry, but this note is unavailable.\n\n"
+                        f"You can delete this note with "
+                        f"<code>{self.prefix}clear {note_name}</code></b>",
+                        parse_mode=enums.ParseMode.HTML
+                    )
+            else:
+                await self.message.edit("<b>There is no such note</b>", parse_mode=enums.ParseMode.HTML)
+        else:
+            await self.message.edit(
+                f"<b>Example: <code>{self.prefix}note note_name</code></b>",
+                parse_mode=enums.ParseMode.HTML
+            )
+
+    async def send_note(self, find_note):
+        if find_note.get("MEDIA_GROUP"):
+            await self.send_media_group(find_note)
+        else:
+            await self.copy_message(find_note)
+
+    async def send_media_group(self, find_note):
+        messages_grouped = await self.client.get_media_group(
+            int(find_note["CHAT_ID"]), int(find_note["MESSAGE_ID"])
+        )
+        media_grouped_list = self.prepare_media_group(messages_grouped)
+        if self.message.reply_to_message:
+            await self.client.send_media_group(
+                self.message.chat.id,
+                media_grouped_list,
+                reply_to_message_id=self.message.reply_to_message.id,
+                parse_mode=enums.ParseMode.HTML,
+            )
+        else:
+            await self.client.send_media_group(
+                self.message.chat.id, media_grouped_list
+            )
+
+    async def copy_message(self, find_note):
+        if self.message.reply_to_message:
+            await self.client.copy_message(
+                self.message.chat.id,
+                int(find_note["CHAT_ID"]),
+                int(find_note["MESSAGE_ID"]),
+                reply_to_message_id=self.message.reply_to_message.id,
+            )
+        else:
+            await self.client.copy_message(
+                self.message.chat.id,
+                int(find_note["CHAT_ID"]),
+                int(find_note["MESSAGE_ID"]),
+            )
+
+    def prepare_media_group(self, messages_grouped):
+        media_grouped_list = []
+        for _ in messages_grouped:
+            if _.photo:
+                media_grouped_list.append(self.prepare_photo(_))
+            elif _.video:
+                media_grouped_list.append(self.prepare_video(_))
+            elif _.audio:
+                media_grouped_list.append(self.prepare_audio(_))
+            elif _.document:
+                media_grouped_list.append(self.prepare_document(_))
+        return media_grouped_list
+
+    def prepare_photo(self, message):
+        if message.caption:
+            return InputMediaPhoto(message.photo.file_id, message.caption.markdown)
+        else:
+            return InputMediaPhoto(message.photo.file_id)
+
+    def prepare_video(self, message):
+        if message.caption:
+            if message.video.thumbs:
+                return InputMediaVideo(
+                    message.video.file_id,
+                    message.video.thumbs[0].file_id,
+                    message.caption.markdown,
+                )
+            else:
+                return InputMediaVideo(message.video.file_id, message.caption.markdown)
+        elif message.video.thumbs:
+            return InputMediaVideo(message.video.file_id, message.video.thumbs[0].file_id)
+        else:
+            return InputMediaVideo(message.video.file_id)
+
+    def prepare_audio(self, message):
+        if message.caption:
+            return InputMediaAudio(message.audio.file_id, message.caption.markdown)
+        else:
+            return InputMediaAudio(message.audio.file_id)
+
+    def prepare_document(self, message):
+        if message.caption:
+            if message.document.thumbs:
+                return InputMediaDocument(
+                    message.document.file_id,
+                    message.document.thumbs[0].file_id,
+                    message.caption.markdown,
+                )
+            else:
+                return InputMediaDocument(message.document.file_id, message.caption.markdown)
+        elif message.document.thumbs:
+            return InputMediaDocument(message.document.file_id, message.document.thumbs[0].file_id)
+        else:
+            return InputMediaDocument(message.document.file_id)

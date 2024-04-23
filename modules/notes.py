@@ -15,17 +15,11 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from pyrogram import Client, filters, errors, enums
-from pyrogram.types import (
-    Message,
-    InputMediaPhoto,
-    InputMediaVideo,
-    InputMediaAudio,
-    InputMediaDocument,
-)
+from pyrogram.types import Message
 
 from utils.db import db
 from utils.misc import modules_help, prefix
-#  from utils.scripts import with_reply
+from utils.handlers import NoteSendHandler
 
 
 @Client.on_message(filters.command(["save"], prefix) & filters.me)
@@ -111,141 +105,11 @@ async def save_note(client: Client, message: Message):
             parse_mode=enums.ParseMode.HTML
         )
 
-
-@Client.on_message(filters.command(["note"], prefix) & filters.me)
+@Client.on_message(filters.command("note", prefix) & filters.me)
 async def note_send(client: Client, message: Message):
-    if len(message.text.split()) >= 2:
-        await message.edit("<b>Loading...</b>", parse_mode=enums.ParseMode.HTML)
+    handler = NoteSendHandler(client, message)
+    await handler.handle_note_send()
 
-        note_name = f"{message.text.split(maxsplit=1)[1]}"
-        find_note = db.get("core.notes", f"note{note_name}", False)
-        if find_note:
-            try:
-                await client.get_messages(
-                    int(find_note["CHAT_ID"]), int(find_note["MESSAGE_ID"])
-                )
-            except errors.RPCError:
-                await message.edit(
-                    "<b>Sorry, but this note is unavaliable.\n\n"
-                    f"You can delete this note with "
-                    f"<code>{prefix}clear {note_name}</code></b>",
-                    parse_mode=enums.ParseMode.HTML
-                )
-                return
-
-            if find_note.get("MEDIA_GROUP"):
-                messages_grouped = await client.get_media_group(
-                    int(find_note["CHAT_ID"]), int(find_note["MESSAGE_ID"])
-                )
-                media_grouped_list = []
-                for _ in messages_grouped:
-                    if _.photo:
-                        if _.caption:
-                            media_grouped_list.append(
-                                InputMediaPhoto(
-                                    _.photo.file_id, _.caption.markdown
-                                )
-                            )
-                        else:
-                            media_grouped_list.append(
-                                InputMediaPhoto(_.photo.file_id)
-                            )
-                    elif _.video:
-                        if _.caption:
-                            if _.video.thumbs:
-                                media_grouped_list.append(
-                                    InputMediaVideo(
-                                        _.video.file_id,
-                                        _.video.thumbs[0].file_id,
-                                        _.caption.markdown,
-                                    )
-                                )
-                            else:
-                                media_grouped_list.append(
-                                    InputMediaVideo(
-                                        _.video.file_id, _.caption.markdown
-                                    )
-                                )
-                        elif _.video.thumbs:
-                            media_grouped_list.append(
-                                InputMediaVideo(
-                                    _.video.file_id, _.video.thumbs[0].file_id
-                                )
-                            )
-                        else:
-                            media_grouped_list.append(
-                                InputMediaVideo(_.video.file_id)
-                            )
-                    elif _.audio:
-                        if _.caption:
-                            media_grouped_list.append(
-                                InputMediaAudio(
-                                    _.audio.file_id, _.caption.markdown
-                                )
-                            )
-                        else:
-                            media_grouped_list.append(
-                                InputMediaAudio(_.audio.file_id)
-                            )
-                    elif _.document:
-                        if _.caption:
-                            if _.document.thumbs:
-                                media_grouped_list.append(
-                                    InputMediaDocument(
-                                        _.document.file_id,
-                                        _.document.thumbs[0].file_id,
-                                        _.caption.markdown,
-                                    )
-                                )
-                            else:
-                                media_grouped_list.append(
-                                    InputMediaDocument(
-                                        _.document.file_id, _.caption.markdown
-                                    )
-                                )
-                        elif _.document.thumbs:
-                            media_grouped_list.append(
-                                InputMediaDocument(
-                                    _.document.file_id,
-                                    _.document.thumbs[0].file_id,
-                                )
-                            )
-                        else:
-                            media_grouped_list.append(
-                                InputMediaDocument(_.document.file_id)
-                            )
-                if message.reply_to_message:
-                    await client.send_media_group(
-                        message.chat.id,
-                        media_grouped_list,
-                        reply_to_message_id=message.reply_to_message.id,
-                        parse_mode=enums.ParseMode.HTML,
-                        )
-                else:
-                    await client.send_media_group(
-                        message.chat.id, media_grouped_list
-                    )
-            elif message.reply_to_message:
-                await client.copy_message(
-                    message.chat.id,
-                    int(find_note["CHAT_ID"]),
-                    int(find_note["MESSAGE_ID"]),
-                    reply_to_message_id=message.reply_to_message.id,
-                )
-            else:
-                await client.copy_message(
-                    message.chat.id,
-                    int(find_note["CHAT_ID"]),
-                    int(find_note["MESSAGE_ID"]),
-                )
-            await message.delete()
-        else:
-            await message.edit("<b>There is no such note</b>", parse_mode=enums.ParseMode.HTML)
-    else:
-        await message.edit(
-            f"<b>Example: <code>{prefix}note note_name</code></b>",
-            parse_mode=enums.ParseMode.HTML
-        )
 
 
 @Client.on_message(filters.command(["notes"], prefix) & filters.me)
