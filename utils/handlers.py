@@ -865,7 +865,7 @@ class PromoteHandler:
                 privileges=ChatPrivileges(**self.common_privileges_promote),
             )
             if len(self.cause.split()) > 1:
-                if self.message.chat.type == "supergroup":
+                if self.message.chat.type == "group":
                     await self.client.set_administrator_title(
                         self.chat_id,
                         user_id,
@@ -888,8 +888,8 @@ class AntiChannelsHandler:
         self.prefix = prefix
 
     async def handle_anti_channels(self):
-        if self.message.chat.type != "supergroup":
-            await self.message.edit("<b>Not supported in non-supergroup chats</b>")
+        if self.message.chat.type != "group":
+            await self.message.edit("<b>Not supported in non-group chats</b>")
             return
 
         command = self.message.command
