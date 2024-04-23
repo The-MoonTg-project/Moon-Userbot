@@ -176,7 +176,7 @@ async def dalle(c: Client, message: Message):
         data = {
             "prompt": prompt,
             "token": vca_api_key,
-            "size": "1024x1024"
+            "size": "1024x1792"
         }
 
         response = await generate_dalle(api_url, data)
