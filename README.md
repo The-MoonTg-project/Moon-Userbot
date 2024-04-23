@@ -4,7 +4,7 @@
 
 [![Open Source Love](https://badges.frapsoft.com/os/v2/open-source.png?v=103)](https://github.com/The-MoonTg-project/Moon-Userbot)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-Yes-green)](https://github.com/The-MoonTg-project/Moon-Userbot/graphs/commit-activity)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/bd7afaaa853c4bf5b55fdc3fa18c9c9d)](https://app.codacy.com/gh/The-MoonTg-project/Moon-Userbot/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+[![CodeFactor](https://www.codefactor.io/repository/github/the-moontg-project/moon-userbot/badge)](https://www.codefactor.io/repository/github/the-moontg-project/moon-userbot)
 [![GitHub Forks](https://img.shields.io/github/forks/The-MoonTg-project/Moon-Userbot?&logo=github)](https://github.com/The-MoonTg-project/Moon-Userbot)
 [![GitHub Stars](https://img.shields.io/github/stars/The-MoonTg-project/Moon-Userbot?&logo=github)](https://github.com/The-MoonTg-project/Moon-Userbot/stargazers)
 [![Last commit](https://img.shields.io/github/last-commit/The-MoonTg-project/Moon-Userbot?&logo=github)](https://github.com/The-MoonTg-project/Moon-Userbot)
