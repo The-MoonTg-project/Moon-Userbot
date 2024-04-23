@@ -1086,8 +1086,10 @@ class NoteSendHandler:
 
     async def send_note(self, find_note):
         if find_note.get("MEDIA_GROUP"):
+            await self.message.delete()
             await self.send_media_group(find_note)
         else:
+            await self.message.delete()
             await self.copy_message(find_note)
 
     async def send_media_group(self, find_note):

@@ -14,6 +14,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import re
 import json
 import threading
 import dns.resolver
@@ -53,30 +54,38 @@ class MongoDatabase(Database):
         self._database = self._client[name]
 
     def set(self, module: str, variable: str, value):
+        if not isinstance(module, str) or not isinstance(variable, str):
+            raise ValueError("Module and variable must be strings")
         self._database[module].replace_one(
             {"var": variable}, {"var": variable, "val": value}, upsert=True
         )
 
     def get(self, module: str, variable: str, expected_value=None):
+        if not isinstance(module, str) or not isinstance(variable, str):
+            raise ValueError("Module and variable must be strings")
         doc = self._database[module].find_one({"var": variable})
         return expected_value if doc is None else doc["val"]
 
     def get_collection(self, module: str):
+        if not isinstance(module, str):
+            raise ValueError("Module must be a string")
         return {item["var"]: item["val"] for item in self._database[module].find()}
 
     def remove(self, module: str, variable: str):
+        if not isinstance(module, str) or not isinstance(variable, str):
+            raise ValueError("Module and variable must be strings")
         self._database[module].delete_one({"var": variable})
 
     def close(self):
         self._client.close()
 
     def add_chat_history(self, message):
-        chat_history = db.get("core.cohere", "chat_history", expected_value=[])
+        chat_history = self.get("core.cohere", "chat_history", expected_value=[])
         chat_history.append(message)
-        db.set("core.cohere", "chat_history", chat_history)
+        self.set("core.cohere", "chat_history", chat_history)
 
     def get_chat_history(self):
-        return db.get("core.cohere", "chat_history", expected_value=[])
+        return self.get("core.cohere", "chat_history", expected_value=[])
 
 
 class SqliteDatabase(Database):
@@ -98,6 +107,10 @@ class SqliteDatabase(Database):
             return json.loads(row["val"])
 
     def _execute(self, module: str, *args, **kwargs) -> sqlite3.Cursor:
+        pattern = r"^(core|custom)\.\w+$"
+        if not re.match(pattern, module):
+            raise ValueError(f"Invalid module name format: {module}")
+
         self._lock.acquire()
         try:
             return self._cursor.execute(*args, **kwargs)
@@ -119,7 +132,7 @@ class SqliteDatabase(Database):
 
     def get(self, module: str, variable: str, default=None):
         sql = f"SELECT * FROM '{module}' WHERE var=:var"
-        cur = self._execute(module, sql, {"tabl": module, "var": variable})
+        cur = self._execute(module, sql, {"var": variable})
 
         row = cur.fetchone()
         if row is None:
@@ -172,12 +185,12 @@ class SqliteDatabase(Database):
         self._conn.close()
 
     def add_chat_history(self, message):
-        chat_history = db.get("core.cohere", "chat_history", default=[])
+        chat_history = self.get("core.cohere", "chat_history", default=[])
         chat_history.append(message)
-        db.set("core.cohere", "chat_history", chat_history)
+        self.set("core.cohere", "chat_history", chat_history)
 
     def get_chat_history(self):
-        return db.get("core.cohere", "chat_history", default=[])
+        return self.get("core.cohere", "chat_history", default=[])
 
 
 if config.db_type in ["mongo", "mongodb"]:
