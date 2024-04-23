@@ -21,13 +21,23 @@ from pyrogram import Client
 from utils import config
 
 if __name__ == "__main__":
-    app = Client(
-        "my_account",
-        api_id=config.api_id,
-        api_hash=config.api_hash,
-        hide_password=True,
-        test_mode=config.test_server,
-    )
+    if not config.STRINGSESSION:
+        app = Client(
+            "my_account",
+            api_id=config.api_id,
+            api_hash=config.api_hash,
+            hide_password=True,
+            test_mode=config.test_server,
+        )
+    elif config.STRINGSESSION:
+        app = Client(
+            "my_account",
+            api_id=config.api_id,
+            api_hash=config.api_hash,
+            session_string=config.STRINGSESSION,
+            hide_password=True,
+            test_mode=config.test_server,
+        )
 
     if config.db_type in ["mongo", "mongodb"]:
         from pymongo import MongoClient, errors
@@ -59,9 +69,8 @@ if __name__ == "__main__":
             "Custom modules: @moonub_modules\n"
             "Chat [EN]: @moonub_chat\n"
             f"For restart, enter:</b>\n"
-            f"<code>{restart}</code>",
-            parse_mode=enums.ParseMode.HTML
+            f"<code>{restart}</code>"
         )
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"[ERROR]: Sending Message to me failed! {e}")
     app.stop()

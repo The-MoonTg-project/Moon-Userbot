@@ -1,5 +1,5 @@
 #  Moon-Userbot - telegram userbot
-#  Copyright (C) 2020-present Dragon Userbot Organization
+#  Copyright (C) 2020-present Moon Userbot Organization
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -25,7 +25,6 @@ from pyrogram.types import (
 
 from utils.db import db
 from utils.misc import modules_help, prefix
-from pyrogram.types import Message
 #  from utils.scripts import with_reply
 
 
@@ -38,7 +37,7 @@ async def save_note(client: Client, message: Message):
     except (errors.RPCError, ValueError, KeyError):
         # group is not accessible or isn't created
         chat = await client.create_supergroup(
-            "Dragon_Userbot_Notes_Filters", "Don't touch this group, please"
+            "Moon_Userbot_Notes_Filters", "Don't touch this group, please"
         )
         db.set("core.notes", "chat_id", chat.id)
 

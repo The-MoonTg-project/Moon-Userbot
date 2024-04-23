@@ -1,5 +1,4 @@
-import asyncio
-import requests
+# import asyncio
 import base64
 import os
 import aiohttp
@@ -28,19 +27,19 @@ async def fetch_upscale_models():
         async with session.get('https://visioncraft.top/models-upscale') as response:
             return await response.json()
 
-async def generate_gifs(api_url, data):
+async def generate_gifs(data):
     """Helper Function to generate GIF"""
     async with aiohttp.ClientSession() as session:
         async with session.post(f"{api_url}/generate-gif", json=data, verify_ssl=False) as response:
             return await response.json()
 
-async def generate_images(api_url, data):
+async def generate_images(data):
     """Helper Function to generate image using SDXL"""
     async with aiohttp.ClientSession() as session:
         async with session.post(f"{api_url}/sd", json=data) as response:
             return await response.read()
 
-async def generate_dalle(api_url, data):
+async def generate_dalle(data):
     """Helper Function to generate image using DALL-E 3"""
     async with aiohttp.ClientSession() as session:
         async with session.post(f"{api_url}/dalle", json=data) as response:
@@ -59,7 +58,7 @@ def upscale_request_lexica(image: bytes) -> bytes:
     imageBytes = client.upscale(image)
     return imageBytes
 
-async def upscale_request_vc(api_url, api_key, image_data):
+async def upscale_request_vc(api_key, image_data):
     """Request Maker Helper function to upscale image for VisionCraft API"""
     image_base64 = base64.b64encode(image_data).decode('utf-8')
 
@@ -77,7 +76,7 @@ async def upscale_request_vc(api_url, api_key, image_data):
         async with session.post(f"{api_url}/upscale", json=payload, headers=headers) as response:
             return await response.read()
 
-async def transcribe_audio(api_url, api_key, audio_data, language, task):
+async def transcribe_audio(api_key, audio_data, language, task):
     """Request Maker Helper function to transcribe audio"""
 
     audio_base64 = base64.b64encode(audio_data).decode("utf-8")
@@ -107,7 +106,6 @@ async def vdxl(c: Client, message: Message):
          if model not in models:
           await message.edit_text(f"<b>Usage: </b><code>{prefix}vdxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>")
           return
-
         elif message.reply_to_message and len(message.command) > 1:
          model = message.text.split(maxsplit=1)[1]
          if model in models:
@@ -136,14 +134,14 @@ async def vdxl(c: Client, message: Message):
             "upscale": True
         }
 
-        response = await generate_images(api_url, data)
+        response = await generate_images(data)
 
         try:
             with open("generated_image.png", "wb") as f:
                 f.write(response)
             await message.delete()
             await c.send_document(chat_id, document="generated_image.png", caption=f"<b>Prompt: </b><code>{prompt}</code>\n<b>Model: </b><code>{model}</code>")
-            os.remove(f"generated_image.png")
+            os.remove("generated_image.png")
         except KeyError:
             try:
                 error = response["error"]
@@ -176,17 +174,17 @@ async def dalle(c: Client, message: Message):
         data = {
             "prompt": prompt,
             "token": vca_api_key,
-            "size": "1024x1792"
+            "size": "1792x1024"
         }
 
-        response = await generate_dalle(api_url, data)
+        response = await generate_dalle(data)
 
         try:
-            with open(f"generated_image.png", "wb") as f:
+            with open("generated_image.png", "wb") as f:
                 f.write(response)
             await message.delete()
             await c.send_document(chat_id, document="generated_image.png", caption=f"<b>Prompt: </b><code>{prompt}</code>\n<b>Model: </b><code>DALL-E 3</code>")
-            os.remove(f"generated_image.png")
+            os.remove("generated_image.png")
         except KeyError:
             try:
                 error = response["error"]
@@ -204,8 +202,6 @@ async def vgif(c: Client, message: Message):
     """Text2GIF Using VisionCraft API"""
     try:
         chat_id = message.chat.id
-        
-
         await message.edit_text("<code>Please Wait...</code>")
 
         if len(message.command) >= 2:
@@ -227,7 +223,7 @@ async def vgif(c: Client, message: Message):
             "sampler": "Euler"
         }
 
-        response = await generate_gifs(api_url, data)
+        response = await generate_gifs(data)
 
         try:
             image_url = response["images"][0]
@@ -285,7 +281,7 @@ async def upscale(c: Client, message: Message):
     
     api_key = vca_api_key
     image = open(photo_data, 'rb').read()
-    upscaled_image_data = await upscale_request_vc(api_url, api_key, image)
+    upscaled_image_data = await upscale_request_vc(api_key, image)
     with open('upscaled_image.png', 'wb') as file:
         file.write(upscaled_image_data)
         await i.delete()
@@ -293,20 +289,19 @@ async def upscale(c: Client, message: Message):
         os.remove('upscaled_image.png')
 
 @Client.on_message(filters.command("whisp", prefix) & filters.me)
-async def whisp(c: Client, message: Message):
+async def whisp(message: Message):
     """Get Text From Audio: Uses VisionCraft API"""
     try:
         audio_data = await message.reply_to_message.download()
-        message_id = message.reply_to_message.id
         try:
             if audio_data == enums.MessageMediaType.AUDIO or enums.MessageMediaType.VOICE:
-                i = await message.edit("<code>Processing...</code>", parse_mode=enums.ParseMode.HTML)
+                await message.edit("<code>Processing...</code>", parse_mode=enums.ParseMode.HTML)
                 
                 api_key = vca_api_key
                 audio = open(audio_data, 'rb').read()
                 language = 'auto'
                 task = 'transcribe'
-                task_result = await transcribe_audio(api_url, api_key, audio, language, task)
+                task_result = await transcribe_audio(api_key, audio, language, task)
                 # print(task_result)
                 ouput = task_result['text']
                 await message.edit_text(f"Transcribed result:\n <code>{ouput}</code>")

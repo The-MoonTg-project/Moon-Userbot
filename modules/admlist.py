@@ -1,5 +1,5 @@
 #  Moon-Userbot - telegram userbot
-#  Copyright (C) 2020-present Dragon Userbot Organization
+#  Copyright (C) 2020-present Moon Userbot Organization
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -14,13 +14,13 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import json
-from html import escape as t
+# import json
+# from html import escape as t
 from time import perf_counter
 from typing import AsyncGenerator, Optional, List, Union
 
 from pyrogram import Client, filters
-from pyrogram.errors.exceptions.flood_420 import FloodWait
+# from pyrogram.errors.exceptions.flood_420 import FloodWait
 from pyrogram import types, raw, utils, enums
 from pyrogram.types.object import Object
 
@@ -33,8 +33,8 @@ class Chat(Object):
         self,
         *,
         client: "Client" = None,
-        id: int,
-        type: "enums.ChatType",
+        id: id,
+        type: type,
         is_verified: bool = None,
         is_restricted: bool = None,
         is_creator: bool = None,
