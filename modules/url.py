@@ -111,7 +111,7 @@ async def urldl(client: Client, message: Message):
     try:
         downloader.start(blocking=False)
     except Exception as e:
-        return await message.edit_msg(format_exc(e))
+        return await message.edit_text(format_exc(e))
     while not downloader.isFinished():
         total_length = downloader.filesize or None
         downloaded = downloader.get_dl_size(human=True)
