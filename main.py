@@ -54,7 +54,11 @@ if config.STRINGSESSION:
 app = Client("my_account", **common_params)
 
 async def main():
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        handlers=[logging.FileHandler("moonlogs.txt"), logging.StreamHandler()],
+        level=logging.INFO,
+        )
     DeleteAccount.__new__ = None
 
     try:

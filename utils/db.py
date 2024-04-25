@@ -17,13 +17,13 @@
 import re
 import json
 import threading
-import dns.resolver
-import pymongo
 import sqlite3
+from dns import resolver
+import pymongo
 from utils import config
 
-dns.resolver.default_resolver = dns.resolver.Resolver(configure=False)
-dns.resolver.default_resolver.nameservers = ["8.8.8.8"]
+resolver.default_resolver = resolver.Resolver(configure=False)
+resolver.default_resolver.nameservers = ["1.1.1.1"]
 
 
 class Database:

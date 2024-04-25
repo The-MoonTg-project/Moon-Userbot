@@ -10,9 +10,6 @@ from utils.config import vca_api_key
 from utils.misc import modules_help, prefix
 from utils.scripts import format_exc, import_library
 
-lexica = import_library("lexica", "lexica-api")
-from lexica import Client as lcl
-
 api_url = "https://visioncraft.top"
 
 async def fetch_models():
@@ -52,13 +49,7 @@ async def download_image(session, image_url, filename):
         with open(filename, "wb") as f:
             f.write(image_data)
 
-def upscale_request_lexica(image: bytes) -> bytes:
-    """Request Maker Helper function to upscale image for Lexica API"""
-    client = lcl()
-    imageBytes = client.upscale(image)
-    return imageBytes
-
-async def upscale_request_vc(api_key, image_data):
+async def upscale_request(api_key, image_data):
     """Request Maker Helper function to upscale image for VisionCraft API"""
     image_base64 = base64.b64encode(image_data).decode('utf-8')
 
@@ -102,23 +93,19 @@ async def vdxl(c: Client, message: Message):
         await message.edit_text("<code>Please Wait...</code>")
 
         if len(message.command) > 2:
-         model, prompt = message.text.split(maxsplit=2)[1:]
-         if model not in models:
-          await message.edit_text(f"<b>Usage: </b><code>{prefix}vdxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>")
-          return
+            model, prompt = message.text.split(maxsplit=2)[1:]
+            if model not in models:
+                return await message.edit_text(f"<b>Usage: </b><code>{prefix}vdxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>")
         elif message.reply_to_message and len(message.command) > 1:
-         model = message.text.split(maxsplit=1)[1]
-         if model in models:
-            prompt = message.reply_to_message.text
-         else:
-          await message.edit_text(f"<b>Usage: </b><code>{prefix}vdxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>")
-          return
-
+            model = message.text.split(maxsplit=1)[1]
+            if model in models:
+                prompt = message.reply_to_message.text
+            else:
+                return await message.edit_text(f"<b>Usage: </b><code>{prefix}vdxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>")
         else:
-         await message.edit_text(
+            return await message.edit_text(
             f"<b>Usage: </b><code>{prefix}vdxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
         )
-         return
 
         data = {
             "prompt": prompt,
@@ -243,27 +230,6 @@ async def vgif(c: Client, message: Message):
     except Exception as e:
         await message.edit_text(f"An error occurred: {format_exc(e)}")
 
-
-@Client.on_message(filters.command("lupscale", prefix) & filters.me)
-async def lupscale(client: Client, message: Message):
-    """Upscale Image Using Lexica API"""
-    try:
-        photo_data = await message.download()
-    except ValueError:
-        try:
-            photo_data = await message.reply_to_message.download()
-        except ValueError:
-            await message.edit("<b>File not found</b>", parse_mode=enums.ParseMode.HTML)
-            return
-    await message.edit("<code>Processing...</code>", parse_mode=enums.ParseMode.HTML)
-    image = open(photo_data, 'rb').read()
-    upscaled_image = upscale_request_lexica(image)
-    with open('upscaled.png', 'wb') as f:
-        f.write(upscaled_image)
-    # await message.delete()
-    await client.send_document(message.chat.id, 'upscaled.png', caption="Upscaled!", reply_to_message_id=message.id)
-    os.remove('upscaled.png')
-
 @Client.on_message(filters.command("upscale", prefix) & filters.me)
 async def upscale(c: Client, message: Message):
     """Default Upscaler of Moon-Userbot: Uses VisionCraft APi"""
@@ -281,7 +247,7 @@ async def upscale(c: Client, message: Message):
     
     api_key = vca_api_key
     image = open(photo_data, 'rb').read()
-    upscaled_image_data = await upscale_request_vc(api_key, image)
+    upscaled_image_data = await upscale_request(api_key, image)
     with open('upscaled_image.png', 'wb') as file:
         file.write(upscaled_image_data)
         await i.delete()
@@ -319,6 +285,7 @@ async def whisp(message: Message):
         return
     except Exception as e:
         await message.edit_text(f"An error occurred: {format_exc(e)}")
+
 
 modules_help["aiutils"] = {
     "vdxl [model]* [prompt/reply to prompt]*": "Text to Image with SDXL model",
