@@ -43,9 +43,6 @@ async def ImageGeneration(model,prompt):
         await client.close()
 
 async def UpscaleImages(image: bytes) -> str:
-    """
-    Upscales an image and return with upscaled image path.
-    """
     client = AsyncClient()
     content = await client.upscale(image)
     await client.close()
