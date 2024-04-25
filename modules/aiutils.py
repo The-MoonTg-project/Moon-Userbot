@@ -5,6 +5,7 @@ import aiohttp
 
 from pyrogram import Client, enums, filters
 from pyrogram.types import Message
+from pyrogram.errors import MessageTooLong
 
 from utils.config import vca_api_key
 from utils.misc import modules_help, prefix
@@ -86,18 +87,26 @@ async def transcribe_audio(api_key, audio_data, language, task):
 @Client.on_message(filters.command("vdxl", prefix) & filters.me)
 async def vdxl(c: Client, message: Message):
     """Text to Image Generation Using SDXL"""
+
+    await message.edit_text("<code>Please Wait...</code>")
+
     try:
         chat_id = message.chat.id
         models = await fetch_models()
 
-        await message.edit_text("<code>Please Wait...</code>")
-
-        if len(message.command) > 2:
-            model, prompt = message.text.split(maxsplit=2)[1:]
-            if model not in models:
+        if not message.reply_to_message and len(message.command) > 2:
+            model_found = False
+            for m in models:
+                if message.text.startswith(f"{prefix}vdxl {m}"):
+                    model = m
+                    prompt = message.text[len(f"{prefix}vdxl {m}"):].strip()
+                    model_found = True
+                    break
+            if not model_found:
                 return await message.edit_text(f"<b>Usage: </b><code>{prefix}vdxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>")
         elif message.reply_to_message and len(message.command) > 1:
             model = message.text.split(maxsplit=1)[1]
+            print(model)
             if model in models:
                 prompt = message.reply_to_message.text
             else:
@@ -136,6 +145,10 @@ async def vdxl(c: Client, message: Message):
             except KeyError:
                 detail = response["detail"]
                 await message.edit_text(f"<code>{detail}</code>")
+    
+    except MessageTooLong:
+        await message.edit_text("<b>Model List is too long</b> See the Full List <a href='https://visioncraft.top/sd/models'> Here </a>")
+        return
 
     except Exception as e:
         await message.edit_text(f"An error occurred: {format_exc(e)}")
@@ -241,9 +254,9 @@ async def upscale(c: Client, message: Message):
             photo_data = await message.reply_to_message.download()
             message_id = message.reply_to_message.id
         except ValueError:
-            await message.edit("<b>File not found</b>", parse_mode=enums.ParseMode.HTML)
+            await message.edit("<b>File not found</b>")
             return
-    i = await message.edit("<code>Processing...</code>", parse_mode=enums.ParseMode.HTML)
+    i = await message.edit("<code>Processing...</code>")
     
     api_key = vca_api_key
     image = open(photo_data, 'rb').read()
@@ -261,7 +274,7 @@ async def whisp(message: Message):
         audio_data = await message.reply_to_message.download()
         try:
             if audio_data == enums.MessageMediaType.AUDIO or enums.MessageMediaType.VOICE:
-                await message.edit("<code>Processing...</code>", parse_mode=enums.ParseMode.HTML)
+                await message.edit("<code>Processing...</code>")
                 
                 api_key = vca_api_key
                 audio = open(audio_data, 'rb').read()
@@ -272,7 +285,7 @@ async def whisp(message: Message):
                 ouput = task_result['text']
                 await message.edit_text(f"Transcribed result:\n <code>{ouput}</code>")
             else:
-                await message.edit("<b>To be used on AUIDO files only</b>", parse_mode=enums.ParseMode.HTML)
+                await message.edit("<b>To be used on AUIDO files only</b>")
         except KeyError:
             try:
                 error = task_result["error"]
@@ -281,7 +294,7 @@ async def whisp(message: Message):
                 detail = task_result["detail"]
                 await message.edit_text(f"<code>{detail}</code>")
     except ValueError:
-        await message.edit("<b>File not found</b>", parse_mode=enums.ParseMode.HTML)
+        await message.edit("<b>File not found</b>")
         return
     except Exception as e:
         await message.edit_text(f"An error occurred: {format_exc(e)}")
