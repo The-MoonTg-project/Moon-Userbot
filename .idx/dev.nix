@@ -7,6 +7,7 @@
   packages = [
     pkgs.docker
     pkgs.python3
+    pkgs.ffmpeg
   ];
 
   # Sets environment variables in the workspace
