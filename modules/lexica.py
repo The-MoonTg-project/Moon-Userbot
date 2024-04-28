@@ -23,7 +23,7 @@ async def lupscale(client: Client, message: Message):
             return
     try:
         image = open(photo_data, 'rb').read()
-        upscaled_image = UpscaleImages(image)
+        upscaled_image = await UpscaleImages(image)
         if message.reply_to_message:
             message_id = message.reply_to_message.id
             await message.delete()
