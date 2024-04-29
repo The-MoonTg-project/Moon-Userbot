@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-echo """
+cat <<'EOF'
  _      ____  ____  _     
 / \__/|/  _ \/  _ \/ \  /|
 | |\/||| / \|| / \|| |\ ||
@@ -12,6 +12,6 @@ This file is part of < https://github.com/The-MoonTg-project/Moon-Userbot > proj
 and is released under the "GNU v3.0 License Agreement".
 Please see < https://github.com/The-MoonTg-project/Moon-Userbot/blob/main/LICENSE >
 All rights reserved.
-"""
+EOF
 
 gunicorn app:app --daemon && python main.py
