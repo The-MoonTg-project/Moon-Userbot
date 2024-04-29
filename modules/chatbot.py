@@ -1,5 +1,5 @@
 import os
-from utils.scripts import import_library, format_exc
+from utils.scripts import import_library, format_exc, restart
 from utils.config import cohere_key
 from utils.db import db
 
@@ -15,7 +15,7 @@ from pyrogram import Client, filters, enums
 from pyrogram.types import Message
 
 chatai_users = db.getaiusers()
-print(chatai_users)
+# print(chatai_users)
 
 @Client.on_message(filters.command("addai", prefix) & filters.me)
 async def adduser(client: Client, message: Message):
@@ -25,8 +25,9 @@ async def adduser(client: Client, message: Message):
             user_id = int(user_id)
             db.addaiuser(user_id)
             await message.edit_text(f"<b>User ID Added</b>")
+            restart()
         else:
-            await message.edit_text(f"<b>User ID is invalid</b>")
+            await message.edit_text(f"<b>User ID is invalid.</b>")
             return
     else:
         await message.edit_text(f"<b>Usage: </b><code>{prefix}addai [user_id]</code>")
@@ -40,8 +41,9 @@ async def remuser(client: Client, message: Message):
             user_id = int(user_id)
             db.remaiuser(user_id)
             await message.edit_text(f"<b>User ID Removed</b>")
+            restart()
         else:
-            await message.edit_text(f"<b>User ID is invalid</b>")
+            await message.edit_text(f"<b>User ID is invalid.</b>")
             return
     else:
         await message.edit_text(f"<b>Usage: </b><code>{prefix}remai [user_id]</code>")
@@ -91,6 +93,9 @@ async def chatoff(client: Client, message: Message):
 
     await message.reply_text("<b>ChatBot is off now</b>")
 
+@Client.on_message(filters.command("listai", prefix) & filters.me)
+async def listai(client: Client, message: Message):
+    await message.edit_text(f"<b>User ID's Currently in AI ChatBot List:</b>\n <code>{chatai_users}</code>")
 
 modules_help["chatbot"] = {
     "addai": "Add A user to AI ChatBot List",

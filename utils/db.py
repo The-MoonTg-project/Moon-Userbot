@@ -207,13 +207,15 @@ class SqliteDatabase(Database):
 
     def addaiuser(self, user_id):
         chatai_users = self.get("core.chatbot", "chatai_users", default=[])
-        chatai_users.append(user_id)
-        self.set("core.chatbot", "chatai_users", chatai_users)
+        if user_id not in chatai_users:
+            chatai_users.append(user_id)
+            self.set("core.chatbot", "chatai_users", chatai_users)
 
     def remaiuser(self, user_id):
         chatai_users = self.get("core.chatbot", "chatai_users", default=[])
-        chatai_users.remove(user_id)
-        self.set("core.chatbot", "chatai_users", chatai_users)
+        if user_id in chatai_users:
+            chatai_users.remove(user_id)
+            self.set("core.chatbot", "chatai_users", chatai_users)
     
     def getaiusers(self):
         return self.get("core.chatbot", "chatai_users", default=[])
