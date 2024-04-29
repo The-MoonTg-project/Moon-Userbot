@@ -122,14 +122,14 @@ Contributions of any type are welcome like `custom_modules` etc. Feel free to do
 **Working on your first Pull Request?** You can learn how from this _free_ series [How to Contribute to an Open Source Project on GitHub](https://kcd.im/pull-request)
 
 ## 👨🏻‍💻 Support
-*[Channel](https://t.me/moonuserbot) with latest news on the official telegram \[en\]
-*[Modules Channel](https://t.me/moonub_modules) with custom modules \[en\]
-*[Discussion](https://t.me/moonub_chat) in the official telegram chat \[en\]
+* [Channel](https://t.me/moonuserbot) with latest news on the official telegram \[en\]
+* [Modules Channel](https://t.me/moonub_modules) with custom modules \[en\]
+* [Discussion](https://t.me/moonub_chat) in the official telegram chat \[en\]
 
 
 ## 👨🏻‍💼 Credits
-*[Dragon-Userbot](https://github.com/Dragon-Userbot/Dragon-Userbot)
-*[AbhiTheModder](https://github.com/AbhiTheModder)
+* [Dragon-Userbot](https://github.com/Dragon-Userbot/Dragon-Userbot)
+* [AbhiTheModder](https://github.com/AbhiTheModder)
  
 ### Written on [Pyrogram\[Pyrofork\]❤️](https://github.com/Mayuri-Chan/pyrofork) and [pytgcalls❤️](https://github.com/MarshalX/tgcalls/tree/main/pytgcalls)
  
