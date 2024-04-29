@@ -1,35 +1,40 @@
-# import asyncio
 import base64
 import os
-import aiohttp
 
+import aiohttp
 from pyrogram import Client, enums, filters
-from pyrogram.types import Message
 from pyrogram.errors import MessageTooLong
+from pyrogram.types import Message
 
 from utils.config import vca_api_key
 from utils.misc import modules_help, prefix
-from utils.scripts import format_exc, import_library
+from utils.scripts import format_exc
 
 api_url = "https://visioncraft.top"
+
 
 async def fetch_models():
     """Get all available SDXL models"""
     async with aiohttp.ClientSession() as session:
-        async with session.get('https://visioncraft.top/sd/models') as response:
+        async with session.get("https://visioncraft.top/sd/models") as response:
             return await response.json()
+
 
 async def fetch_upscale_models():
     """Get all available upscale models"""
     async with aiohttp.ClientSession() as session:
-        async with session.get('https://visioncraft.top/models-upscale') as response:
+        async with session.get("https://visioncraft.top/models-upscale") as response:
             return await response.json()
+
 
 async def generate_gifs(data):
     """Helper Function to generate GIF"""
     async with aiohttp.ClientSession() as session:
-        async with session.post(f"{api_url}/generate-gif", json=data, verify_ssl=False) as response:
+        async with session.post(
+            f"{api_url}/generate-gif", json=data, verify_ssl=False
+        ) as response:
             return await response.json()
+
 
 async def generate_images(data):
     """Helper Function to generate image using SDXL"""
@@ -37,11 +42,13 @@ async def generate_images(data):
         async with session.post(f"{api_url}/sd", json=data) as response:
             return await response.read()
 
+
 async def generate_dalle(data):
     """Helper Function to generate image using DALL-E 3"""
     async with aiohttp.ClientSession() as session:
         async with session.post(f"{api_url}/dalle", json=data) as response:
             return await response.read()
+
 
 async def download_image(session, image_url, filename):
     """Get The Image Data From Response"""
@@ -50,23 +57,27 @@ async def download_image(session, image_url, filename):
         with open(filename, "wb") as f:
             f.write(image_data)
 
+
 async def upscale_request(api_key, image_data):
     """Request Maker Helper function to upscale image for VisionCraft API"""
-    image_base64 = base64.b64encode(image_data).decode('utf-8')
+    image_base64 = base64.b64encode(image_data).decode("utf-8")
 
     payload = {
         "token": api_key,
         "image": image_base64,
         "model": "R-ESRGAN 4x+",
-        "resize": 4
+        "resize": 4,
     }
 
     # Set up the headers
     headers = {"Content-Type": "application/json"}
 
     async with aiohttp.ClientSession() as session:
-        async with session.post(f"{api_url}/upscale", json=payload, headers=headers) as response:
+        async with session.post(
+            f"{api_url}/upscale", json=payload, headers=headers
+        ) as response:
             return await response.read()
+
 
 async def transcribe_audio(api_key, audio_data, language, task):
     """Request Maker Helper function to transcribe audio"""
@@ -77,12 +88,13 @@ async def transcribe_audio(api_key, audio_data, language, task):
         "token": api_key,
         "audio": audio_base64,
         "language": language,
-        "task": task
+        "task": task,
     }
 
     async with aiohttp.ClientSession() as session:
         async with session.post(f"{api_url}/whisper", json=payload) as response:
             return await response.json()
+
 
 @Client.on_message(filters.command("vdxl", prefix) & filters.me)
 async def vdxl(c: Client, message: Message):
@@ -99,22 +111,26 @@ async def vdxl(c: Client, message: Message):
             for m in models:
                 if message.text.startswith(f"{prefix}vdxl {m}"):
                     model = m
-                    prompt = message.text[len(f"{prefix}vdxl {m}"):].strip()
+                    prompt = message.text[len(f"{prefix}vdxl {m}") :].strip()
                     model_found = True
                     break
             if not model_found:
-                return await message.edit_text(f"<b>Usage: </b><code>{prefix}vdxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>")
+                return await message.edit_text(
+                    f"<b>Usage: </b><code>{prefix}vdxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
+                )
         elif message.reply_to_message and len(message.command) > 1:
             model = message.text.split(maxsplit=1)[1]
             print(model)
             if model in models:
                 prompt = message.reply_to_message.text
             else:
-                return await message.edit_text(f"<b>Usage: </b><code>{prefix}vdxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>")
+                return await message.edit_text(
+                    f"<b>Usage: </b><code>{prefix}vdxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
+                )
         else:
             return await message.edit_text(
-            f"<b>Usage: </b><code>{prefix}vdxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
-        )
+                f"<b>Usage: </b><code>{prefix}vdxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
+            )
 
         data = {
             "prompt": prompt,
@@ -127,7 +143,7 @@ async def vdxl(c: Client, message: Message):
             "steps": 30,
             "cfg_scale": 8,
             "sampler": "Euler",
-            "upscale": True
+            "upscale": True,
         }
 
         response = await generate_images(data)
@@ -136,7 +152,11 @@ async def vdxl(c: Client, message: Message):
             with open("generated_image.png", "wb") as f:
                 f.write(response)
             await message.delete()
-            await c.send_document(chat_id, document="generated_image.png", caption=f"<b>Prompt: </b><code>{prompt}</code>\n<b>Model: </b><code>{model}</code>")
+            await c.send_document(
+                chat_id,
+                document="generated_image.png",
+                caption=f"<b>Prompt: </b><code>{prompt}</code>\n<b>Model: </b><code>{model}</code>",
+            )
             os.remove("generated_image.png")
         except KeyError:
             try:
@@ -145,13 +165,16 @@ async def vdxl(c: Client, message: Message):
             except KeyError:
                 detail = response["detail"]
                 await message.edit_text(f"<code>{detail}</code>")
-    
+
     except MessageTooLong:
-        await message.edit_text("<b>Model List is too long</b> See the Full List <a href='https://visioncraft.top/sd/models'> Here </a>")
+        await message.edit_text(
+            "<b>Model List is too long</b> See the Full List <a href='https://visioncraft.top/sd/models'> Here </a>"
+        )
         return
 
     except Exception as e:
         await message.edit_text(f"An error occurred: {format_exc(e)}")
+
 
 @Client.on_message(filters.command("dalle", prefix) & filters.me)
 async def dalle(c: Client, message: Message):
@@ -162,20 +185,16 @@ async def dalle(c: Client, message: Message):
         await message.edit_text("<code>Please Wait...</code>")
 
         if len(message.command) >= 2:
-         prompt = message.text.split(maxsplit=1)[1]
+            prompt = message.text.split(maxsplit=1)[1]
         elif message.reply_to_message:
-         prompt = message.reply_to_message.text
+            prompt = message.reply_to_message.text
         else:
-         await message.edit_text(
-            f"<b>Usage: </b><code>{prefix}vgif [prompt/reply to prompt]*</code>"
-        )
-         return
+            await message.edit_text(
+                f"<b>Usage: </b><code>{prefix}vgif [prompt/reply to prompt]*</code>"
+            )
+            return
 
-        data = {
-            "prompt": prompt,
-            "token": vca_api_key,
-            "size": "1792x1024"
-        }
+        data = {"prompt": prompt, "token": vca_api_key, "size": "1792x1024"}
 
         response = await generate_dalle(data)
 
@@ -183,7 +202,11 @@ async def dalle(c: Client, message: Message):
             with open("generated_image.png", "wb") as f:
                 f.write(response)
             await message.delete()
-            await c.send_document(chat_id, document="generated_image.png", caption=f"<b>Prompt: </b><code>{prompt}</code>\n<b>Model: </b><code>DALL-E 3</code>")
+            await c.send_document(
+                chat_id,
+                document="generated_image.png",
+                caption=f"<b>Prompt: </b><code>{prompt}</code>\n<b>Model: </b><code>DALL-E 3</code>",
+            )
             os.remove("generated_image.png")
         except KeyError:
             try:
@@ -205,14 +228,14 @@ async def vgif(c: Client, message: Message):
         await message.edit_text("<code>Please Wait...</code>")
 
         if len(message.command) >= 2:
-         prompt = message.text.split(maxsplit=1)[1]
+            prompt = message.text.split(maxsplit=1)[1]
         elif message.reply_to_message:
-         prompt = message.reply_to_message.text
+            prompt = message.reply_to_message.text
         else:
-         await message.edit_text(
-            f"<b>Usage: </b><code>{prefix}vgif [prompt/reply to prompt]*</code>"
-        )
-         return
+            await message.edit_text(
+                f"<b>Usage: </b><code>{prefix}vgif [prompt/reply to prompt]*</code>"
+            )
+            return
 
         data = {
             "prompt": prompt,
@@ -220,7 +243,7 @@ async def vgif(c: Client, message: Message):
             "token": vca_api_key,
             "steps": 30,
             "cfg_scale": 8,
-            "sampler": "Euler"
+            "sampler": "Euler",
         }
 
         response = await generate_gifs(data)
@@ -230,7 +253,11 @@ async def vgif(c: Client, message: Message):
             async with aiohttp.ClientSession() as session:
                 await download_image(session, image_url, "generated_image.gif")
                 await message.delete()
-                await c.send_animation(chat_id, animation="generated_image.gif", caption=f"<b>Prompt: </b><code>{prompt}</code>")
+                await c.send_animation(
+                    chat_id,
+                    animation="generated_image.gif",
+                    caption=f"<b>Prompt: </b><code>{prompt}</code>",
+                )
                 os.remove("generated_image.gif")
         except KeyError:
             try:
@@ -242,6 +269,7 @@ async def vgif(c: Client, message: Message):
 
     except Exception as e:
         await message.edit_text(f"An error occurred: {format_exc(e)}")
+
 
 @Client.on_message(filters.command("upscale", prefix) & filters.me)
 async def upscale(c: Client, message: Message):
@@ -257,15 +285,21 @@ async def upscale(c: Client, message: Message):
             await message.edit("<b>File not found</b>")
             return
     i = await message.edit("<code>Processing...</code>")
-    
+
     api_key = vca_api_key
-    image = open(photo_data, 'rb').read()
+    image = open(photo_data, "rb").read()
     upscaled_image_data = await upscale_request(api_key, image)
-    with open('upscaled_image.png', 'wb') as file:
+    with open("upscaled_image.png", "wb") as file:
         file.write(upscaled_image_data)
         await i.delete()
-        await c.send_document(message.chat.id, 'upscaled_image.png', caption="Upscaled!", reply_to_message_id=message_id)
-        os.remove('upscaled_image.png')
+        await c.send_document(
+            message.chat.id,
+            "upscaled_image.png",
+            caption="Upscaled!",
+            reply_to_message_id=message_id,
+        )
+        os.remove("upscaled_image.png")
+
 
 @Client.on_message(filters.command("whisp", prefix) & filters.me)
 async def whisp(message: Message):
@@ -273,16 +307,19 @@ async def whisp(message: Message):
     try:
         audio_data = await message.reply_to_message.download()
         try:
-            if audio_data == enums.MessageMediaType.AUDIO or enums.MessageMediaType.VOICE:
+            if (
+                audio_data == enums.MessageMediaType.AUDIO
+                or enums.MessageMediaType.VOICE
+            ):
                 await message.edit("<code>Processing...</code>")
-                
+
                 api_key = vca_api_key
-                audio = open(audio_data, 'rb').read()
-                language = 'auto'
-                task = 'transcribe'
+                audio = open(audio_data, "rb").read()
+                language = "auto"
+                task = "transcribe"
                 task_result = await transcribe_audio(api_key, audio, language, task)
                 # print(task_result)
-                ouput = task_result['text']
+                ouput = task_result["text"]
                 await message.edit_text(f"Transcribed result:\n <code>{ouput}</code>")
             else:
                 await message.edit("<b>To be used on AUIDO files only</b>")
