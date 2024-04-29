@@ -19,8 +19,8 @@
   idx.extensions = [
     "ms-azuretools.vscode-docker"
     "ms-python.debugpy"
-    "ms-python.pylint"
     "ms-python.python"
+    "trunk.io"
   ];
 
   services.docker.enable = true;

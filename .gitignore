@@ -16,3 +16,4 @@ config.ini
 unknown_errors.txt
 moonlogs.txt
 .env
+.trunk/
