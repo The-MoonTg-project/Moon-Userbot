@@ -51,7 +51,7 @@ async def remuser(client: Client, message: Message):
 async def chatbot(client: Client, message: Message):
     user_id = message.chat.id
 
-    if db.get("core.chatbot", f"addusers{user_id}") == user_id:
+    if user_id in chatai_users:
         pass
     else:
         return
