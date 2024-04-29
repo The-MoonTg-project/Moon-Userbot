@@ -13,34 +13,30 @@
 
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
-import os
-import time
-import math
-
-from datetime import datetime
-from urllib.parse import unquote
-from io import BytesIO
 
 import asyncio
+import math
 import mimetypes
+
+import os
+import time
+from datetime import datetime
+from io import BytesIO
+from urllib.parse import unquote
+
 import requests
 import urllib3
-
+from pyrogram import Client, enums, filters
+from pyrogram.types import Message
 from pySmartDL import SmartDL
 
-from pyrogram import Client, filters, enums
-from pyrogram.types import Message
-from pyrogram.errors import MessageNotModified
-
-from utils.misc import modules_help, prefix
-from utils.scripts import format_exc, progress, humanbytes
-
 from utils.config import apiflash_key
-
+from utils.misc import modules_help, prefix
+from utils.scripts import format_exc, humanbytes, progress
 
 
 def generate_screenshot(url):
-    api_url = f'https://api.apiflash.com/v1/urltoimage?access_key={apiflash_key}&url={url}&format=png'
+    api_url = f"https://api.apiflash.com/v1/urltoimage?access_key={apiflash_key}&url={url}&format=png"
     response = requests.get(api_url, timeout=5)
     if response.status_code == 200:
         return BytesIO(response.content)
@@ -50,6 +46,7 @@ def generate_screenshot(url):
 
 http = urllib3.PoolManager()
 
+
 @Client.on_message(filters.command("short", prefix) & filters.me)
 async def short(_, message: Message):
     if len(message.command) > 1:
@@ -57,10 +54,18 @@ async def short(_, message: Message):
     elif message.reply_to_message:
         link = message.reply_to_message.text
     else:
-        await message.edit(f"<b>Usage: </b><code>{prefix}short [url to short]</code>", parse_mode=enums.ParseMode.HTML)
-        return  
-    r = http.request('GET', 'https://clck.ru/--?url='+link) 
-    await message.edit(r.data.decode().replace("https://", "<b>Shortened Url:</b>"), disable_web_page_preview=True, parse_mode=enums.ParseMode.HTML)
+        await message.edit(
+            f"<b>Usage: </b><code>{prefix}short [url to short]</code>",
+            parse_mode=enums.ParseMode.HTML,
+        )
+        return
+    r = http.request("GET", "https://clck.ru/--?url=" + link)
+    await message.edit(
+        r.data.decode().replace("https://", "<b>Shortened Url:</b>"),
+        disable_web_page_preview=True,
+        parse_mode=enums.ParseMode.HTML,
+    )
+
 
 @Client.on_message(filters.command("urldl", prefix) & filters.me)
 async def urldl(client: Client, message: Message):
@@ -73,24 +78,24 @@ async def urldl(client: Client, message: Message):
     else:
         await message.edit(
             f"<b>Usage: </b><code>{prefix}urldl [url to download]</code>",
-            parse_mode=enums.ParseMode.HTML
+            parse_mode=enums.ParseMode.HTML,
         )
         return
 
     await message.edit("<b>Trying to download...</b>")
 
-    ext = '.' + link.split('.')[-1]
+    ext = "." + link.split(".")[-1]
     c_time = time.time()
 
     resp = requests.head(link, allow_redirects=True, timeout=5)
     if resp.status_code != 200:
         return await message.edit("<b>Failed to fetch request header information</b>")
 
-    content_type = resp.headers.get('Content-Type').split(';')[0]
+    content_type = resp.headers.get("Content-Type").split(";")[0]
     extension = mimetypes.guess_extension(content_type)
 
     try:
-        os.makedirs('downloads')
+        os.makedirs("downloads")
         if ext == extension:
             file_name = "downloads/" + link.split("/")[-1]
         else:
@@ -128,17 +133,13 @@ async def urldl(client: Client, message: Message):
         eta = downloader.get_eta(human=True)
         try:
             m = "<b>Trying to download...</b>\n"
-            m += (
-                f"<b>File Name:</b> <code>{unquote(link.split('/')[-1])}</code>\n"
-            )
+            m += f"<b>File Name:</b> <code>{unquote(link.split('/')[-1])}</code>\n"
             m += f"<b>Speed:</b> {speed}\n"
             m += f"{progress_str}\n"
             m += f"{downloaded} of {humanbytes(total_length)}\n"
             m += f"<b>ETA:</b> {eta}"
             if round(diff % 10.00) == 0 and m != u_m:
-                await message.edit_text(
-                    disable_web_page_preview=True, text=m
-                )
+                await message.edit_text(disable_web_page_preview=True, text=m)
                 u_m = m
                 await asyncio.sleep(5)
         except Exception as e:
@@ -150,7 +151,14 @@ async def urldl(client: Client, message: Message):
             f"<b>Downloaded to <code>{file_name}</code> in {sec} seconds</b>"
         )
         ms_ = await message.edit("<b>Starting Upload...</b>")
-        await client.send_document(message.chat.id, file_name, progress=progress, progress_args=(ms_, c_time, '`Uploading...`'), caption=f"<b>File Name:</b> <code>{unquote(link.split('/')[-1])}</code>\n", reply_to_message_id=message_id)
+        await client.send_document(
+            message.chat.id,
+            file_name,
+            progress=progress,
+            progress_args=(ms_, c_time, "`Uploading...`"),
+            caption=f"<b>File Name:</b> <code>{unquote(link.split('/')[-1])}</code>\n",
+            reply_to_message_id=message_id,
+        )
         await message.delete()
         os.remove(file_name)
     else:
@@ -170,21 +178,24 @@ async def upload_cmd(_, message: Message):
 
     try:
         file_name = await message.download(
-            progress=progress,
-            progress_args=(ms_, c_time, '`Downloading...`')
-            )
+            progress=progress, progress_args=(ms_, c_time, "`Downloading...`")
+        )
     except ValueError:
         try:
             file_name = await message.reply_to_message.download(
-                progress=progress,
-                progress_args=(ms_, c_time, '`Downloading...`')
-                )
+                progress=progress, progress_args=(ms_, c_time, "`Downloading...`")
+            )
         except ValueError:
-            await message.edit("<b>File to upload not found</b>", parse_mode=enums.ParseMode.HTML)
+            await message.edit(
+                "<b>File to upload not found</b>", parse_mode=enums.ParseMode.HTML
+            )
             return
 
     if os.path.getsize(file_name) > max_size:
-        await message.edit(f"<b>Files longer than {max_size_mb}MB isn't supported</b>", parse_mode=enums.ParseMode.HTML)
+        await message.edit(
+            f"<b>Files longer than {max_size_mb}MB isn't supported</b>",
+            parse_mode=enums.ParseMode.HTML,
+        )
         if os.path.exists(file_name):
             os.remove(file_name)
         return
@@ -200,21 +211,22 @@ async def upload_cmd(_, message: Message):
         file_size_mb = os.path.getsize(file_name) / 1024 / 1024
         file_age = int(
             min_file_age
-            + (max_file_age - min_file_age) *
-            ((1 - (file_size_mb / max_size_mb)) ** 2)
+            + (max_file_age - min_file_age) * ((1 - (file_size_mb / max_size_mb)) ** 2)
         )
         url = response.text.replace("https://", "")
         await message.edit(
             f"<b>Your URL: {url}\nYour file will remain live for {file_age} days</b>",
             disable_web_page_preview=True,
-            parse_mode=enums.ParseMode.HTML
+            parse_mode=enums.ParseMode.HTML,
         )
     else:
-        await message.edit(f"<b>API returned an error!\n" f"{response.text}\n Not allowed</b>", parse_mode=enums.ParseMode.HTML)
+        await message.edit(
+            f"<b>API returned an error!\n" f"{response.text}\n Not allowed</b>",
+            parse_mode=enums.ParseMode.HTML,
+        )
         print(response.text)
     if os.path.exists(file_name):
         os.remove(file_name)
-
 
 
 @Client.on_message(filters.command(["ws", "webshot"], prefix) & filters.me)
@@ -228,7 +240,10 @@ async def webshot(client: Client, message: Message):
         if not url.startswith("https://"):
             url = "https://" + message.text.split(maxsplit=1)[1]
     else:
-        await message.edit_text(f"<b>Usage: </b><code>{prefix}webshot/{prefix}ws [url/reply to url]</code>", parse_mode=enums.ParseMode.HTML)
+        await message.edit_text(
+            f"<b>Usage: </b><code>{prefix}webshot/{prefix}ws [url/reply to url]</code>",
+            parse_mode=enums.ParseMode.HTML,
+        )
         return
 
     chat_id = message.chat.id
@@ -238,11 +253,16 @@ async def webshot(client: Client, message: Message):
         screenshot_data = generate_screenshot(url)
         if screenshot_data:
             await message.delete()
-            await client.send_photo(chat_id, screenshot_data, caption=f"Screenshot of <code>{url}</code>")
+            await client.send_photo(
+                chat_id, screenshot_data, caption=f"Screenshot of <code>{url}</code>"
+            )
         else:
-            await message.reply_text("<code>Failed to generate screenshot...\nMake sure url is correct</code>")
+            await message.reply_text(
+                "<code>Failed to generate screenshot...\nMake sure url is correct</code>"
+            )
     except Exception as e:
         await message.reply_text(f"An error occurred: {format_exc(e)}")
+
 
 modules_help["url"] = {
     "short [url]*": "short url",
