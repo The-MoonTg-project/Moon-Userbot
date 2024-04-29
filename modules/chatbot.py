@@ -15,6 +15,7 @@ from pyrogram import Client, filters, enums
 from pyrogram.types import Message
 
 chatai_users = db.getaiusers()
+print(chatai_users)
 
 @Client.on_message(filters.command("addai", prefix) & filters.me)
 async def adduser(client: Client, message: Message):
@@ -86,8 +87,6 @@ async def chatbot(client: Client, message: Message):
 
 @Client.on_message(filters.command("chatoff", prefix) & filters.me)
 async def chatoff(client: Client, message: Message):
-    for user_id in chatai_users:
-        db.remove("core.chatbot", "chatai_users", user_id)
     db.remove("core.chatbot", "chatai_users")
 
     await message.reply_text("<b>ChatBot is off now</b>")
