@@ -85,7 +85,7 @@ class MongoDatabase(Database):
         self.set(f"core.cohere.user_{user_id}", "chat_history", chat_history)
 
     def get_chat_history(self, user_id, default=[]):
-        return self.get(f"core.cohere.user_{user_id}", "chat_history", default=[])
+        return self.get(f"core.cohere.user_{user_id}", "chat_history", expected_value=[])
     
     def addaiuser(self, user_id):
         chatai_users = self.get("core.chatbot", "chatai_users", expected_value=[])
