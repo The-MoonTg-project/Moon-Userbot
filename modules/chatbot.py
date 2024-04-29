@@ -90,15 +90,16 @@ async def chatbot(client: Client, message: Message):
 @Client.on_message(filters.command("chatoff", prefix) & filters.me)
 async def chatoff(client: Client, message: Message):
     db.remove("core.chatbot", "chatai_users")
-
     await message.reply_text("<b>ChatBot is off now</b>")
+    restart()
 
 @Client.on_message(filters.command("listai", prefix) & filters.me)
 async def listai(client: Client, message: Message):
     await message.edit_text(f"<b>User ID's Currently in AI ChatBot List:</b>\n <code>{chatai_users}</code>")
 
 modules_help["chatbot"] = {
-    "addai": "Add A user to AI ChatBot List",
-    "remai": "Remove A user from AI ChatBot List",
+    "addai [user_id]*": "Add A user to AI ChatBot List",
+    "remai [user_id]*": "Remove A user from AI ChatBot List",
+    "listai": "List A user from AI ChatBot List",
     "chatoff": "Turn off AI ChatBot"
 }
