@@ -5,22 +5,23 @@
 # Please see < https://github.com/DevsExpo/blob/master/LICENSE >
 #
 # All rights reserved.
+# Modifed by @moonuserbot
+
+import io
+import os
+from datetime import datetime
+from functools import wraps
+from io import BytesIO
+
+import requests
 from PIL import Image
-# from main_startup.core.decorators import friday_on_cmd
 from pyrogram import Client, enums, filters
 from pyrogram.types import Message
 
+from utils.config import rmbg_key
 from utils.misc import modules_help, prefix
-from utils.scripts import format_exc, edit_or_reply
-# from main_startup.helper_func.basic_helpers import edit_or_reply, get_text
-# from main_startup.config_var import Config
-# import logging
-from functools import wraps
-import io
-from io import BytesIO
-import os
-from datetime import datetime
-import requests
+from utils.scripts import edit_or_reply, format_exc
+
 
 async def convert_to_image(message, client) -> [None, str]:
     """Convert Most Media Formats To Raw Image"""
@@ -62,41 +63,52 @@ async def convert_to_image(message, client) -> [None, str]:
         await exec(f"ffmpeg -i {vid_path} -filter:v scale=500:500 -an {final_path}")
     return final_path
 
-from utils.config import rmbg_key
 
 def remove_background(photo_data):
     response = requests.post(
-    'https://api.remove.bg/v1.0/removebg',
-    files={'image_file': open(photo_data, 'rb')},
-    data={'size': 'auto'},
-    headers={'X-Api-Key': rmbg_key},
-)
+        "https://api.remove.bg/v1.0/removebg",
+        files={"image_file": open(photo_data, "rb")},
+        data={"size": "auto"},
+        headers={"X-Api-Key": rmbg_key},
+    )
     if response.status_code == requests.codes.ok:
         return BytesIO(response.content)
     else:
         print("Error:", response.status_code, response.text)
-        None
+        return None
 
 
 def _check_rmbg(func):
     @wraps(func)
     async def check_rmbg(client: Client, message: Message):
         if not rmbg_key:
-            await edit_or_reply(message, "`Is Your RMBG Api 'rmbg_key' Valid Or You Didn't Add It??`", parse_mode=enums.ParseMode.MARKDOWN)
+            await edit_or_reply(
+                message,
+                "`Is Your RMBG Api 'rmbg_key' Valid Or You Didn't Add It??`",
+                parse_mode=enums.ParseMode.MARKDOWN,
+            )
         else:
             await func(client, message)
+
     return check_rmbg
+
 
 @Client.on_message(filters.command("rmbg", prefix) & filters.me)
 @_check_rmbg
 async def rmbg(client: Client, message: Message):
-    pablo = await edit_or_reply(message, "`Processing...`", parse_mode=enums.ParseMode.MARKDOWN)
+    pablo = await edit_or_reply(
+        message, "`Processing...`", parse_mode=enums.ParseMode.MARKDOWN
+    )
     if not message.reply_to_message:
-        await pablo.edit("`Reply To A Image Please!`", parse_mode=enums.ParseMode.MARKDOWN)
+        await pablo.edit(
+            "`Reply To A Image Please!`", parse_mode=enums.ParseMode.MARKDOWN
+        )
         return
     cool = await convert_to_image(message, client)
     if not cool:
-        await pablo.edit("`Reply to a valid media first.`", parse_mode=enums.ParseMode.MARKDOWN)
+        await pablo.edit(
+            "`Reply to a valid media first.`", parse_mode=enums.ParseMode.MARKDOWN
+        )
         return
     start = datetime.now()
     await pablo.edit("sending to ReMove.BG")
@@ -106,7 +118,7 @@ async def rmbg(client: Client, message: Message):
     }
     r = requests.post(
         "https://api.remove.bg/v1.0/removebg",
-        headers={'X-Api-Key': rmbg_key},
+        headers={"X-Api-Key": rmbg_key},
         files=files,
         allow_redirects=True,
         stream=True,
@@ -119,23 +131,23 @@ async def rmbg(client: Client, message: Message):
         with io.BytesIO(output_file_name.content) as remove_bg_image:
             remove_bg_image.name = "BG_rem.png"
             await client.send_document(
-                message.chat.id,
-                remove_bg_image,
-                reply_to_message_id=message.id)
+                message.chat.id, remove_bg_image, reply_to_message_id=message.id
+            )
         end = datetime.now()
         ms = (end - start).seconds
         await pablo.edit(
-            "<code>Removed image's Background in {} seconds, powered by </code> <b>@moonuserbot</b>".format(ms)
+            "<code>Removed image's Background in {} seconds, powered by </code> <b>@moonuserbot</b>".format(
+                ms
+            )
         )
         if os.path.exists("BG_rem.png"):
             os.remove("BG_rem.png")
     else:
         await pablo.edit(
             "ReMove.BG API returned Errors. Please report to @moonub_chat\n`{}".format(
-                output_file_name.content.decode("UTF-8"), parse_mode=enums.ParseMode.MARKDOWN
+                output_file_name.content.decode("UTF-8")
             )
         )
-
 
 
 @Client.on_message(filters.command("rebg", prefix) & filters.me)
@@ -149,15 +161,22 @@ async def rembg(client: Client, message: Message):
             try:
                 photo_data = await message.reply_to_message.download()
             except ValueError:
-                await message.edit("<b>File not found</b>", parse_mode=enums.ParseMode.HTML)
+                await message.edit(
+                    "<b>File not found</b>", parse_mode=enums.ParseMode.HTML
+                )
                 return
         background_removed_data = remove_background(photo_data)
 
         if background_removed_data:
             await message.delete()
-            await client.send_photo(chat_id, photo=background_removed_data, caption="Background removed!")
+            await client.send_photo(
+                chat_id, photo=background_removed_data, caption="Background removed!"
+            )
         else:
-            await message.edit_text("`Is Your RMBG Api 'rmbg_key' Valid Or You Didn't Add It??`\n **Check logs for details**", parse_mode=enums.ParseMode.MARKDOWN)
+            await message.edit_text(
+                "`Is Your RMBG Api 'rmbg_key' Valid Or You Didn't Add It??`\n **Check logs for details**",
+                parse_mode=enums.ParseMode.MARKDOWN,
+            )
     except Exception as e:
         await message.reply_text(f"An error occurred: {format_exc(e)}")
     finally:
@@ -167,5 +186,5 @@ async def rembg(client: Client, message: Message):
 
 modules_help["removebg"] = {
     "rebg [reply to image]*": "reemove background from image without transparency",
-    "rmbg [reply to image]*": "remove background from image with transparency"
+    "rmbg [reply to image]*": "remove background from image with transparency",
 }
