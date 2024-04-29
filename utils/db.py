@@ -79,13 +79,26 @@ class MongoDatabase(Database):
     def close(self):
         self._client.close()
 
-    def add_chat_history(self, message):
-        chat_history = self.get("core.cohere", "chat_history", expected_value=[])
+    def add_chat_history(self, user_id, message):
+        chat_history = self.get_chat_history(user_id, default=[])
         chat_history.append(message)
-        self.set("core.cohere", "chat_history", chat_history)
+        self.set(f"core.cohere.user_{user_id}", "chat_history", chat_history)
 
-    def get_chat_history(self):
-        return self.get("core.cohere", "chat_history", expected_value=[])
+    def get_chat_history(self, user_id, default=[]):
+        return self.get(f"core.cohere.user_{user_id}", "chat_history", default=[])
+    
+    def addaiuser(self, user_id):
+        chatai_users = self.get("core.chatbot", "chatai_users", expected_value=[])
+        chatai_users.append(user_id)
+        self.set("core.chatbot", "chatai_users", chatai_users)
+
+    def remaiuser(self, user_id):
+        chatai_users = self.get("core.chatbot", "chatai_users", expected_value=[])
+        chatai_users.remove(user_id)
+        self.set("core.chatbot", "chatai_users", chatai_users)
+    
+    def getaiusers(self):
+        return self.get("core.chatbot", "chatai_users", expected_value=[])
 
 
 class SqliteDatabase(Database):
@@ -107,7 +120,7 @@ class SqliteDatabase(Database):
             return json.loads(row["val"])
 
     def _execute(self, module: str, *args, **kwargs) -> sqlite3.Cursor:
-        pattern = r"^(core|custom)\.\w+$"
+        pattern = r"^(core|custom)"
         if not re.match(pattern, module):
             raise ValueError(f"Invalid module name format: {module}")
 
@@ -184,14 +197,26 @@ class SqliteDatabase(Database):
         self._conn.commit()
         self._conn.close()
 
-    def add_chat_history(self, message):
-        chat_history = self.get("core.cohere", "chat_history", default=[])
+    def add_chat_history(self, user_id, message):
+        chat_history = self.get_chat_history(user_id, default=[])
         chat_history.append(message)
-        self.set("core.cohere", "chat_history", chat_history)
+        self.set(f"core.cohere.user_{user_id}", "chat_history", chat_history)
 
-    def get_chat_history(self):
-        return self.get("core.cohere", "chat_history", default=[])
+    def get_chat_history(self, user_id, default=[]):
+        return self.get(f"core.cohere.user_{user_id}", "chat_history", default=[])
 
+    def addaiuser(self, user_id):
+        chatai_users = self.get("core.chatbot", "chatai_users", default=[])
+        chatai_users.append(user_id)
+        self.set("core.chatbot", "chatai_users", chatai_users)
+
+    def remaiuser(self, user_id):
+        chatai_users = self.get("core.chatbot", "chatai_users", default=[])
+        chatai_users.remove(user_id)
+        self.set("core.chatbot", "chatai_users", chatai_users)
+    
+    def getaiusers(self):
+        return self.get("core.chatbot", "chatai_users", default=[])
 
 if config.db_type in ["mongo", "mongodb"]:
     db = MongoDatabase(config.db_url, config.db_name)
