@@ -1,4 +1,3 @@
-import os
 from utils.scripts import import_library, format_exc, restart
 from utils.config import cohere_key
 from utils.db import db
@@ -24,10 +23,10 @@ async def adduser(client: Client, message: Message):
         if user_id.isdigit():
             user_id = int(user_id)
             db.addaiuser(user_id)
-            await message.edit_text(f"<b>User ID Added</b>")
+            await message.edit_text("<b>User ID Added</b>")
             restart()
         else:
-            await message.edit_text(f"<b>User ID is invalid.</b>")
+            await message.edit_text("<b>User ID is invalid.</b>")
             return
     else:
         await message.edit_text(f"<b>Usage: </b><code>{prefix}addai [user_id]</code>")
@@ -40,10 +39,10 @@ async def remuser(client: Client, message: Message):
         if user_id.isdigit():
             user_id = int(user_id)
             db.remaiuser(user_id)
-            await message.edit_text(f"<b>User ID Removed</b>")
+            await message.edit_text("<b>User ID Removed</b>")
             restart()
         else:
-            await message.edit_text(f"<b>User ID is invalid.</b>")
+            await message.edit_text("<b>User ID is invalid.</b>")
             return
     else:
         await message.edit_text(f"<b>Usage: </b><code>{prefix}remai [user_id]</code>")
