@@ -49,7 +49,7 @@ async def remuser(client: Client, message: Message):
         await message.edit_text(f"<b>Usage: </b><code>{prefix}remai [user_id]</code>")
         return
 
-@Client.on_message(filters.user(users=chatai_users))
+@Client.on_message(filters.user(users=chatai_users) & filters.text)
 async def chatbot(client: Client, message: Message):
     user_id = message.chat.id
 
