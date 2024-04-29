@@ -47,7 +47,7 @@ async def lgen(client: Client, message: Message):
             if model_id not in models_ids:
                 return await message.edit_text(f"<b>Usage: </b><code>{prefix}lgen [model_id]* [prompt/reply to prompt]*</code>\n <b>Available Models and IDs:</b> <blockquote>{models}</blockquote>")
             message_id = None
-            prompt = ''.join(message.text.split()[2:])
+            prompt = ' '.join(message.text.split()[2:])
         elif message.reply_to_message and len(message.command) > 1:
             model_id = int(message.text.split()[1])
             if model_id not in models_ids:
