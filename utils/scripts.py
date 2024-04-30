@@ -14,30 +14,30 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import logging
+import asyncio
+import importlib
 import math
-import time
 import os
 import re
-import sys
-import asyncio
-import traceback
-import importlib
+import shlex
 import subprocess
+import sys
+import time
+import traceback
 from io import BytesIO
 from types import ModuleType
 from typing import Dict, Tuple
-import shlex
 
 from PIL import Image
+from pyrogram import Client, errors, types
 from pyrogram.errors import FloodWait, MessageNotModified
-from pyrogram import Client, errors, types, enums
 from pyrogram.types import Message
 
 from .misc import modules_help, prefix, requirements_list
 
 META_COMMENTS = re.compile(r"^ *# *meta +(\S+) *: *(.*?)\s*$", re.MULTILINE)
 interact_with_to_delete = []
+
 
 def time_formatter(milliseconds: int) -> str:
     """Time Formatter"""
@@ -54,11 +54,12 @@ def time_formatter(milliseconds: int) -> str:
     )
     return tmp[:-2]
 
+
 def humanbytes(size):
     """Convert Bytes To Bytes So That Human Can Read It"""
     if not size:
         return ""
-    power = 2 ** 10
+    power = 2**10
     raised_to_pow = 0
     dict_power_n = {0: "", 1: "Ki", 2: "Mi", 3: "Gi", 4: "Ti"}
     while size > power:
@@ -66,20 +67,20 @@ def humanbytes(size):
         raised_to_pow += 1
     return str(round(size, 2)) + " " + dict_power_n[raised_to_pow] + "B"
 
+
 async def edit_or_send_as_file(
     text: str,
     message: Message,
     client: Client,
-    caption: str = "`Result!`",
+    caption: str = "<code>Result!</code>",
     file_name: str = "result",
-    parse_mode=enums.ParseMode.MARKDOWN,
 ):
     """Send As File If Len Of Text Exceeds Tg Limit Else Edit Message"""
     if not text:
-        await message.edit("`Wait, What?`", parse_mode=enums.ParseMode.MARKDOWN)
+        await message.edit("<code>Wait, What?</code>")
         return
     if len(text) > 1024:
-        await message.edit("`OutPut is Too Large, Sending As File!`", parse_mode=enums.ParseMode.MARKDOWN)
+        await message.edit("<code>OutPut is Too Large, Sending As File!</code>")
         file_names = f"{file_name}.text"
         open(file_names, "w").write(text)
         await client.send_document(message.chat.id, file_names, caption=caption)
@@ -88,7 +89,8 @@ async def edit_or_send_as_file(
             os.remove(file_names)
         return
     else:
-        return await message.edit(text, parse_mode=parse_mode)
+        return await message.edit(text)
+
 
 def get_text(message: Message) -> [None, str]:
     """Extract Text From Commands"""
@@ -102,6 +104,7 @@ def get_text(message: Message) -> [None, str]:
             return None
     else:
         return None
+
 
 async def progress(current, total, message, start, type_of_ps, file_name=None):
     """Progress Bar For Showing Progress While Uploading / Downloading File - Normal"""
@@ -126,7 +129,7 @@ async def progress(current, total, message, start, type_of_ps, file_name=None):
         if file_name:
             try:
                 await message.edit(
-                    "{}\n**File Name:** `{}`\n{}".format(type_of_ps, file_name, tmp, parse_mode=enums.ParseMode.MARKDOWN)
+                    "{}\n<b>File Name:</b> <code>{}</code>\n{}".format(type_of_ps, file_name, tmp)
                 )
             except FloodWait as e:
                 await asyncio.sleep(e.x)
@@ -134,11 +137,12 @@ async def progress(current, total, message, start, type_of_ps, file_name=None):
                 pass
         else:
             try:
-                await message.edit("{}\n{}".format(type_of_ps, tmp), parse_mode=enums.ParseMode.MARKDOWN)
+                await message.edit("{}\n{}".format(type_of_ps, tmp))
             except FloodWait as e:
                 await asyncio.sleep(e.x)
             except MessageNotModified:
                 pass
+
 
 async def run_cmd(prefix: str) -> Tuple[str, str, int, int]:
     """Run Commands"""
@@ -153,6 +157,7 @@ async def run_cmd(prefix: str) -> Tuple[str, str, int, int]:
         process.returncode,
         process.pid,
     )
+
 
 def mediainfo(media):
     xx = str((str(media)).split("(", maxsplit=1)[0])
@@ -188,13 +193,15 @@ def mediainfo(media):
         m = "web"
     return m
 
-async def edit_or_reply(message, text, parse_mode=enums.ParseMode.MARKDOWN):
+
+async def edit_or_reply(message, text):
     """Edit Message If Its From Self, Else Reply To Message"""
     if not message:
-        return await message.edit(text, parse_mode=parse_mode)
+        return await message.edit(text)
     if not message.from_user:
-        return await message.edit(text, parse_mode=parse_mode)
-    return await message.edit(text, parse_mode=parse_mode)
+        return await message.edit(text)
+    return await message.edit(text)
+
 
 def text(message: types.Message) -> str:
     """Find text in `types.Message` object"""
@@ -213,16 +220,13 @@ def format_exc(e: Exception, suffix="") -> str:
             f"<b>Telegram API error!</b>\n"
             f"<code>[{e.CODE} {e.ID or e.NAME}] — {e.MESSAGE.format(value=e.value)}</code>\n\n<b>{suffix}</b>"
         )
-    return (
-        f"<b>Error!</b>\n"
-        f"<code>{err}</code>"
-    )
+    return f"<b>Error!</b>\n" f"<code>{err}</code>"
 
 
 def with_reply(func):
     async def wrapped(client: Client, message: types.Message):
         if not message.reply_to_message:
-            await message.edit("<b>Reply to message is required</b>", parse_mode=enums.ParseMode.HTML)
+            await message.edit("<b>Reply to message is required</b>")
         else:
             return await func(client, message)
 
@@ -243,10 +247,7 @@ async def interact_with(message: types.Message) -> types.Message:
     await asyncio.sleep(1)
     # noinspection PyProtectedMember
     response = [
-        msg
-        async for msg in message._client.get_chat_history(
-            message.chat.id, limit=1
-        )
+        msg async for msg in message._client.get_chat_history(message.chat.id, limit=1)
     ]
     seconds_waiting = 0
 
@@ -259,9 +260,7 @@ async def interact_with(message: types.Message) -> types.Message:
         # noinspection PyProtectedMember
         response = [
             msg
-            async for msg in message._client.get_chat_history(
-                message.chat.id, limit=1
-            )
+            async for msg in message._client.get_chat_history(message.chat.id, limit=1)
         ]
 
     interact_with_to_delete.append(message.id)
@@ -274,9 +273,7 @@ def format_module_help(module_name: str, full=True):
     commands = modules_help[module_name]
 
     help_text = (
-        f"<b>Help for |{module_name}|\n\nUsage:</b>\n"
-        if full
-        else "<b>Usage:</b>\n"
+        f"<b>Help for |{module_name}|\n\nUsage:</b>\n" if full else "<b>Usage:</b>\n"
     )
 
     for command, desc in commands.items():
@@ -295,13 +292,11 @@ def format_small_module_help(module_name: str, full=True):
         if full
         else "<b>Commands list:\n"
     )
-    for command, desc in commands.items():
+    for command, _desc in commands.items():
         cmd = command.split(maxsplit=1)
         args = " <code>" + cmd[1] + "</code>" if len(cmd) > 1 else ""
         help_text += f"<code>{prefix}{cmd[0]}</code>{args}\n"
-    help_text += (
-        f"\nGet full usage: <code>{prefix}help {module_name}</code></b>"
-    )
+    help_text += f"\nGet full usage: <code>{prefix}help {module_name}</code></b>"
 
     return help_text
 
@@ -319,15 +314,14 @@ def import_library(library_name: str, package_name: str = None):
 
     try:
         return importlib.import_module(library_name)
-    except ImportError:
+    except ImportError as exc:
         completed = subprocess.run(
             [sys.executable, "-m", "pip", "install", package_name]
         )
         if completed.returncode != 0:
             raise AssertionError(
-                f"Failed to install library {package_name} (pip exited with code {completed.returncode})",
-                parse_mode=enums.ParseMode.HTML
-            )
+                f"Failed to install library {package_name} (pip exited with code {completed.returncode})"
+            ) from exc
         return importlib.import_module(library_name)
 
 
@@ -384,10 +378,7 @@ async def load_module(
             raise
 
         if message:
-            await message.edit(
-                f"<b>Installing requirements: {' '.join(packages)}</b>",
-                parse_mode=enums.ParseMode.HTML
-            )
+            await message.edit(f"<b>Installing requirements: {' '.join(packages)}</b>")
 
         proc = await asyncio.create_subprocess_exec(
             sys.executable,
@@ -401,10 +392,7 @@ async def load_module(
             await asyncio.wait_for(proc.wait(), timeout=120)
         except asyncio.TimeoutError:
             if message:
-                await message.edit(
-                    "<b>Timeout while installed requirements. Try to install them manually</b>",
-                    parse_mode=enums.ParseMode.HTML
-                )
+                await message.edit("<b>Timeout while installed requirements. Try to install them manually</b>")
             raise TimeoutError("timeout while installing requirements") from e
 
         if proc.returncode != 0:
@@ -412,14 +400,13 @@ async def load_module(
                 await message.edit(
                     f"<b>Failed to install requirements (pip exited with code {proc.returncode}). "
                     f"Check logs for futher info</b>",
-                    parse_mode=enums.ParseMode.HTML
                 )
             raise RuntimeError("failed to install requirements") from e
 
         module = importlib.import_module(path)
 
-    for name, obj in vars(module).items():
-        if type(getattr(obj, "handlers", [])) == list:
+    for _name, obj in vars(module).items():
+        if isinstance(getattr(obj, "handlers", []), list):
             for handler, group in getattr(obj, "handlers", []):
                 client.add_handler(handler, group)
 
@@ -435,7 +422,7 @@ async def unload_module(module_name: str, client: Client) -> bool:
 
     module = importlib.import_module(path)
 
-    for name, obj in vars(module).items():
+    for _name, obj in vars(module).items():
         for handler, group in getattr(obj, "handlers", []):
             client.remove_handler(handler, group)
 
@@ -452,3 +439,14 @@ def parse_meta_comments(code: str) -> Dict[str, str]:
         return {}
 
     return {groups[i]: groups[i + 1] for i in range(0, len(groups), 2)}
+
+def ReplyCheck(message: Message):
+    reply_id = None
+
+    if message.reply_to_message:
+        reply_id = message.reply_to_message.id
+
+    elif not message.from_user.is_self:
+        reply_id = message.id
+
+    return reply_id

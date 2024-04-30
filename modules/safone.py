@@ -3,7 +3,7 @@ import requests
 import aiofiles
 import base64
 
-from pyrogram import Client, filters, enums
+from pyrogram import Client, filters
 from pyrogram.types import Message, InputMediaPhoto
 from pyrogram.errors import MediaCaptionTooLong, MessageTooLong
 
@@ -156,7 +156,7 @@ async def tsearch(client: Client, message: Message):
 
         link_results = await telegraph(title="Search Results", user_name=message.from_user.first_name, content=all_results_content)
 
-        if coverImage_url != None:
+        if coverImage_url is not None:
             coverImage = requests.get(url=coverImage_url).content
             async with aiofiles.open('coverImage.jpg', mode='wb') as f:
                 await f.write(coverImage)
@@ -177,12 +177,12 @@ async def tsearch(client: Client, message: Message):
         await client.send_media_group(
             chat_id,
             [
-                 InputMediaPhoto('coverImage.jpg', caption=f"<b>Title:</b> <code>{title}</code>\n<b>Category:</b> <code>{category}</code>\n<b>Language:</b> <code>{Language}</code>\n<b>Size:</b> <code>{size}</code>\n<b>Genres:</b> <code>{genre}</code>\n<b>Description:</b> {description}\n<b>Magnet Link:</b> <a href='{link_result}'>Click Here</a>")
+                 InputMediaPhoto('coverImage.jpg', caption=f"<b>Title:</b> <code>{title}</code>\n<b>Category:</b> <code>{category}</code>\n<b>Language:</b> <code>{language}</code>\n<b>Size:</b> <code>{size}</code>\n<b>Genres:</b> <code>{genre}</code>\n<b>Description:</b> {description}\n<b>Magnet Link:</b> <a href='{link_result}'>Click Here</a>")
             ])
 
     except MessageTooLong:
         description = description[:150]
-        await message.edit_text(f"<b>Title:</b> <code>{title}</code>\n<b>Category:</b> <code>{category}</code>\n<b>Language:</b> <code>{Language}</code>\n<b>Size:</b> <code>{size}</code>\n<b>Genres:</b> <code>{genre}</code>\n<b>Description:</b> {description}\n<b>Magnet Link:</b> <a href='{link_result}'>Click Here</a>", disable_web_page_preview=True)
+        await message.edit_text(f"<b>Title:</b> <code>{title}</code>\n<b>Category:</b> <code>{category}</code>\n<b>Language:</b> <code>{language}</code>\n<b>Size:</b> <code>{size}</code>\n<b>Genres:</b> <code>{genre}</code>\n<b>Description:</b> {description}\n<b>Magnet Link:</b> <a href='{link_result}'>Click Here</a>", disable_web_page_preview=True)
 
     except Exception as e:
         await message.edit_text(format_exc(e))

@@ -14,17 +14,17 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from pyrogram import Client, filters, errors, enums
+from pyrogram import Client, enums, errors, filters
 from pyrogram.types import Message
 
 from utils.db import db
-from utils.misc import modules_help, prefix
 from utils.handlers import NoteSendHandler
+from utils.misc import modules_help, prefix
 
 
 @Client.on_message(filters.command(["save"], prefix) & filters.me)
 async def save_note(client: Client, message: Message):
-    await message.edit("<b>Loading...</b>", parse_mode=enums.ParseMode.HTML)
+    await message.edit("<b>Loading...</b>")
 
     try:
         chat = await client.get_chat(db.get("core.notes", "chat_id", 0))
@@ -55,7 +55,6 @@ async def save_note(client: Client, message: Message):
                 except errors.ChatForwardsRestricted:
                     await message.edit(
                         "<b>Forwarding messages is restricted by chat admins</b>",
-                        parse_mode=enums.ParseMode.HTML
                     )
                     return
                 note = {
@@ -64,9 +63,9 @@ async def save_note(client: Client, message: Message):
                     "CHAT_ID": str(chat_id),
                 }
                 db.set("core.notes", f"note{note_name}", note)
-                await message.edit(f"<b>Note {note_name} saved</b>", parse_mode=enums.ParseMode.HTML)
+                await message.edit(f"<b>Note {note_name} saved</b>")
             else:
-                await message.edit("<b>This note already exists</b>", parse_mode=enums.ParseMode.HTML)
+                await message.edit("<b>This note already exists</b>")
         else:
             checking_note = db.get("core.notes", f"note{note_name}", False)
             if not checking_note:
@@ -80,9 +79,9 @@ async def save_note(client: Client, message: Message):
                     "CHAT_ID": str(chat_id),
                 }
                 db.set("core.notes", f"note{note_name}", note)
-                await message.edit(f"<b>Note {note_name} saved</b>", parse_mode=enums.ParseMode.HTML)
+                await message.edit(f"<b>Note {note_name} saved</b>")
             else:
-                await message.edit("<b>This note already exists</b>", parse_mode=enums.ParseMode.HTML)
+                await message.edit("<b>This note already exists</b>")
     elif len(message.text.split()) >= 3:
         note_name = message.text.split(maxsplit=1)[1].split()[0]
         checking_note = db.get("core.notes", f"note{note_name}", False)
@@ -96,14 +95,14 @@ async def save_note(client: Client, message: Message):
                 "CHAT_ID": str(chat_id),
             }
             db.set("core.notes", f"note{note_name}", note)
-            await message.edit(f"<b>Note {note_name} saved</b>", parse_mode=enums.ParseMode.HTML)
+            await message.edit(f"<b>Note {note_name} saved</b>")
         else:
-            await message.edit("<b>This note already exists</b>", parse_mode=enums.ParseMode.HTML)
+            await message.edit("<b>This note already exists</b>")
     else:
         await message.edit(
             f"<b>Example: <code>{prefix}save note_name</code></b>",
-            parse_mode=enums.ParseMode.HTML
         )
+
 
 @Client.on_message(filters.command("note", prefix) & filters.me)
 async def note_send(client: Client, message: Message):
@@ -111,16 +110,15 @@ async def note_send(client: Client, message: Message):
     await handler.handle_note_send()
 
 
-
 @Client.on_message(filters.command(["notes"], prefix) & filters.me)
 async def notes(_, message: Message):
-    await message.edit("<b>Loading...</b>", parse_mode=enums.ParseMode.HTML)
+    await message.edit("<b>Loading...</b>")
     text = "Available notes:\n\n"
     collection = db.get_collection("core.notes")
     for note in collection.keys():
         if note[:4] == "note":
             text += f"<code>{note[4:]}</code>\n"
-    await message.edit(text, parse_mode=enums.ParseMode.HTML)
+    await message.edit(text)
 
 
 @Client.on_message(filters.command(["clear"], prefix) & filters.me)
@@ -130,14 +128,11 @@ async def clear_note(_, message: Message):
         find_note = db.get("core.notes", f"note{note_name}", False)
         if find_note:
             db.remove("core.notes", f"note{note_name}")
-            await message.edit(f"<b>Note {note_name} deleted</b>", parse_mode=enums.ParseMode.HTML)
+            await message.edit(f"<b>Note {note_name} deleted</b>")
         else:
-            await message.edit("<b>There is no such note</b>", parse_mode=enums.ParseMode.HTML)
+            await message.edit("<b>There is no such note</b>")
     else:
-        await message.edit(
-            f"<b>Example: <code>{prefix}clear note_name</code></b>",
-            parse_mode=enums.ParseMode.HTML
-        )
+        await message.edit(f"<b>Example: <code>{prefix}clear note_name</code></b>")
 
 
 modules_help["notes"] = {

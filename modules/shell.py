@@ -18,7 +18,7 @@ from subprocess import Popen, PIPE, TimeoutExpired
 import os
 from time import perf_counter
 
-from pyrogram import Client, filters, enums
+from pyrogram import Client, filters
 from pyrogram.types import Message
 
 from utils.misc import modules_help, prefix
@@ -27,7 +27,7 @@ from utils.misc import modules_help, prefix
 @Client.on_message(filters.command(["shell", "sh"], prefix) & filters.me)
 async def shell(_, message: Message):
     if len(message.command) < 2:
-        return await message.edit("<b>Specify the command in message text</b>", parse_mode=enums.ParseMode.HTML)
+        return await message.edit("<b>Specify the command in message text</b>")
     cmd_text = message.text.split(maxsplit=1)[1]
     cmd_obj = Popen(
         cmd_text,
@@ -40,7 +40,7 @@ async def shell(_, message: Message):
     char = "#" if os.getuid() == 0 else "$"
     text = f"<b>{char}</b> <code>{cmd_text}</code>\n\n"
 
-    await message.edit(text + "<b>Running...</b>", parse_mode=enums.ParseMode.HTML)
+    await message.edit(text + "<b>Running...</b>")
     try:
         start_time = perf_counter()
         stdout, stderr = cmd_obj.communicate(timeout=60)
@@ -53,7 +53,7 @@ async def shell(_, message: Message):
         if stderr:
             text += f"<b>Error:</b>\n<code>{stderr}</code>\n\n"
         text += f"<b>Completed in {round(stop_time - start_time, 5)} seconds with code {cmd_obj.returncode}</b>"
-    await message.edit(text, parse_mode=enums.ParseMode.HTML)
+    await message.edit(text)
     cmd_obj.kill()
 
 

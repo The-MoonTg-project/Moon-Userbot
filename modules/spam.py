@@ -16,7 +16,7 @@
 
 import asyncio
 
-from pyrogram import Client, filters, enums
+from pyrogram import Client, filters
 from pyrogram.types import Message
 
 from utils.misc import modules_help, prefix
@@ -33,11 +33,11 @@ async def spam(client: Client, message: Message):
 
     await message.delete()
 
-    for msg in range(amount):
+    for _msg in range(amount):
         if message.reply_to_message:
-            sent = await message.reply_to_message.reply(text, parse_mode=enums.ParseMode.HTML)
+            sent = await message.reply_to_message.reply(text)
         else:
-            sent = await client.send_message(message.chat.id, text, parse_mode=enums.ParseMode.HTML)
+            sent = await client.send_message(message.chat.id, text)
 
         if message.command[0] == "statspam":
             await asyncio.sleep(0.1)

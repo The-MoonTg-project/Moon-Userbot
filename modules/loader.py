@@ -35,15 +35,13 @@ async def get_mod_hash(_, message: Message):
     resp = requests.get(url)
     if not resp.ok:
         await message.edit(
-            f"<b>Troubleshooting with downloading module <code>{url}</code></b>",
-            parse_mode=enums.ParseMode.HTML,
+            f"<b>Troubleshooting with downloading module <code>{url}</code></b>"
         )
         return
 
     await message.edit(
         f"<b>Module hash: <code>{hashlib.sha256(resp.content).hexdigest()}</code>\n"
         f"Link: <code>{url}</code>\nFile: <code>{url.split('/')[-1]}</code></b>",
-        parse_mode=enums.ParseMode.HTML,
     )
 
 
@@ -57,9 +55,7 @@ async def loadmod(_, message: Message):
         )
         and len(message.command) == 1
     ):
-        await message.edit(
-            "<b>Specify module to download</b>", parse_mode=enums.ParseMode.HTML
-        )
+        await message.edit("<b>Specify module to download</b>")
         return
 
     if len(message.command) > 1:
@@ -81,7 +77,6 @@ async def loadmod(_, message: Message):
             if not resp.ok:
                 await message.edit(
                     f"<b>Troubleshooting with downloading module <code>{url}</code></b>",
-                    parse_mode=enums.ParseMode.HTML,
                 )
                 return
 
@@ -92,17 +87,13 @@ async def loadmod(_, message: Message):
                     "<a href=https://github.com/The-MoonTg-project/custom_modules>"
                     "custom_modules</a> repository are supported!</b>",
                     disable_web_page_preview=True,
-                    parse_mode=enums.ParseMode.HTML,
                 )
 
             module_name = url.split("/")[-1].split(".")[0]
 
         resp = requests.get(url)
         if not resp.ok:
-            await message.edit(
-                f"<b>Module <code>{module_name}</code> is not found</b>",
-                parse_mode=enums.ParseMode.HTML,
-            )
+            await message.edit(f"<b>Module <code>{module_name}</code> is not found</b>")
             return
 
         if not os.path.exists(f"{BASE_PATH}/modules/custom_modules"):
@@ -129,15 +120,11 @@ async def loadmod(_, message: Message):
                 "<a href=https://github.com/The-MoonTg-project/custom_modules>"
                 "custom_modules</a> repository are supported!</b>",
                 disable_web_page_preview=True,
-                parse_mode=enums.ParseMode.HTML
             )
         else:
             os.rename(file_name, f"./modules/custom_modules/{module_name}.py")
 
-    await message.edit(
-        f"<b>The module <code>{module_name}</code> is loaded!</b>",
-        parse_mode=enums.ParseMode.HTML,
-    )
+    await message.edit(f"<b>The module <code>{module_name}</code> is loaded!</b>")
     restart()
 
 
@@ -155,26 +142,19 @@ async def unload_mods(_, message: Message):
 
     if os.path.exists(f"{BASE_PATH}/modules/custom_modules/{module_name}.py"):
         os.remove(f"{BASE_PATH}/modules/custom_modules/{module_name}.py")
-        await message.edit(
-            f"<b>The module <code>{module_name}</code> removed!</b>",
-            parse_mode=enums.ParseMode.HTML,
-        )
+        await message.edit(f"<b>The module <code>{module_name}</code> removed!</b>")
         restart()
     elif os.path.exists(f"{BASE_PATH}/modules/{module_name}.py"):
         await message.edit(
-            "<b>It is forbidden to remove built-in modules, it will disrupt the updater</b>",
-            parse_mode=enums.ParseMode.HTML,
+            "<b>It is forbidden to remove built-in modules, it will disrupt the updater</b>"
         )
     else:
-        await message.edit(
-            f"<b>Module <code>{module_name}</code> is not found</b>",
-            parse_mode=enums.ParseMode.HTML,
-        )
+        await message.edit(f"<b>Module <code>{module_name}</code> is not found</b>")
 
 
 @Client.on_message(filters.command(["loadallmods"], prefix) & filters.me)
 async def load_all_mods(_, message: Message):
-    await message.edit("<b>Fetching info...</b>", parse_mode=enums.ParseMode.HTML)
+    await message.edit("<b>Fetching info...</b>")
 
     if not os.path.exists(f"{BASE_PATH}/modules/custom_modules"):
         os.mkdir(f"{BASE_PATH}/modules/custom_modules")
@@ -191,23 +171,22 @@ async def load_all_mods(_, message: Message):
             continue
         new_modules[module_info["name"][:-3]] = module_info["download_url"]
     if not new_modules:
-        return await message.edit("<b>All modules already loaded</b>", parse_mode=enums.ParseMode.HTML)
+        return await message.edit("<b>All modules already loaded</b>")
 
-    await message.edit(f'<b>Loading new modules: {" ".join(new_modules.keys())}</b>', parse_mode=enums.ParseMode.HTML)
+    await message.edit(f'<b>Loading new modules: {" ".join(new_modules.keys())}</b>')
     for name, url in new_modules.items():
         with open(f"./modules/custom_modules/{name}.py", "wb") as f:
             f.write(requests.get(url).content)
 
     await message.edit(
         f'<b>Successfully loaded new modules: {" ".join(new_modules.keys())}</b>',
-        parse_mode=enums.ParseMode.HTML
     )
     restart()
 
 
 @Client.on_message(filters.command(["updateallmods"], prefix) & filters.me)
 async def updateallmods(_, message: Message):
-    await message.edit("<b>Updating modules...</b>", parse_mode=enums.ParseMode.HTML)
+    await message.edit("<b>Updating modules...</b>")
 
     if not os.path.exists(f"{BASE_PATH}/modules/custom_modules"):
         os.mkdir(f"{BASE_PATH}/modules/custom_modules")
@@ -215,7 +194,7 @@ async def updateallmods(_, message: Message):
     modules_installed = list(os.walk("modules/custom_modules"))[0][2]
 
     if not modules_installed:
-        return await message.edit("<b>You don't have any modules installed</b>", parse_mode=enums.ParseMode.HTML)
+        return await message.edit("<b>You don't have any modules installed</b>")
 
     for module_name in modules_installed:
         if not module_name.endswith(".py"):
@@ -231,7 +210,7 @@ async def updateallmods(_, message: Message):
         with open(f"./modules/custom_modules/{module_name}", "wb") as f:
             f.write(resp.content)
 
-    await message.edit(f"<b>Successfully updated {len(modules_installed)} modules</b>", parse_mode=enums.ParseMode.HTML)
+    await message.edit(f"<b>Successfully updated {len(modules_installed)} modules</b>")
 
 
 modules_help["loader"] = {
@@ -243,3 +222,4 @@ modules_help["loader"] = {
     "loadallmods": "Load all custom modules (use it at your own risk)",
     "updateallmods": "Update all custom modules",
 }
+

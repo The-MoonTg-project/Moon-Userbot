@@ -20,7 +20,7 @@ import time
 from datetime import datetime
 from html import escape
 
-from pyrogram import Client, filters, enums
+from pyrogram import Client, filters
 from pyrogram import ContinuePropagation
 from pyrogram.errors import RPCError
 from pyrogram.raw.functions.account import GetAuthorizations, ResetAuthorization
@@ -30,7 +30,6 @@ from pyrogram.types import Message
 from utils.db import db
 from utils.misc import modules_help, prefix
 from textwrap import dedent
-from datetime import datetime
 
 auth_hashes = db.get("core.sessionkiller", "auths_hashes", [])
 
@@ -91,7 +90,7 @@ async def sessions_list(client: Client, message: Message):
             answer = ""
             chunk.clear()
     if len(chunk):
-        await message.reply("\n\n".join(chunk), parse_mode=enums.ParseMode.HTML)
+        await message.reply("\n\n".join(chunk))
     await message.delete()
 
 
@@ -103,16 +102,16 @@ async def sessionkiller(client: Client, message: Message):
         if db.get("core.sessionkiller", "enabled", False):
             await message.edit(
                 "<b>Sessionkiller status: enabled\n"
-                f"You can disable it with <code>{prefix}sessionkiller disable</code></b>", parse_mode=enums.ParseMode.HTML
+                f"You can disable it with <code>{prefix}sessionkiller disable</code></b>"
             )
         else:
             await message.edit(
                 "<b>Sessionkiller status: disabled\n"
-                f"You can enable it with <code>{prefix}sessionkiller enable</code></b>", parse_mode=enums.ParseMode.HTML
+                f"You can enable it with <code>{prefix}sessionkiller enable</code></b>"
             )
     elif message.command[1] in ["enable", "on", "1", "yes", "true"]:
         db.set("core.sessionkiller", "enabled", True)
-        await message.edit("<b>Sessionkiller enabled!</b>", parse_mode=enums.ParseMode.HTML)
+        await message.edit("<b>Sessionkiller enabled!</b>")
         db.set(
             "core.sessionkiller",
             "auths_hashes",
@@ -126,10 +125,10 @@ async def sessionkiller(client: Client, message: Message):
 
     elif message.command[1] in ["disable", "off", "0", "no", "false"]:
         db.set("core.sessionkiller", "enabled", False)
-        await message.edit("<b>Sessionkiller disabled!</b>", parse_mode=enums.ParseMode.HTML)
+        await message.edit("<b>Sessionkiller disabled!</b>")
     else:
         await message.edit(
-            f"<b>Usage: {prefix}sessionkiller [enable|disable]</b>", parse_mode=enums.ParseMode.HTML
+            f"<b>Usage: {prefix}sessionkiller [enable|disable]</b>"
         )
 
 
@@ -189,7 +188,7 @@ async def check_new_login(
             # schedule sending report message so user will get notification
             schedule_date = int(time.time() + 15)
             await client.send_message(
-                "me", full_report, schedule_date=schedule_date, parse_mode=enums.ParseMode.HTML
+                "me", full_report, schedule_date=schedule_date
             )
             return
 

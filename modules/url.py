@@ -55,15 +55,13 @@ async def short(_, message: Message):
         link = message.reply_to_message.text
     else:
         await message.edit(
-            f"<b>Usage: </b><code>{prefix}short [url to short]</code>",
-            parse_mode=enums.ParseMode.HTML,
+            f"<b>Usage: </b><code>{prefix}short [url to short]</code>"
         )
         return
     r = http.request("GET", "https://clck.ru/--?url=" + link)
     await message.edit(
         r.data.decode().replace("https://", "<b>Shortened Url:</b>"),
         disable_web_page_preview=True,
-        parse_mode=enums.ParseMode.HTML,
     )
 
 
@@ -77,8 +75,7 @@ async def urldl(client: Client, message: Message):
         link = message.reply_to_message.text
     else:
         await message.edit(
-            f"<b>Usage: </b><code>{prefix}urldl [url to download]</code>",
-            parse_mode=enums.ParseMode.HTML,
+            f"<b>Usage: </b><code>{prefix}urldl [url to download]</code>"
         )
         return
 
@@ -187,20 +184,19 @@ async def upload_cmd(_, message: Message):
             )
         except ValueError:
             await message.edit(
-                "<b>File to upload not found</b>", parse_mode=enums.ParseMode.HTML
+                "<b>File to upload not found</b>"
             )
             return
 
     if os.path.getsize(file_name) > max_size:
         await message.edit(
-            f"<b>Files longer than {max_size_mb}MB isn't supported</b>",
-            parse_mode=enums.ParseMode.HTML,
+            f"<b>Files longer than {max_size_mb}MB isn't supported</b>"
         )
         if os.path.exists(file_name):
             os.remove(file_name)
         return
 
-    await message.edit("<b>Uploading...</b>", parse_mode=enums.ParseMode.HTML)
+    await message.edit("<b>Uploading...</b>")
     with open(file_name, "rb") as f:
         response = requests.post(
             "https://x0.at",
@@ -216,13 +212,11 @@ async def upload_cmd(_, message: Message):
         url = response.text.replace("https://", "")
         await message.edit(
             f"<b>Your URL: {url}\nYour file will remain live for {file_age} days</b>",
-            disable_web_page_preview=True,
-            parse_mode=enums.ParseMode.HTML,
+            disable_web_page_preview=True
         )
     else:
         await message.edit(
-            f"<b>API returned an error!\n" f"{response.text}\n Not allowed</b>",
-            parse_mode=enums.ParseMode.HTML,
+            f"<b>API returned an error!\n" f"{response.text}\n Not allowed</b>"
         )
         print(response.text)
     if os.path.exists(file_name):
@@ -241,8 +235,7 @@ async def webshot(client: Client, message: Message):
             url = "https://" + message.text.split(maxsplit=1)[1]
     else:
         await message.edit_text(
-            f"<b>Usage: </b><code>{prefix}webshot/{prefix}ws [url/reply to url]</code>",
-            parse_mode=enums.ParseMode.HTML,
+            f"<b>Usage: </b><code>{prefix}webshot/{prefix}ws [url/reply to url]</code>"
         )
         return
 

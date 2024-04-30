@@ -18,7 +18,7 @@ import os
 import sys
 import subprocess
 
-from pyrogram import Client, filters, enums
+from pyrogram import Client, filters
 from pyrogram.types import Message
 
 from utils.misc import modules_help, prefix, requirements_list
@@ -39,11 +39,11 @@ async def restart_cmd(_, message: Message):
     )
 
     if "LAVHOST" in os.environ:
-        await message.edit("<b>Your lavHost is restarting...</b>", parse_mode=enums.ParseMode.HTML)
+        await message.edit("<b>Your lavHost is restarting...</b>")
         os.system("lavhost restart")
         return
 
-    await message.edit("<b>Restarting...</b>", parse_mode=enums.ParseMode.HTML)
+    await message.edit("<b>Restarting...</b>")
     restart()
 
 
@@ -60,11 +60,11 @@ async def update(_, message: Message):
     )
 
     if "LAVHOST" in os.environ:
-        await message.edit("<b>Your lavHost is updating...</b>", parse_mode=enums.ParseMode.HTML)
+        await message.edit("<b>Your lavHost is updating...</b>")
         os.system("lavhost update")
         return
 
-    await message.edit("<b>Updating...</b>", parse_mode=enums.ParseMode.HTML)
+    await message.edit("<b>Updating...</b>")
     try:
         subprocess.run([sys.executable, "-m", "pip", "install", "-U", "pip"])
         subprocess.run(["git", "pull"])
@@ -84,10 +84,10 @@ async def update(_, message: Message):
             [sys.executable, "-m", "pip", "install", "-U", *requirements_list]
         )
     except Exception as e:
-        await message.edit(format_exc(e), parse_mode=enums.ParseMode.HTML)
+        await message.edit(format_exc(e))
         db.remove("core.updater", "restart_info")
     else:
-        await message.edit("<b>Updating: done! Restarting...</b>", parse_mode=enums.ParseMode.HTML)
+        await message.edit("<b>Updating: done! Restarting...</b>")
         restart()
 
 

@@ -18,35 +18,21 @@
 import asyncio
 from datetime import datetime
 
+import humanize
 from pyrogram import Client, enums, filters
 from pyrogram.types import Message
 
 from utils.misc import modules_help, prefix
-from utils.scripts import import_library
+from utils.scripts import import_library, ReplyCheck
 
-humanize = import_library("humanize")
+import_library("humanize")
 
-import humanize
-
+# Variables
 AFK = False
 AFK_REASON = ""
 AFK_TIME = ""
 USERS = {}
 GROUPS = {}
-
-# Helpers
-
-
-def ReplyCheck(message: Message):
-    reply_id = None
-
-    if message.reply_to_message:
-        reply_id = message.reply_to_message.id
-
-    elif not message.from_user.is_self:
-        reply_id = message.id
-
-    return reply_id
 
 
 def GetChatID(message: Message):
@@ -87,7 +73,6 @@ async def collect_afk_messages(bot: Client, message: Message):
                 chat_id=GetChatID(message),
                 text=text,
                 reply_to_message_id=ReplyCheck(message),
-                parse_mode=enums.ParseMode.HTML,
             )
             CHAT_TYPE[GetChatID(message)] = 1
             return
@@ -104,7 +89,6 @@ async def collect_afk_messages(bot: Client, message: Message):
                     chat_id=GetChatID(message),
                     text=text,
                     reply_to_message_id=ReplyCheck(message),
-                    parse_mode=enums.ParseMode.HTML,
                 )
             elif CHAT_TYPE[GetChatID(message)] > 50:
                 return
@@ -119,7 +103,6 @@ async def collect_afk_messages(bot: Client, message: Message):
                     chat_id=GetChatID(message),
                     text=text,
                     reply_to_message_id=ReplyCheck(message),
-                    parse_mode=enums.ParseMode.HTML,
                 )
 
         CHAT_TYPE[GetChatID(message)] += 1
@@ -153,8 +136,7 @@ async def afk_unset(bot: Client, message: Message):
         await message.edit(
             f"<code>While you were away (for {last_seen}), you received {sum(USERS.values()) + sum(GROUPS.values())} "
             f"messages from {len(USERS) + len(GROUPS)} chats</code>",
-            parse_mode=enums.ParseMode.HTML
-        )
+)
         AFK = False
         AFK_TIME = ""
         AFK_REASON = ""
@@ -173,8 +155,7 @@ async def auto_afk_unset(bot: Client, message: Message):
         last_seen = subtract_time(datetime.now(), AFK_TIME).replace("ago", "").strip()
         reply = await message.reply(
             f"<code>While you were away (for {last_seen}), you received {sum(USERS.values()) + sum(GROUPS.values())} "
-            f"messages from {len(USERS) + len(GROUPS)} chats</code>",
-            parse_mode=enums.ParseMode.HTML,
+            f"messages from {len(USERS) + len(GROUPS)} chats</code>"
         )
         AFK = False
         AFK_TIME = ""
@@ -189,3 +170,5 @@ modules_help["afk"] = {
     "afk [reason]": "Go to AFK mode with reason as anything after .afk\nUsage: <code>.afk <reason></code>",
     "unafk": "Get out of AFK",
 }
+
+

@@ -152,7 +152,7 @@ async def rmbg(client: Client, message: Message):
 
 @Client.on_message(filters.command("rebg", prefix) & filters.me)
 async def rembg(client: Client, message: Message):
-    await message.edit("<code>Processing...</code>", parse_mode=enums.ParseMode.HTML)
+    await message.edit("<code>Processing...</code>")
     chat_id = message.chat.id
     try:
         try:
@@ -162,7 +162,7 @@ async def rembg(client: Client, message: Message):
                 photo_data = await message.reply_to_message.download()
             except ValueError:
                 await message.edit(
-                    "<b>File not found</b>", parse_mode=enums.ParseMode.HTML
+                    "<b>File not found</b>"
                 )
                 return
         background_removed_data = remove_background(photo_data)

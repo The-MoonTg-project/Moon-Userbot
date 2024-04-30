@@ -1,6 +1,6 @@
 import os
 
-from pyrogram import Client, enums, filters
+from pyrogram import Client, filters
 from pyrogram.types import Message
 
 from utils.misc import modules_help, prefix
@@ -15,27 +15,25 @@ async def upl(client: Client, message: Message):
         link = message.reply_to_message.text
     else:
         await message.edit(
-            f"<b>Usage: </b><code>{prefix}upl [filepath to upload]</code>",
-            parse_mode=enums.ParseMode.HTML,
+            f"<b>Usage: </b><code>{prefix}upl [filepath to upload]</code>"
         )
         return
 
     # Ensure that the link is an absolute path to a file on your local machine
     if not os.path.isfile(link):
         await message.edit(
-            f"<b>Error: </b><code>{link}</code> is not a valid file path.",
-            parse_mode=enums.ParseMode.HTML,
+            f"<b>Error: </b><code>{link}</code> is not a valid file path."
         )
         return
 
     try:
-        await message.edit("<b>Uploading Now...</b>", parse_mode=enums.ParseMode.HTML)
+        await message.edit("<b>Uploading Now...</b>")
         await client.send_document(
-            message.chat.id, link, parse_mode=enums.ParseMode.HTML
+            message.chat.id, link
         )
         await message.delete()
     except Exception as e:
-        await message.edit(format_exc(e), parse_mode=enums.ParseMode.HTML)
+        await message.edit(format_exc(e))
 
 
 @Client.on_message(filters.command("uplr", prefix) & filters.me)
@@ -46,27 +44,25 @@ async def uplr(client: Client, message: Message):
         link = message.reply_to_message.text
     else:
         await message.edit(
-            f"<b>Usage: </b><code>{prefix}upl [filepath to upload]</code>",
-            parse_mode=enums.ParseMode.HTML,
+            f"<b>Usage: </b><code>{prefix}upl [filepath to upload]</code>"
         )
         return
 
     # Ensure that the link is an absolute path to a file on your local machine
     if not os.path.isfile(link):
         await message.edit(
-            f"<b>Error: </b><code>{link}</code> is not a valid file path.",
-            parse_mode=enums.ParseMode.HTML,
+            f"<b>Error: </b><code>{link}</code> is not a valid file path."
         )
         return
 
     try:
-        await message.edit("<b>Uploading Now...</b>", parse_mode=enums.ParseMode.HTML)
+        await message.edit("<b>Uploading Now...</b>")
         await client.send_document(
-            message.chat.id, link, parse_mode=enums.ParseMode.HTML
+            message.chat.id, link
         )
         await message.delete()
     except Exception as e:
-        await message.edit(format_exc(e), parse_mode=enums.ParseMode.HTML)
+        await message.edit(format_exc(e))
     finally:
         if os.path.exists(link):
             os.remove(link)

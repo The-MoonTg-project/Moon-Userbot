@@ -14,7 +14,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from pyrogram import Client, filters, enums
+from pyrogram import Client, filters
 from pyrogram.raw import functions
 from pyrogram.types import Message
 
@@ -50,12 +50,12 @@ async def get_user_inf(client: Client, message: Message):
 |-Deleted: <code>{user.deleted}</code>
 |-BIO: <code>{about}</code>
 </b>"""
-    await message.edit(user_info, parse_mode=enums.ParseMode.HTML)
+    await message.edit(user_info)
 
 
 @Client.on_message(filters.command("inffull", prefix) & filters.me)
 async def get_full_user_inf(client: Client, message: Message):
-    await message.edit("<b>Receiving the information...</b>", parse_mode=enums.ParseMode.HTML)
+    await message.edit("<b>Receiving the information...</b>")
 
     try:
         if len(message.command) >= 2:
@@ -73,7 +73,7 @@ async def get_full_user_inf(client: Client, message: Message):
         await client.unblock_user("@creationdatebot")
         try:
             response = await interact_with(
-                await client.send_message("creationdatebot", f"/id {user.id}", parse_mode=enums.ParseMode.HTML)
+                await client.send_message("creationdatebot", f"/id {user.id}")
             )
         except RuntimeError:
             creation_date = "None"
@@ -104,9 +104,9 @@ async def get_full_user_inf(client: Client, message: Message):
 |-Phone calls available: <code>{full_user.phone_calls_available}</code>
 |-Phone calls private: <code>{full_user.phone_calls_private}</code>
 |-Blocked: <code>{full_user.blocked}</code></b>"""
-        await message.edit(user_info, parse_mode=enums.ParseMode.HTML)
+        await message.edit(user_info)
     except Exception as e:
-        await message.edit(format_exc(e), parse_mode=enums.ParseMode.HTML)
+        await message.edit(format_exc(e))
 
 modules_help["user_info"] = {
     "inf [reply|id|username]": "Get brief information about user",

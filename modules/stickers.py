@@ -32,13 +32,13 @@ from utils.scripts import (
 @Client.on_message(filters.command("kang", prefix) & filters.me)
 @with_reply
 async def kang(client: Client, message: types.Message):
-    await message.edit("<b>Please wait...</b>", parse_mode=enums.ParseMode.HTML)
+    await message.edit("<b>Please wait...</b>")
 
     if len(message.command) < 2:
         await message.edit(
                     "<b>No arguments provided\n"
                     f"Usage: <code>{prefix}kang [pack]* [emoji]</code></b>",
-                    parse_mode=enums.ParseMode.HTML
+                    
                 )
         return
 
@@ -54,12 +54,12 @@ async def kang(client: Client, message: types.Message):
 
     result = await interact_with(await client.send_message("@stickers", pack, parse_mode=enums.ParseMode.MARKDOWN))
     if ".TGS" in result.text:
-        await message.edit("<b>Animated packs aren't supported</b>", parse_mode=enums.ParseMode.HTML)
+        await message.edit("<b>Animated packs aren't supported</b>")
         return
     if "StickerExample.psd" not in result.text:
         await message.edit(
                     "<b>Stickerpack doesn't exitst. Create it using @Stickers bot (via /newpack command)</b>",
-                    parse_mode=enums.ParseMode.HTML
+                    
                 )
         return
 
@@ -68,7 +68,7 @@ async def kang(client: Client, message: types.Message):
     except ValueError:
         await message.edit(
                     "<b>Replied message doesn't contain any downloadable media</b>",
-                    parse_mode=enums.ParseMode.HTML
+                    
                 )
         return
 
@@ -84,10 +84,10 @@ async def kang(client: Client, message: types.Message):
         await client.delete_messages("@stickers", interact_with_to_delete)
         await message.edit(
                     f"<b>Sticker added to <a href=https://t.me/addstickers/{pack}>pack</a></b>",
-                    parse_mode=enums.ParseMode.HTML
+                    
                 )
     else:
-        await message.edit("<b>Something went wrong. Check history with @stickers</b>", parse_mode=enums.ParseMode.HTML)
+        await message.edit("<b>Something went wrong. Check history with @stickers</b>")
     interact_with_to_delete.clear()
 
 
@@ -95,7 +95,7 @@ async def kang(client: Client, message: types.Message):
 @with_reply
 async def stick2png(client: Client, message: types.Message):
     try:
-        await message.edit("<b>Downloading...</b>", parse_mode=enums.ParseMode.HTML)
+        await message.edit("<b>Downloading...</b>")
 
         path = await message.reply_to_message.download()
         with open(path, "rb") as f:
@@ -108,7 +108,7 @@ async def stick2png(client: Client, message: types.Message):
 
         await client.send_document(message.chat.id, file_io, parse_mode=enums.ParseMode.MARKDOWN)
     except Exception as e:
-        await message.edit(format_exc(e), parse_mode=enums.ParseMode.HTML)
+        await message.edit(format_exc(e))
     else:
         await message.delete()
 
@@ -117,7 +117,7 @@ async def stick2png(client: Client, message: types.Message):
 @with_reply
 async def resize_cmd(client: Client, message: types.Message):
     try:
-        await message.edit("<b>Downloading...</b>", parse_mode=enums.ParseMode.HTML)
+        await message.edit("<b>Downloading...</b>")
 
         path = await message.reply_to_message.download()
         resized = resize_image(path)
@@ -127,7 +127,7 @@ async def resize_cmd(client: Client, message: types.Message):
 
         await client.send_document(message.chat.id, resized, parse_mode=enums.ParseMode.MARKDOWN)
     except Exception as e:
-        await message.edit(format_exc(e), parse_mode=enums.ParseMode.HTML)
+        await message.edit(format_exc(e))
     else:
         await message.delete()
 

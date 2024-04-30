@@ -13,7 +13,7 @@ async def sg(client: Client, message: Message):
     if message.reply_to_message and message.reply_to_message.from_user:
         user_id = message.reply_to_message.from_user.id
     else:
-        await message.edit(f"<b>Usage: </b><code>{prefix}sgb [id]</code>", parse_mode=enums.ParseMode.HTML)
+        await message.edit(f"<b>Usage: </b><code>{prefix}sgb [id]</code>")
         return
     try:
         await client.send_message("@SangMata_beta_bot","/start", parse_mode=enums.ParseMode.MARKDOWN)

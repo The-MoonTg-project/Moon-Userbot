@@ -7,7 +7,7 @@
 #  (at your option) any later version.
 import os
 
-from pyrogram import Client, enums, filters
+from pyrogram import Client, filters
 from pyrogram.types import Message
 
 from utils.misc import modules_help, prefix
@@ -26,12 +26,11 @@ from utils.scripts import format_exc, format_module_help, format_small_module_he
 async def sendmod(client: Client, message: Message):
     if len(message.command) == 1:
         await message.edit(
-            "<b>Module name to send is not provided</b>",
-            parse_mode=enums.ParseMode.HTML,
+            "<b>Module name to send is not provided</b>"
         )
         return
 
-    await message.edit("<b>Dispatching...</b>", parse_mode=enums.ParseMode.HTML)
+    await message.edit("<b>Dispatching...</b>")
     try:
         module_name = message.command[1].lower()
         if module_name in modules_help:
@@ -50,12 +49,9 @@ async def sendmod(client: Client, message: Message):
                 )
             await message.delete()
         else:
-            await message.edit(
-                f"<b>Module {module_name} not found!</b>",
-                parse_mode=enums.ParseMode.HTML,
-            )
+            await message.edit(f"<b>Module {module_name} not found!</b>")
     except Exception as e:
-        await message.edit(format_exc(e), parse_mode=enums.ParseMode.HTML)
+        await message.edit(format_exc(e))
 
 
 modules_help["sendmod"] = {

@@ -1,35 +1,37 @@
 import re
-from datetime import timedelta, datetime
+from datetime import datetime, timedelta
 from typing import Dict, Union
 
 from pyrogram import Client, enums
 from pyrogram.errors import (
-    UserAdminInvalid,
     ChatAdminRequired,
     PeerIdInvalid,
+    RPCError,
+    UserAdminInvalid,
     UsernameInvalid,
 )
 from pyrogram.raw import functions, types
 from pyrogram.types import (
-    Message,
     ChatPermissions,
     ChatPrivileges,
-    InputMediaPhoto,
-    InputMediaVideo,
     InputMediaAudio,
     InputMediaDocument,
+    InputMediaPhoto,
+    InputMediaVideo,
+    Message,
 )
 from pyrogram.utils import (
-    get_channel_id,
-    MAX_USER_ID,
-    MIN_CHAT_ID,
     MAX_CHANNEL_ID,
+    MAX_USER_ID,
     MIN_CHANNEL_ID,
+    MIN_CHAT_ID,
+    get_channel_id,
 )
 
 from utils.db import db
-from utils.scripts import text, format_exc
 from utils.misc import prefix
+from utils.scripts import format_exc, text
+
 
 async def check_username_or_id(data: Union[str, int]) -> str:
     data = str(data)
@@ -54,6 +56,7 @@ async def check_username_or_id(data: Union[str, int]) -> str:
 
     raise ValueError(f"Peer id invalid: {peer_id}")
 
+
 async def get_user_and_name(message):
     if message.reply_to_message.from_user:
         return (
@@ -65,6 +68,7 @@ async def get_user_and_name(message):
             message.reply_to_message.sender_chat.id,
             message.reply_to_message.sender_chat.title,
         )
+
 
 class BanHandler:
     def __init__(self, client: Client, message: Message):
@@ -93,7 +97,11 @@ class BanHandler:
             if len(self.cause.split()) > 1:
                 user_to_ban = await self.get_user_to_ban()
                 if user_to_ban:
-                    self.name = user_to_ban.first_name if getattr(user_to_ban, "first_name", None) else user_to_ban.title
+                    self.name = (
+                        user_to_ban.first_name
+                        if getattr(user_to_ban, "first_name", None)
+                        else user_to_ban.title
+                    )
                     await self.ban_user(user_to_ban.id)
 
     async def get_user_to_ban(self):
@@ -144,9 +152,9 @@ class BanHandler:
         )
         await self.message.edit(
             f"<b>{self.name}</b> <code>banned!</code>"
-            + f"\n{'<b>Cause:</b> <i>' + text_c.split(maxsplit=1)[1] + '</i>' if len(text_c.split()) > 1 else ''}",
-            parse_mode=enums.ParseMode.HTML,
+            + f"\n{'<b>Cause:</b> <i>' + text_c.split(maxsplit=1)[1] + '</i>' if len(text_c.split()) > 1 else ''}"
         )
+
 
 class UnbanHandler:
     def __init__(self, client: Client, message: Message):
@@ -175,7 +183,11 @@ class UnbanHandler:
             if len(self.cause.split()) > 1:
                 user_to_unban = await self.get_user_to_unban()
                 if user_to_unban:
-                    self.name = user_to_unban.first_name if getattr(user_to_unban, "first_name", None) else user_to_unban.title
+                    self.name = (
+                        user_to_unban.first_name
+                        if getattr(user_to_unban, "first_name", None)
+                        else user_to_unban.title
+                    )
                     await self.unban_user(user_to_unban.id)
 
     async def get_user_to_unban(self):
@@ -209,9 +221,9 @@ class UnbanHandler:
         )
         await self.message.edit(
             f"<b>{self.name}</b> <code>unbanned!</code>"
-            + f"\n{'<b>Cause:</b> <i>' + text_c.split(maxsplit=1)[1] + '</i>' if len(text_c.split()) > 1 else ''}",
-            parse_mode=enums.ParseMode.HTML,
+            + f"\n{'<b>Cause:</b> <i>' + text_c.split(maxsplit=1)[1] + '</i>' if len(text_c.split()) > 1 else ''}"
         )
+
 
 class KickHandler:
     def __init__(self, client: Client, message: Message):
@@ -242,7 +254,11 @@ class KickHandler:
             if len(self.cause.split()) > 1:
                 user_to_kick = await self.get_user_to_kick()
                 if user_to_kick:
-                    self.name = user_to_kick.first_name if getattr(user_to_kick, "first_name", None) else user_to_kick.title
+                    self.name = (
+                        user_to_kick.first_name
+                        if getattr(user_to_kick, "first_name", None)
+                        else user_to_kick.title
+                    )
                     await self.kick_user(user_to_kick.id)
             else:
                 await self.message.edit("<b>user_id or username</b>")
@@ -304,9 +320,9 @@ class KickHandler:
         )
         await self.message.edit(
             f"<b>{self.name}</b> <code>kicked!</code>"
-            + f"\n{'<b>Cause:</b> <i>' + text_c.split(maxsplit=1)[1] + '</i>' if len(text_c.split()) > 1 else ''}",
-            parse_mode=enums.ParseMode.HTML,
+            + f"\n{'<b>Cause:</b> <i>' + text_c.split(maxsplit=1)[1] + '</i>' if len(text_c.split()) > 1 else ''}"
         )
+
 
 class KickDeletedAccountsHandler:
     def __init__(self, client: Client, message: Message):
@@ -326,18 +342,16 @@ class KickDeletedAccountsHandler:
             return await self.message.edit(format_exc(e))
         await self.message.edit(
             f"<b>Successfully kicked {self.kicked_count} deleted account(s)</b>",
-            parse_mode=enums.ParseMode.HTML
         )
 
     async def kick_member(self, user_id):
         try:
             await self.client.ban_chat_member(
-                self.chat_id,
-                user_id,
-                datetime.now() + timedelta(seconds=31)
+                self.chat_id, user_id, datetime.now() + timedelta(seconds=31)
             )
         except Exception as e:
             await self.message.edit(f"Failed to kick user {user_id}: {format_exc(e)}")
+
 
 class TimeMuteHandler:
     def __init__(self, client: Client, message: Message):
@@ -366,7 +380,6 @@ class TimeMuteHandler:
                 await self.message.edit(
                     f"<b>{name}</b> <code>in tmute</code>"
                     + f"\n{'<b>Cause:</b> <i>' + self.cause.split(maxsplit=1)[1] + '</i>' if len(self.cause.split()) > 1 else ''}",
-                    parse_mode=enums.ParseMode.HTML
                 )
 
     async def handle_non_reply_tmute(self):
@@ -374,19 +387,21 @@ class TimeMuteHandler:
             if len(self.cause.split()) > 1:
                 user_to_tmute = await self.get_user_to_tmute()
                 if user_to_tmute:
-                    name = user_to_tmute.first_name if getattr(user_to_tmute, "first_name", None) else user_to_tmute.title
+                    name = (
+                        user_to_tmute.first_name
+                        if getattr(user_to_tmute, "first_name", None)
+                        else user_to_tmute.title
+                    )
                     if user_to_tmute.id not in self.tmuted_users:
                         self.tmuted_users.append(user_to_tmute.id)
                         db.set("core.ats", f"c{self.chat_id}", self.tmuted_users)
                         await self.message.edit(
                             f"<b>{name}</b> <code>in tmute</code>"
                             + f"\n{'<b>Cause:</b> <i>' + self.cause.split(maxsplit=2)[2] + '</i>' if len(self.cause.split()) > 2 else ''}",
-                            parse_mode=enums.ParseMode.HTML
                         )
                     else:
                         await self.message.edit(
                             f"<b>{name}</b> <code>already in tmute</code>",
-                            parse_mode=enums.ParseMode.HTML
                         )
             else:
                 await self.message.edit("<b>user_id or username</b>")
@@ -400,6 +415,7 @@ class TimeMuteHandler:
         else:
             await self.message.edit("<b>Invalid user type</b>")
             return None
+
 
 class TimeUnmuteHandler:
     def __init__(self, client: Client, message: Message):
@@ -428,7 +444,6 @@ class TimeUnmuteHandler:
                 await self.message.edit(
                     f"<b>{name}</b> <code>tunmuted</code>"
                     + f"\n{'<b>Cause:</b> <i>' + self.cause.split(maxsplit=1)[1] + '</i>' if len(self.cause.split()) > 1 else ''}",
-                    parse_mode=enums.ParseMode.HTML
                 )
 
     async def handle_non_reply_tunmute(self):
@@ -436,11 +451,14 @@ class TimeUnmuteHandler:
             if len(self.cause.split()) > 1:
                 user_to_tunmute = await self.get_user_to_tunmute()
                 if user_to_tunmute:
-                    name = user_to_tunmute.first_name if getattr(user_to_tunmute, "first_name", None) else user_to_tunmute.title
+                    name = (
+                        user_to_tunmute.first_name
+                        if getattr(user_to_tunmute, "first_name", None)
+                        else user_to_tunmute.title
+                    )
                     if user_to_tunmute.id not in self.tmuted_users:
                         await self.message.edit(
                             f"<b>{name}</b> <code>not in tmute</code>",
-                            parse_mode=enums.ParseMode.HTML
                         )
                     else:
                         self.tmuted_users.remove(user_to_tunmute.id)
@@ -448,7 +466,6 @@ class TimeUnmuteHandler:
                         await self.message.edit(
                             f"<b>{name}</b> <code>tunmuted</code>"
                             + f"\n{'<b>Cause:</b> <i>' + self.cause.split(maxsplit=2)[2] + '</i>' if len(self.cause.split()) > 2 else ''}",
-                            parse_mode=enums.ParseMode.HTML
                         )
             else:
                 await self.message.edit("<b>user_id or username</b>")
@@ -462,6 +479,7 @@ class TimeUnmuteHandler:
         else:
             await self.message.edit("<b>Invalid user type</b>")
             return None
+
 
 class TimeMuteUsersHandler:
     def __init__(self, client: Client, message: Message):
@@ -486,7 +504,7 @@ class TimeMuteUsersHandler:
                 await self.message.edit("<b>No users in tmute</b>")
             else:
                 text += f"\n<b>Total users in tmute</b> {count}"
-                await self.message.edit(text, parse_mode=enums.ParseMode.HTML)
+                await self.message.edit(text)
         else:
             await self.message.edit("<b>Unsupported</b>")
 
@@ -510,6 +528,7 @@ class TimeMuteUsersHandler:
                 return user.first_name
         except PeerIdInvalid:
             return None
+
 
 class UnmuteHandler:
     def __init__(self, client: Client, message: Message):
@@ -589,6 +608,7 @@ class UnmuteHandler:
         except Exception as e:
             await self.message.edit(format_exc(e))
 
+
 class MuteHandler:
     def __init__(self, client: Client, message: Message):
         self.client = client
@@ -611,7 +631,9 @@ class MuteHandler:
                 mute_seconds = self.calculate_mute_seconds()
                 try:
                     await self.mute_user(user_for_mute.id, mute_seconds)
-                    await self.message.edit(self.construct_mute_message(user_for_mute, mute_seconds))
+                    await self.message.edit(
+                        self.construct_mute_message(user_for_mute, mute_seconds)
+                    )
                 except UserAdminInvalid:
                     await self.message.edit("<b>No rights</b>")
                 except ChatAdminRequired:
@@ -629,7 +651,9 @@ class MuteHandler:
                     mute_seconds = self.calculate_mute_seconds()
                     try:
                         await self.mute_user(user_to_mute.id, mute_seconds)
-                        await self.message.edit(self.construct_mute_message(user_to_mute, mute_seconds))
+                        await self.message.edit(
+                            self.construct_mute_message(user_to_mute, mute_seconds)
+                        )
                     except UserAdminInvalid:
                         await self.message.edit("<b>No rights</b>")
                     except ChatAdminRequired:
@@ -702,6 +726,7 @@ class MuteHandler:
             message_text = message_text.replace(" ", " ")
         return message_text
 
+
 class DemoteHandler:
     def __init__(self, client: Client, message: Message):
         self.client = client
@@ -736,7 +761,9 @@ class DemoteHandler:
             if user_for_demote:
                 try:
                     await self.demote_user(user_for_demote.id)
-                    await self.message.edit(self.construct_demote_message(user_for_demote))
+                    await self.message.edit(
+                        self.construct_demote_message(user_for_demote)
+                    )
                 except UserAdminInvalid:
                     await self.message.edit("<b>No rights</b>")
                 except ChatAdminRequired:
@@ -753,7 +780,9 @@ class DemoteHandler:
                 if user_to_demote:
                     try:
                         await self.demote_user(user_to_demote.id)
-                        await self.message.edit(self.construct_demote_message(user_to_demote))
+                        await self.message.edit(
+                            self.construct_demote_message(user_to_demote)
+                        )
                     except UserAdminInvalid:
                         await self.message.edit("<b>No rights</b>")
                     except ChatAdminRequired:
@@ -791,6 +820,7 @@ class DemoteHandler:
             + f"\n{'<b>Cause:</b> <i>' + self.cause.split(' ', maxsplit=2)[2] + '</i>' if len(self.cause.split()) > 2 else ''}"
         )
 
+
 class PromoteHandler:
     def __init__(self, client: Client, message: Message):
         self.client = client
@@ -818,7 +848,9 @@ class PromoteHandler:
             if user_for_promote:
                 try:
                     await self.promote_user(user_for_promote.id)
-                    await self.message.edit(self.construct_promote_message(user_for_promote))
+                    await self.message.edit(
+                        self.construct_promote_message(user_for_promote)
+                    )
                 except UserAdminInvalid:
                     await self.message.edit("<b>No rights</b>")
                 except ChatAdminRequired:
@@ -835,7 +867,9 @@ class PromoteHandler:
                 if user_to_promote:
                     try:
                         await self.promote_user(user_to_promote.id)
-                        await self.message.edit(self.construct_promote_message(user_to_promote))
+                        await self.message.edit(
+                            self.construct_promote_message(user_to_promote)
+                        )
                     except UserAdminInvalid:
                         await self.message.edit("<b>No rights</b>")
                     except ChatAdminRequired:
@@ -880,6 +914,7 @@ class PromoteHandler:
             + f"\n{'<b>Prefix:</b> <i>' + self.cause.split(' ', maxsplit=1)[1] + '</i>' if len(self.cause.split()) > 1 else ''}"
         )
 
+
 class AntiChannelsHandler:
     def __init__(self, client: Client, message: Message):
         self.client = client
@@ -900,7 +935,9 @@ class AntiChannelsHandler:
         elif command[1] in ["disable", "off", "0", "no", "false"]:
             await self.disable_anti_channels()
         else:
-            await self.message.edit(f"<b>Usage: {self.prefix}antich [enable|disable]</b>")
+            await self.message.edit(
+                f"<b>Usage: {self.prefix}antich [enable|disable]</b>"
+            )
 
     async def toggle_anti_channels_status(self):
         current_status = db.get("core.ats", f"antich{self.chat_id}", False)
@@ -923,6 +960,7 @@ class AntiChannelsHandler:
     async def disable_anti_channels(self):
         db.set("core.ats", f"antich{self.chat_id}", False)
         await self.message.edit("<b>Blocking channels in this chat disabled.</b>")
+
 
 class DeleteHistoryHandler:
     def __init__(self, client: Client, message: Message):
@@ -960,7 +998,11 @@ class DeleteHistoryHandler:
             try:
                 user_to_delete = await self.get_user_to_delete()
                 if user_to_delete:
-                    name = user_to_delete.first_name if getattr(user_to_delete, "first_name", None) else user_to_delete.title
+                    name = (
+                        user_to_delete.first_name
+                        if getattr(user_to_delete, "first_name", None)
+                        else user_to_delete.title
+                    )
                     await self.delete_user_history(user_to_delete.id, name)
                 else:
                     await self.message.edit("<b>User is not found</b>")
@@ -1002,6 +1044,7 @@ class DeleteHistoryHandler:
             await self.message.edit("<b>No rights</b>")
         except Exception as e:
             await self.message.edit(format_exc(e))
+
 
 class AntiRaidHandler:
     def __init__(self, client: Client, message: Message):
@@ -1053,6 +1096,7 @@ class AntiRaidHandler:
         else:
             await self.message.edit("<b>Anti-raid mode disabled</b>")
 
+
 class NoteSendHandler:
     def __init__(self, client: Client, message: Message):
         self.client = client
@@ -1062,26 +1106,24 @@ class NoteSendHandler:
 
     async def handle_note_send(self):
         if len(self.message.text.split()) >= 2:
-            await self.message.edit("<b>Loading...</b>", parse_mode=enums.ParseMode.HTML)
+            await self.message.edit("<b>Loading...</b>")
 
             note_name = self.message.text.split(maxsplit=1)[1]
             find_note = db.get("core.notes", f"note{note_name}", False)
             if find_note:
                 try:
                     await self.send_note(find_note)
-                except errors.RPCError:
+                except RPCError:
                     await self.message.edit(
                         "<b>Sorry, but this note is unavailable.\n\n"
                         f"You can delete this note with "
-                        f"<code>{self.prefix}clear {note_name}</code></b>",
-                        parse_mode=enums.ParseMode.HTML
+                        f"<code>{self.prefix}clear {note_name}</code></b>"
                     )
             else:
-                await self.message.edit("<b>There is no such note</b>", parse_mode=enums.ParseMode.HTML)
+                await self.message.edit("<b>There is no such note</b>")
         else:
             await self.message.edit(
                 f"<b>Example: <code>{self.prefix}note note_name</code></b>",
-                parse_mode=enums.ParseMode.HTML
             )
 
     async def send_note(self, find_note):
@@ -1102,12 +1144,9 @@ class NoteSendHandler:
                 self.message.chat.id,
                 media_grouped_list,
                 reply_to_message_id=self.message.reply_to_message.id,
-                parse_mode=enums.ParseMode.HTML,
             )
         else:
-            await self.client.send_media_group(
-                self.message.chat.id, media_grouped_list
-            )
+            await self.client.send_media_group(self.message.chat.id, media_grouped_list)
 
     async def copy_message(self, find_note):
         if self.message.reply_to_message:
@@ -1154,7 +1193,9 @@ class NoteSendHandler:
             else:
                 return InputMediaVideo(message.video.file_id, message.caption.markdown)
         elif message.video.thumbs:
-            return InputMediaVideo(message.video.file_id, message.video.thumbs[0].file_id)
+            return InputMediaVideo(
+                message.video.file_id, message.video.thumbs[0].file_id
+            )
         else:
             return InputMediaVideo(message.video.file_id)
 
@@ -1173,8 +1214,12 @@ class NoteSendHandler:
                     message.caption.markdown,
                 )
             else:
-                return InputMediaDocument(message.document.file_id, message.caption.markdown)
+                return InputMediaDocument(
+                    message.document.file_id, message.caption.markdown
+                )
         elif message.document.thumbs:
-            return InputMediaDocument(message.document.file_id, message.document.thumbs[0].file_id)
+            return InputMediaDocument(
+                message.document.file_id, message.document.thumbs[0].file_id
+            )
         else:
             return InputMediaDocument(message.document.file_id)

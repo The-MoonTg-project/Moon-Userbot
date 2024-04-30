@@ -52,7 +52,7 @@ async def direct_link_generator(_, m: Message):
     elif m.reply_to_message:
         message = m.reply_to_message.text
     else:
-        await m.edit(f"<b>Usage: </b><code>{prefix}direct [url]</code>", parse_mode=enums.ParseMode.HTML)
+        await m.edit(f"<b>Usage: </b><code>{prefix}direct [url]</code>")
         return
     reply = ""
     links = re.findall(r"\bhttps?://.*\.\S+", message)
