@@ -25,8 +25,6 @@ from pyrogram.types import Message
 from utils.misc import modules_help, prefix
 from utils.scripts import import_library, ReplyCheck
 
-import_library("humanize")
-
 # Variables
 AFK = False
 AFK_REASON = ""
