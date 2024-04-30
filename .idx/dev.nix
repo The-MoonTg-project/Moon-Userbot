@@ -20,7 +20,8 @@
     "ms-azuretools.vscode-docker"
     "ms-python.debugpy"
     "ms-python.python"
-    "trunk.io"
+    "esbenp.prettier-vscode"
+    "ms-python.pylint"
   ];
 
   services.docker.enable = true;
