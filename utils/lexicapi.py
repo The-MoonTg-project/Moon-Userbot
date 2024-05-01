@@ -36,7 +36,7 @@ async def ImageGeneration(model,prompt):
             continue
         return image_url
     except Exception as e:
-        logging.warn(f"Failed to generate the image:", e)
+        logging.warning(f"Failed to generate the image:", e)
     finally:
         await AsyncClient().close()
 
