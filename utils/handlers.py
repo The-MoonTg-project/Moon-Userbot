@@ -1179,12 +1179,11 @@ class NoteSendHandler:
                     message.caption.markdown,
                 )
             return InputMediaVideo(message.video.file_id, message.caption.markdown)
-        elif message.video.thumbs:
+        if message.video.thumbs:
             return InputMediaVideo(
                 message.video.file_id, message.video.thumbs[0].file_id
             )
-        else:
-            return InputMediaVideo(message.video.file_id)
+        return InputMediaVideo(message.video.file_id)
 
     def prepare_audio(self, message):
         if message.caption:
@@ -1202,9 +1201,8 @@ class NoteSendHandler:
             return InputMediaDocument(
                 message.document.file_id, message.caption.markdown
             )
-        elif message.document.thumbs:
+        if message.document.thumbs:
             return InputMediaDocument(
                 message.document.file_id, message.document.thumbs[0].file_id
             )
-        else:
-            return InputMediaDocument(message.document.file_id)
+        return InputMediaDocument(message.document.file_id)
