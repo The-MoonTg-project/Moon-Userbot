@@ -14,16 +14,16 @@ def ImageModels():
 
 async def ImageGeneration(model,prompt):
     try:
-        output = await AsyncClient().generate(model,prompt,"")
+        output = await AsyncClient().generate(model, prompt, "")
         if output['code'] != 1:
             return 2
         if output['code'] == 69:
             return output['code']
-        task_id, request_id = output['task_id'],output['request_id']
+        task_id, request_id = output['task_id'], output['request_id']
         await asyncio.sleep(20)
         tries = 0
         image_url = None
-        resp = await AsyncClient().getImages(task_id,request_id)
+        resp = await AsyncClient().getImages(task_id, request_id)
         while True:
             if resp['code'] == 2:
                 image_url = resp['img_urls']
@@ -31,12 +31,12 @@ async def ImageGeneration(model,prompt):
             if tries > 15:
                 break
             await asyncio.sleep(5)
-            resp = await AsyncClient().getImages(task_id,request_id)
+            resp = await AsyncClient().getImages(task_id, request_id)
             tries += 1
             continue
         return image_url
     except Exception as e:
-        logging.warn(f"Failed to generate the image:",e)
+        logging.warn(f"Failed to generate the image:", e)
     finally:
         await AsyncClient().close()
 
