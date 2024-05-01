@@ -15,7 +15,6 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import base64
-import os
 from io import BytesIO
 
 import requests

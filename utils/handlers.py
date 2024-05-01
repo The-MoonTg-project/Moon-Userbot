@@ -2,7 +2,7 @@ import re
 from datetime import datetime, timedelta
 from typing import Dict, Union
 
-from pyrogram import Client, enums
+from pyrogram import Client
 from pyrogram.errors import (
     ChatAdminRequired,
     PeerIdInvalid,
