@@ -79,10 +79,10 @@ async def update(_, message: Message):
                 "-r",
                 "requirements.txt",
             ], 
-        check=True)
+            check=True
+        )
         subprocess.run(
-            [sys.executable, "-m", "pip", "install", "-U", *requirements_list], 
-        check=True)
+            [sys.executable, "-m", "pip", "install", "-U", *requirements_list], check=True)
     except Exception as e:
         await message.edit(format_exc(e))
         db.remove("core.updater", "restart_info")
