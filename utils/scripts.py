@@ -69,27 +69,27 @@ def humanbytes(size):
 
 
 async def edit_or_send_as_file(
-    text: str,
+    tex: str,
     message: Message,
     client: Client,
     caption: str = "<code>Result!</code>",
     file_name: str = "result",
 ):
     """Send As File If Len Of Text Exceeds Tg Limit Else Edit Message"""
-    if not text:
+    if not tex:
         await message.edit("<code>Wait, What?</code>")
         return
-    if len(text) > 1024:
+    if len(tex) > 1024:
         await message.edit("<code>OutPut is Too Large, Sending As File!</code>")
-        file_names = f"{file_name}.text"
+        file_names = f"{file_name}.txt"
         with open(file_names, "w") as fn:
-            fn.write(text)
+            fn.write(tex)
         await client.send_document(message.chat.id, file_names, caption=caption)
         await message.delete()
         if os.path.exists(file_names):
             os.remove(file_names)
         return
-    return await message.edit(text)
+    return await message.edit(tex)
 
 
 def get_text(message: Message) -> [None, str]:
