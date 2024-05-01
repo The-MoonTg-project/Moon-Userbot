@@ -56,7 +56,7 @@ def subtract_time(start, end):
 async def collect_afk_messages(bot: Client, message: Message):
     if AFK:
         last_seen = subtract_time(datetime.now(), AFK_TIME)
-        is_group = True if message.chat.type in ["supergroup", "group"] else False
+        is_group = message.chat.type in ["supergroup", "group"]
         CHAT_TYPE = GROUPS if is_group else USERS
 
         if GetChatID(message) not in CHAT_TYPE:

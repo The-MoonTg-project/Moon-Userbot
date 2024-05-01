@@ -135,7 +135,7 @@ class Chat(Object):
             dc_id=getattr(getattr(chat, "photo", None), "dc_id", None),
             has_protected_content=getattr(chat, "noforwards", None),
             client=client,
-            is_admin=True if getattr(chat, "admin_rights", False) else False,
+            is_admin=bool(getattr(chat, "admin_rights", False)),
             deactivated=chat.deactivated,
         )
 
@@ -174,7 +174,7 @@ class Chat(Object):
             members_count=getattr(channel, "participants_count", None),
             dc_id=getattr(getattr(channel, "photo", None), "dc_id", None),
             has_protected_content=getattr(channel, "noforwards", None),
-            is_admin=True if getattr(channel, "admin_rights", False) else False,
+            is_admin=bool(getattr(channel, "admin_rights", False)),
             client=client,
         )
 
