@@ -88,7 +88,7 @@ async def sessions_list(client: Client, message: Message):
             await message.reply(answer)
             answer = ""
             chunk.clear()
-    if len(chunk):
+    if chunk:
         await message.reply("\n\n".join(chunk))
     await message.delete()
 
