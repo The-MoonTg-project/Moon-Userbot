@@ -1171,12 +1171,14 @@ class NoteSendHandler:
                 media_grouped_list.append(self.prepare_document(_))
         return media_grouped_list
 
-    def prepare_photo(self, message):
+    @staticmethod
+    def prepare_photo(message):
         if message.caption:
             return InputMediaPhoto(message.photo.file_id, message.caption.markdown)
         return InputMediaPhoto(message.photo.file_id)
 
-    def prepare_video(self, message):
+    @staticmethod
+    def prepare_video(message):
         if message.caption:
             if message.video.thumbs:
                 return InputMediaVideo(
@@ -1191,12 +1193,14 @@ class NoteSendHandler:
             )
         return InputMediaVideo(message.video.file_id)
 
-    def prepare_audio(self, message):
+    @staticmethod
+    def prepare_audio(message):
         if message.caption:
             return InputMediaAudio(message.audio.file_id, message.caption.markdown)
         return InputMediaAudio(message.audio.file_id)
 
-    def prepare_document(self, message):
+    @staticmethod
+    def prepare_document(message):
         if message.caption:
             if message.document.thumbs:
                 return InputMediaDocument(
