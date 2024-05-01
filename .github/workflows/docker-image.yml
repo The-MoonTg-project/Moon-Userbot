@@ -1,6 +1,9 @@
 name: Docker Image CI
 
-on: push
+on:
+  push:
+    branches:
+      - main
 jobs:
   push_to_registry:
     name: Docker Image CI
