@@ -14,12 +14,9 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# import json
-# from html import escape as t
 from time import perf_counter
 from typing import AsyncGenerator, List, Optional, Union
 
-# from pyrogram.errors.exceptions.flood_420 import FloodWait
 from pyrogram import Client, enums, filters, raw, types, utils
 from pyrogram.types.object import Object
 
