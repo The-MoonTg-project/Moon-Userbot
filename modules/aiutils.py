@@ -15,39 +15,34 @@ api_url = "https://visioncraft.top"
 
 async def fetch_models():
     """Get all available SDXL models"""
-    async with aiohttp.ClientSession() as session:
-        async with session.get("https://visioncraft.top/sd/models") as response:
-            return await response.json()
+    async with aiohttp.ClientSession() as session, session.get("https://visioncraft.top/sd/models") as response:
+        return await response.json()
 
 
 async def fetch_upscale_models():
     """Get all available upscale models"""
-    async with aiohttp.ClientSession() as session:
-        async with session.get("https://visioncraft.top/models-upscale") as response:
-            return await response.json()
+    async with aiohttp.ClientSession() as session, session.get("https://visioncraft.top/models-upscale") as response:
+        return await response.json()
 
 
 async def generate_gifs(data):
     """Helper Function to generate GIF"""
-    async with aiohttp.ClientSession() as session:
-        async with session.post(
-            f"{api_url}/generate-gif", json=data, verify_ssl=False
-        ) as response:
-            return await response.json()
+    async with aiohttp.ClientSession() as session, session.post(
+        f"{api_url}/generate-gif", json=data, verify_ssl=False
+    ) as response:
+        return await response.json()
 
 
 async def generate_images(data):
     """Helper Function to generate image using SDXL"""
-    async with aiohttp.ClientSession() as session:
-        async with session.post(f"{api_url}/sd", json=data) as response:
-            return await response.read()
+    async with aiohttp.ClientSession() as session, session.post(f"{api_url}/sd", json=data) as response:
+        return await response.read()
 
 
 async def generate_dalle(data):
     """Helper Function to generate image using DALL-E 3"""
-    async with aiohttp.ClientSession() as session:
-        async with session.post(f"{api_url}/dalle", json=data) as response:
-            return await response.read()
+    async with aiohttp.ClientSession() as session, session.post(f"{api_url}/dalle", json=data) as response:
+        return await response.read()
 
 
 async def download_image(session, image_url, filename):
@@ -72,11 +67,10 @@ async def upscale_request(api_key, image_data):
     # Set up the headers
     headers = {"Content-Type": "application/json"}
 
-    async with aiohttp.ClientSession() as session:
-        async with session.post(
-            f"{api_url}/upscale", json=payload, headers=headers
-        ) as response:
-            return await response.read()
+    async with aiohttp.ClientSession() as session, session.post(
+        f"{api_url}/upscale", json=payload, headers=headers
+    ) as response:
+        return await response.read()
 
 
 async def transcribe_audio(api_key, audio_data, language, task):
@@ -91,9 +85,8 @@ async def transcribe_audio(api_key, audio_data, language, task):
         "task": task,
     }
 
-    async with aiohttp.ClientSession() as session:
-        async with session.post(f"{api_url}/whisper", json=payload) as response:
-            return await response.json()
+    async with aiohttp.ClientSession() as session, session.post(f"{api_url}/whisper", json=payload) as response:
+        return await response.json()
 
 
 @Client.on_message(filters.command("vdxl", prefix) & filters.me)
