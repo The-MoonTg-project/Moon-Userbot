@@ -127,7 +127,7 @@ def gdrive(url: str) -> str:
             name = page.find("span", {"class": "uc-name-size"}).text
             reply += "```Provide GDrive Link not directc sharing of GDrive!```"
             return reply
-        
+
     reply += f"[{name}]({dl_url})\n"
     return reply
 

@@ -30,7 +30,7 @@ common_params = {
 if __name__ == "__main__":
     if config.STRINGSESSION:
         common_params["session_string"] = config.STRINGSESSION
-    
+
     app = Client("my_account", **common_params)
 
     if config.db_type in ["mongo", "mongodb"]:

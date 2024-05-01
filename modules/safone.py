@@ -61,12 +61,12 @@ async def app(client: Client, message: Message):
             query = message.text.split(maxsplit=1)[1]
         else:
             message.edit_text("What should i search? You didn't provided me with any value to search")
-        
+
         response = requests.get(url=f"{url}/apps?query={query}&limit=1", headers=headers, timeout=5)
         if response.status_code != 200:
             await message.edit_text("Something went wrong")
             return
-        
+
         result = response.json()
 
         try:
@@ -94,7 +94,7 @@ async def app(client: Client, message: Message):
             [
                 InputMediaPhoto('coverImage.jpg', caption=f"<b>Title:</b> <code>{title}</code>\n<b>Rating:</b> <code>{rating}</code>\n<b>IsFree:</b> <code>{IsFree}</code>\n<b>Price:</b> <code>{price}</code>\n<b>Package Name:</b> <code>{package_name}</code>\n<b>Genres:</b> <code>{genre}</code>\n<b>Developer:</b> <code>{developer}\n<b>Description:</b> {description}\n<b>Link:</b> {link}")
             ])
-    
+
     except MediaCaptionTooLong:
         description = description[:850]
         await message.delete()
@@ -120,12 +120,12 @@ async def tsearch(client: Client, message: Message):
             query = message.text.split(maxsplit=1)[1]
         else:
             message.edit_text("What should i search? You didn't provided me with any value to search")
-        
+
         response = requests.get(url=f"{url}/torrent?query={query}&limit={limit}", headers=headers)
         if response.status_code != 200:
             await message.edit_text("Something went wrong")
             return
-        
+
         result = response.json()
 
         coverImage_url = result['results'][0]['thumbnail']
@@ -170,7 +170,7 @@ async def tsearch(client: Client, message: Message):
         else:
             await message.edit_text(f"<b>Title:</b> <code>{title}</code>\n<b>Category:</b> <code>{category}</code>\n<b>Language:</b> <code>{language}</code>\n<b>Size:</b> <code>{size}</code>\n<b>Genres:</b> <code>{genre}</code>\n<b>Description:</b> {description}\n<b>Magnet Link:</b> <a href='{link_result}'>Click Here</a>\n<b>More Results:</b> <a href='{link_results}'>Click Here</a>", disable_web_page_preview=True)
 
-    
+
     except MediaCaptionTooLong:
         description = description[:850]
         await message.delete()
@@ -214,7 +214,7 @@ async def tts(client: Client, message: Message):
             f"<b>Usage: </b><code>{prefix}tts [character]* [text/reply to text]*</code>\n <b>Available Characters:</b> <blockquote>{characters}</blockquote>"
         )
          return
-        
+
         data = {
             "text": prompt,
             "character": character
@@ -229,7 +229,7 @@ async def tts(client: Client, message: Message):
         audio_data = base64.b64decode(audio_data)
         async with aiofiles.open(f'{prompt}.mp3', mode='wb') as f:
             await f.write(audio_data)
-        
+
         await message.delete()
         await client.send_audio(chat_id=message.chat.id, audio=f'{prompt}.mp3', caption=f"<b>Characters:</b> <code>{character}</code>\n<b>Prompt:</b> <code>{prompt}</code>")
 

@@ -30,7 +30,7 @@ async def id(client: Client, message: Message):
                 (f"Your DC ID: `{message.from_user.dc_id}`" if message.from_user else f"Channel/Group ID: `{message.sender_chat.id}`"),
             ]
         )
-    
+
         if (rtm := message.reply_to_message):
             text += f"\n\nReplied Message ID: `{rtm.id}`"
 
@@ -42,7 +42,7 @@ async def id(client: Client, message: Message):
                         f"Replied User DC ID: `{user.dc_id}`"
                     ]
                 )
-            
+
             else:
                 text = "\n".join(
                     [
