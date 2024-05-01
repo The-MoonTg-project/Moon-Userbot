@@ -12,7 +12,6 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from pyrogram import Client
-from pyrogram import enums as enums
 from pyrogram import filters
 from pyrogram.types import Message
 

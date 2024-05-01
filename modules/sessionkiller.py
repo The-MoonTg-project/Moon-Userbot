@@ -29,7 +29,6 @@ from pyrogram.types import Message
 
 from utils.db import db
 from utils.misc import modules_help, prefix
-from textwrap import dedent
 
 auth_hashes = db.get("core.sessionkiller", "auths_hashes", [])
 
