@@ -68,7 +68,7 @@ async def main():
             logging.warning(
                 "Session file is locked. Trying to kill blocking process..."
             )
-            subprocess.run(["fuser", "-k", "my_account.session"])
+            subprocess.run(["fuser", "-k", "my_account.session"], check=True)
             restart()
         raise
     except (errors.NotAcceptable, errors.Unauthorized) as e:
