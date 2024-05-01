@@ -22,7 +22,8 @@ async def lupscale(client: Client, message: Message):
             await message.edit("<b>File not found</b>")
             return
     try:
-        image = open(photo_data, 'rb').read()
+        with open(photo_data, 'rb') as image_file:
+            image = image_file.read()
         upscaled_image = await UpscaleImages(image)
         if message.reply_to_message:
             message_id = message.reply_to_message.id
