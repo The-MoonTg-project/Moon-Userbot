@@ -114,12 +114,11 @@ class SqliteDatabase(Database):
     def _parse_row(row: sqlite3.Row):
         if row["type"] == "bool":
             return row["val"] == "1"
-        elif row["type"] == "int":
+        if row["type"] == "int":
             return int(row["val"])
-        elif row["type"] == "str":
+        if row["type"] == "str":
             return row["val"]
-        else:
-            return json.loads(row["val"])
+        return json.loads(row["val"])
 
     def _execute(self, module: str, *args, **kwargs) -> sqlite3.Cursor:
         pattern = r"^(core|custom)"
@@ -152,8 +151,7 @@ class SqliteDatabase(Database):
         row = cur.fetchone()
         if row is None:
             return default
-        else:
-            return self._parse_row(row)
+        return self._parse_row(row)
 
     def set(self, module: str, variable: str, value) -> bool:
         sql = f"""

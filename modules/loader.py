@@ -121,8 +121,7 @@ async def loadmod(_, message: Message):
                 "custom_modules</a> repository are supported!</b>",
                 disable_web_page_preview=True,
             )
-        else:
-            os.rename(file_name, f"./modules/custom_modules/{module_name}.py")
+        os.rename(file_name, f"./modules/custom_modules/{module_name}.py")
 
     await message.edit(f"<b>The module <code>{module_name}</code> is loaded!</b>")
     restart()

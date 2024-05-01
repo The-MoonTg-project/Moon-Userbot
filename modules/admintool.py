@@ -104,7 +104,7 @@ async def get_user_and_name(message):
             message.reply_to_message.from_user.id,
             message.reply_to_message.from_user.first_name,
         )
-    elif message.reply_to_message.sender_chat:
+    if message.reply_to_message.sender_chat:
         return (
             message.reply_to_message.sender_chat.id,
             message.reply_to_message.sender_chat.title,

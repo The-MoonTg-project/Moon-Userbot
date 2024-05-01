@@ -29,9 +29,8 @@ async def sg(client: Client, message: Message):
         if hmm.startswith("Forward"):
             await lol.edit("**Unknown error occurred**", parse_mode=enums.ParseMode.MARKDOWN)
             return
-        else:
-            await lol.delete()
-            await opt.copy(chat)
+        await lol.delete()
+        await opt.copy(chat)
 
 modules_help["sangmata"] = {
     "sgb": "reply to any user"

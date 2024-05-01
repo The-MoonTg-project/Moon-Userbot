@@ -64,15 +64,14 @@ async def lgen(client: Client, message: Message):
         img = await ImageGeneration(model_id, prompt)
         if img is None or img == 1 or img == 2:
             return await message.edit_text("Something went wrong!")
-        elif img == 69:
+        if img == 69:
             return await message.edit_text("NSFW is not allowed")
-        else:
-            img_url = img[0]
-            with open("generated_image.png", 'wb') as f:
-                f.write(requests.get(img_url, timeout=5).content)
-            
-            await client.send_document(message.chat.id, "generated_image.png", caption=f"<b>Prompt: </b><code>{prompt}</code>\n<b>Model: </b><code>{model_name}</code>", reply_to_message_id=message_id)
-            os.remove("generated_image.png")
+        img_url = img[0]
+        with open("generated_image.png", 'wb') as f:
+            f.write(requests.get(img_url, timeout=5).content)
+        
+        await client.send_document(message.chat.id, "generated_image.png", caption=f"<b>Prompt: </b><code>{prompt}</code>\n<b>Model: </b><code>{model_name}</code>", reply_to_message_id=message_id)
+        os.remove("generated_image.png")
     except Exception as e:
         await message.edit(format_exc(e))
 

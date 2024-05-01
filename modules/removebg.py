@@ -73,9 +73,8 @@ def remove_background(photo_data):
     )
     if response.status_code == requests.codes.ok:
         return BytesIO(response.content)
-    else:
-        print("Error:", response.status_code, response.text)
-        return None
+    print("Error:", response.status_code, response.text)
+    return None
 
 
 def _check_rmbg(func):

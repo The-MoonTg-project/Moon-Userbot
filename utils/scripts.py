@@ -88,8 +88,7 @@ async def edit_or_send_as_file(
         if os.path.exists(file_names):
             os.remove(file_names)
         return
-    else:
-        return await message.edit(text)
+    return await message.edit(text)
 
 
 def get_text(message: Message) -> [None, str]:
