@@ -147,8 +147,8 @@ class SqliteDatabase(Database):
             self._lock.release()
 
     def get(self, module: str, variable: str, default=None):
-        sql = f"SELECT * FROM '{module}' WHERE var=:var"
-        cur = self._execute(module, sql, {"var": variable})
+        sql = f"SELECT * FROM '{module}' WHERE var=?"
+        cur = self._execute(module, sql, (variable,))
 
         row = cur.fetchone()
         if row is None:
@@ -157,9 +157,9 @@ class SqliteDatabase(Database):
 
     def set(self, module: str, variable: str, value) -> bool:
         sql = f"""
-        INSERT INTO '{module}' VALUES ( :var, :val, :type )
+        INSERT INTO '{module}' VALUES ( ?, ?, ? )
         ON CONFLICT (var) DO
-        UPDATE SET val=:val, type=:type WHERE var=:var
+        UPDATE SET val=?, type=? WHERE var=?
         """
 
         if isinstance(value, bool):
@@ -175,17 +175,21 @@ class SqliteDatabase(Database):
             val = json.dumps(value)
             typ = "json"
 
-        self._execute(module, sql, {"var": variable, "val": val, "type": typ})
+        self._execute(module, sql, (variable, val, typ, val, typ, variable))
         self._conn.commit()
 
         return True
 
     def remove(self, module: str, variable: str):
-        sql = f"DELETE FROM '{module}' WHERE var=:var"
-        self._execute(module, sql, {"var": variable})
+        sql = f"DELETE FROM '{module}' WHERE var=?"
+        self._execute(module, sql, (variable,))
         self._conn.commit()
 
     def get_collection(self, module: str) -> dict:
+        pattern = r"^(core|custom)"
+        if not re.match(pattern, module):
+            raise ValueError(f"Invalid module name format: {module}")
+
         sql = f"SELECT * FROM '{module}'"
         cur = self._execute(module, sql)
 
