@@ -4,7 +4,6 @@ import asyncio
 from lexica import AsyncClient, Client
 
 def ImageModels():
-    client = Client()
     models = Client().models['models']['image']
     dict_models = {}
     for model in models:
@@ -15,8 +14,7 @@ def ImageModels():
 
 async def ImageGeneration(model,prompt):
     try:
-        client = AsyncClient()
-        output = await client.generate(model,prompt,"")
+        output = await AsyncClient().generate(model,prompt,"")
         if output['code'] != 1:
             return 2
         if output['code'] == 69:
@@ -25,7 +23,7 @@ async def ImageGeneration(model,prompt):
         await asyncio.sleep(20)
         tries = 0
         image_url = None
-        resp = await client.getImages(task_id,request_id)
+        resp = await AsyncClient().getImages(task_id,request_id)
         while True:
             if resp['code'] == 2:
                 image_url = resp['img_urls']
@@ -33,19 +31,18 @@ async def ImageGeneration(model,prompt):
             if tries > 15:
                 break
             await asyncio.sleep(5)
-            resp = await client.getImages(task_id,request_id)
+            resp = await AsyncClient().getImages(task_id,request_id)
             tries += 1
             continue
         return image_url
     except Exception as e:
         logging.warn(f"Failed to generate the image:",e)
     finally:
-        await client.close()
+        await AsyncClient().close()
 
 async def UpscaleImages(image: bytes) -> str:
-    client = AsyncClient()
-    content = await client.upscale(image)
-    await client.close()
+    content = await AsyncClient().upscale(image)
+    await AsyncClient().close()
     upscaled_file_path = "upscaled.png"
     with open(upscaled_file_path, "wb") as output_file:
         output_file.write(content)
