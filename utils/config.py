@@ -2,10 +2,10 @@ import os
 import environs
 
 try:
-   env = environs.Env()
-   env.read_env("./.env")
+    env = environs.Env()
+    env.read_env("./.env")
 except FileNotFoundError:
-   print("No .env file found, using os.environ.")
+    print("No .env file found, using os.environ.")
 
 api_id = int(os.getenv("API_ID", env.int("API_ID")))
 api_hash = os.getenv("API_HASH", env.str("API_HASH"))
