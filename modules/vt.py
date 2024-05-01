@@ -19,7 +19,7 @@ from utils.scripts import edit_or_reply, format_exc, progress
 
 
 @Client.on_message(filters.command("vt", prefix) & filters.me)
-async def scan_my_file(client: Client, message: Message):
+async def scan_my_file(_, message: Message):
     ms_ = await edit_or_reply(message, "`Please Wait! Scanning This File`")
     if not message.reply_to_message:
         return await ms_.edit(
@@ -64,7 +64,7 @@ async def scan_my_file(client: Client, message: Message):
 
 
 @Client.on_message(filters.command("vtl", prefix) & filters.me)
-async def scan_my_large_file(client: Client, message: Message):
+async def scan_my_large_file(_, message: Message):
     ms_ = await edit_or_reply(message, "`Please Wait! Scanning This File`")
     if not message.reply_to_message:
         return await ms_.edit(

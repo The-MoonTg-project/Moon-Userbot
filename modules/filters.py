@@ -201,7 +201,7 @@ async def filter_handler(client: Client, message: Message):
 
 
 @Client.on_message(filters.command(["filters"], prefix) & filters.me)
-async def filters_handler(client: Client, message: Message):
+async def filters_handler(_, message: Message):
     try:
         text = ""
         for index, a in enumerate(get_filters_chat(message.chat.id).items(), start=1):
@@ -218,7 +218,7 @@ async def filters_handler(client: Client, message: Message):
 @Client.on_message(
     filters.command(["delfilter", "filterdel", "fdel"], prefix) & filters.me
 )
-async def filter_del_handler(client: Client, message: Message):
+async def filter_del_handler(_, message: Message):
     try:
         if len(message.text.split()) < 2:
             return await message.edit(
@@ -240,7 +240,7 @@ async def filter_del_handler(client: Client, message: Message):
 
 
 @Client.on_message(filters.command(["fsearch"], prefix) & filters.me)
-async def filter_search_handler(client: Client, message: Message):
+async def filter_search_handler(_, message: Message):
     try:
         if len(message.text.split()) < 2:
             return await message.edit(

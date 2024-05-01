@@ -46,12 +46,12 @@ async def anti_pm_handler(client: Client, message: Message):
     m_n = 0
     warns = db.get("core.antipm", "warns", m_n)
     user_id = message.from_user.id
-    id = message.chat.id
+    ids = message.chat.id
     b_f = await client.get_me()
     u_n = b_f.first_name
-    user = await client.get_users(id)
+    user = await client.get_users(ids)
     u_f = user.first_name
-    user_info = await client.resolve_peer(message.chat.id)
+    user_info = await client.resolve_peer(ids)
     default_text = f"""<b>Hello, {u_f}!
 This is the Assistant Of {u_n}.</b>
 <i>My Boss is away or busy as of now, You can wait for him to respond.
@@ -66,9 +66,9 @@ Do not spam further messages else I may have to block you!</i>
         await client.block_user(user_info)
 
     if db.get("core.antipm", f"disallowusers{id}") == user_id != db.get(
-        "core.antipm", f"allowusers{id}"
+        "core.antipm", f"allowusers{ids}"
     ) or db.get("core.antipm", f"disallowusers{id}") != user_id != db.get(
-        "core.antipm", f"allowusers{id}"
+        "core.antipm", f"allowusers{ids}"
     ):
         await client.send_message(message.chat.id, f"{default_text}")
 
@@ -162,20 +162,20 @@ async def antipm_block(_, message: Message):
 
 
 @Client.on_message(filters.command(["a"], prefix) & filters.me)
-async def add_contact(client: Client, message: Message):
-    id = message.chat.id
+async def add_contact(_, message: Message):
+    ids = message.chat.id
 
-    db.set("core.antipm", f"allowusers{id}", id)
+    db.set("core.antipm", f"allowusers{ids}", ids)
     db.set("core.antipm", "warns", 0)
     await message.edit("User Approved!")
 
 
 @Client.on_message(filters.command(["d"], prefix) & filters.me)
-async def del_contact(client: Client, message: Message):
-    id = message.chat.id
+async def del_contact(_, message: Message):
+    ids = message.chat.id
 
-    db.set("core.antipm", f"disallowusers{id}", id)
-    db.remove("core.antipm", f"allowusers{id}")
+    db.set("core.antipm", f"disallowusers{ids}", ids)
+    db.remove("core.antipm", f"allowusers{ids}")
     await message.edit("User DisApproved!")
 
 

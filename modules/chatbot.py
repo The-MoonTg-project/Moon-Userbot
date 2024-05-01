@@ -14,7 +14,7 @@ chatai_users = db.getaiusers()
 
 
 @Client.on_message(filters.command("addai", prefix) & filters.me)
-async def adduser(client: Client, message: Message):
+async def adduser(_, message: Message):
     if len(message.command) > 1:
         user_id = message.text.split(maxsplit=1)[1]
         if user_id.isdigit():
@@ -31,7 +31,7 @@ async def adduser(client: Client, message: Message):
 
 
 @Client.on_message(filters.command("remai", prefix) & filters.me)
-async def remuser(client: Client, message: Message):
+async def remuser(_, message: Message):
     if len(message.command) > 1:
         user_id = message.text.split(maxsplit=1)[1]
         if user_id.isdigit():
@@ -48,7 +48,7 @@ async def remuser(client: Client, message: Message):
 
 
 @Client.on_message(filters.user(users=chatai_users) & filters.text)
-async def chatbot(client: Client, message: Message):
+async def chatbot(_, message: Message):
     user_id = message.chat.id
 
     if user_id in chatai_users:
@@ -84,14 +84,14 @@ async def chatbot(client: Client, message: Message):
 
 
 @Client.on_message(filters.command("chatoff", prefix) & filters.me)
-async def chatoff(client: Client, message: Message):
+async def chatoff(_, message: Message):
     db.remove("core.chatbot", "chatai_users")
     await message.reply_text("<b>ChatBot is off now</b>")
     restart()
 
 
 @Client.on_message(filters.command("listai", prefix) & filters.me)
-async def listai(client: Client, message: Message):
+async def listai(_, message: Message):
     await message.edit_text(
         f"<b>User ID's Currently in AI ChatBot List:</b>\n <code>{chatai_users}</code>"
     )
