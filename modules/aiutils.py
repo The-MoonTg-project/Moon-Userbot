@@ -287,7 +287,8 @@ async def upscale(c: Client, message: Message):
     i = await message.edit("<code>Processing...</code>")
 
     api_key = vca_api_key
-    image = open(photo_data, "rb").read()
+    with open(photo_data, "rb") as image_file:
+        image = image_file.read()
     upscaled_image_data = await upscale_request(api_key, image)
     with open("upscaled_image.png", "wb") as file:
         file.write(upscaled_image_data)
