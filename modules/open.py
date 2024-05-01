@@ -74,7 +74,7 @@ def check_extension(file_path):
 
 
 @Client.on_message(filters.command("open", prefix) & filters.me)
-async def open(client: Client, message: Message):
+async def openfile(client: Client, message: Message):
     if not message.reply_to_message:
         return await message.edit_text("Kindly Reply to a File")
 
