@@ -68,7 +68,6 @@ async def update(_, message: Message):
     try:
         subprocess.run([sys.executable, "-m", "pip", "install", "-U", "pip"], check=True)
         subprocess.run(["git", "pull"], check=True)
-
         subprocess.run(
             [
                 sys.executable,
@@ -78,7 +77,7 @@ async def update(_, message: Message):
                 "-U",
                 "-r",
                 "requirements.txt",
-            ], 
+            ],
             check=True
         )
         subprocess.run(
