@@ -165,7 +165,6 @@ async def antipm_block(_, message: Message):
 async def add_contact(client: Client, message: Message):
     id = message.chat.id
 
-    user = await client.get_users(id)
     db.set("core.antipm", f"allowusers{id}", id)
     db.set("core.antipm", "warns", 0)
     await message.edit("User Approved!")
@@ -175,7 +174,6 @@ async def add_contact(client: Client, message: Message):
 async def del_contact(client: Client, message: Message):
     id = message.chat.id
 
-    user = await client.get_users(id)
     db.set("core.antipm", f"disallowusers{id}", id)
     db.remove("core.antipm", f"allowusers{id}")
     await message.edit("User DisApproved!")
