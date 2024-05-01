@@ -29,7 +29,7 @@ from types import ModuleType
 from typing import Dict, Tuple
 
 from PIL import Image
-from pyrogram import Client, errors, types
+from pyrogram import Client, errors, enums
 from pyrogram.errors import FloodWait, MessageNotModified
 from pyrogram.types import Message
 
@@ -200,8 +200,8 @@ async def edit_or_reply(message, txt):
     return await message.edit(txt)
 
 
-def text(message: types.Message) -> str:
-    """Find text in `types.Message` object"""
+def text(message: Message) -> str:
+    """Find text in `Message` object"""
     return message.text if message.text else message.caption
 
 
@@ -221,7 +221,7 @@ def format_exc(e: Exception, suffix="") -> str:
 
 
 def with_reply(func):
-    async def wrapped(client: Client, message: types.Message):
+    async def wrapped(client: Client, message: Message):
         if not message.reply_to_message:
             await message.edit("<b>Reply to message is required</b>")
         else:
@@ -230,7 +230,7 @@ def with_reply(func):
     return wrapped
 
 
-async def interact_with(message: types.Message) -> types.Message:
+async def interact_with(message: Message) -> Message:
     """
     Check history with bot and return bot's response
 
@@ -349,7 +349,7 @@ def resize_image(
 async def load_module(
     module_name: str,
     client: Client,
-    message: types.Message = None,
+    message: Message = None,
     core=False,
 ) -> ModuleType:
     if module_name in modules_help and not core:
