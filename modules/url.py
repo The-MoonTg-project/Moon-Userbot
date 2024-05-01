@@ -40,8 +40,7 @@ def generate_screenshot(url):
     response = requests.get(api_url, timeout=5)
     if response.status_code == 200:
         return BytesIO(response.content)
-    else:
-        return None
+    return None
 
 
 http = urllib3.PoolManager()

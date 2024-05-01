@@ -19,7 +19,7 @@ async def ImageGeneration(model,prompt):
         output = await client.generate(model,prompt,"")
         if output['code'] != 1:
             return 2
-        elif output['code'] == 69:
+        if output['code'] == 69:
             return output['code']
         task_id, request_id = output['task_id'],output['request_id']
         await asyncio.sleep(20)

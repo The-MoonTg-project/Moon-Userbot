@@ -312,12 +312,11 @@ async def render_message(app: Client, message: types.Message) -> dict:
 def get_audio_text(audio: types.Audio) -> str:
     if audio.title and audio.performer:
         return f" ({audio.title} — {audio.performer})"
-    elif audio.title:
+    if audio.title:
         return f" ({audio.title})"
-    elif audio.performer:
+    if audio.performer:
         return f" ({audio.performer})"
-    else:
-        return ""
+    return ""
 
 
 def get_reply_text(reply: types.Message) -> str:

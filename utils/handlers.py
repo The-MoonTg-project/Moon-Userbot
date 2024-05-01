@@ -43,8 +43,7 @@ async def check_username_or_id(data: Union[str, int]) -> str:
         and data[0] != "-"
     ):
         return "channel"
-    else:
-        peer_id = int(data)
+    peer_id = int(data)
     if peer_id < 0:
         if MIN_CHAT_ID <= peer_id:
             return "chat"
@@ -63,7 +62,7 @@ async def get_user_and_name(message):
             message.reply_to_message.from_user.id,
             message.reply_to_message.from_user.first_name,
         )
-    elif message.reply_to_message.sender_chat:
+    if message.reply_to_message.sender_chat:
         return (
             message.reply_to_message.sender_chat.id,
             message.reply_to_message.sender_chat.title,
@@ -108,11 +107,10 @@ class BanHandler:
         user_type = await check_username_or_id(self.cause.split(" ")[1])
         if user_type == "channel":
             return await self.client.get_chat(self.cause.split(" ")[1])
-        elif user_type == "user":
+        if user_type == "user":
             return await self.client.get_users(self.cause.split(" ")[1])
-        else:
-            await self.message.edit("<b>Invalid user type</b>")
-            return None
+        await self.message.edit("<b>Invalid user type</b>")
+        return None
 
     async def ban_user(self, user_id):
         try:
@@ -194,11 +192,10 @@ class UnbanHandler:
         user_type = await check_username_or_id(self.cause.split(" ")[1])
         if user_type == "channel":
             return await self.client.get_chat(self.cause.split(" ")[1])
-        elif user_type == "user":
+        if user_type == "user":
             return await self.client.get_users(self.cause.split(" ")[1])
-        else:
-            await self.message.edit("<b>Invalid user type</b>")
-            return None
+        await self.message.edit("<b>Invalid user type</b>")
+        return None
 
     async def unban_user(self, user_id):
         try:
@@ -267,11 +264,10 @@ class KickHandler:
         user_type = await check_username_or_id(self.cause.split(" ")[1])
         if user_type == "channel":
             return await self.client.get_chat(self.cause.split(" ")[1])
-        elif user_type == "user":
+        if user_type == "user":
             return await self.client.get_users(self.cause.split(" ")[1])
-        else:
-            await self.message.edit("<b>Invalid user type</b>")
-            return None
+        await self.message.edit("<b>Invalid user type</b>")
+        return None
 
     async def kick_user(self, user_id):
         try:
@@ -410,11 +406,10 @@ class TimeMuteHandler:
         user_type = await check_username_or_id(self.cause.split(" ")[1])
         if user_type == "channel":
             return await self.client.get_chat(self.cause.split(" ")[1])
-        elif user_type == "user":
+        if user_type == "user":
             return await self.client.get_users(self.cause.split(" ")[1])
-        else:
-            await self.message.edit("<b>Invalid user type</b>")
-            return None
+        await self.message.edit("<b>Invalid user type</b>")
+        return None
 
 
 class TimeUnmuteHandler:
@@ -474,11 +469,10 @@ class TimeUnmuteHandler:
         user_type = await check_username_or_id(self.cause.split(" ")[1])
         if user_type == "channel":
             return await self.client.get_chat(self.cause.split(" ")[1])
-        elif user_type == "user":
+        if user_type == "user":
             return await self.client.get_users(self.cause.split(" ")[1])
-        else:
-            await self.message.edit("<b>Invalid user type</b>")
-            return None
+        await self.message.edit("<b>Invalid user type</b>")
+        return None
 
 
 class TimeMuteUsersHandler:
@@ -523,7 +517,7 @@ class TimeMuteUsersHandler:
                     )
                 )
                 return channel.chats[0].title
-            elif await check_username_or_id(_name_.id) == "user":
+            if await check_username_or_id(_name_.id) == "user":
                 user = await self.client.get_users(_name_.id)
                 return user.first_name
         except PeerIdInvalid:
@@ -591,11 +585,10 @@ class UnmuteHandler:
         user_type = await check_username_or_id(self.cause.split(" ")[1])
         if user_type == "channel":
             return await self.client.get_chat(self.cause.split(" ")[1])
-        elif user_type == "user":
+        if user_type == "user":
             return await self.client.get_users(self.cause.split(" ")[1])
-        else:
-            await self.message.edit("<b>Invalid user type</b>")
-            return None
+        await self.message.edit("<b>Invalid user type</b>")
+        return None
 
     async def unmute_user(self, user_id):
         try:
@@ -669,11 +662,10 @@ class MuteHandler:
         user_type = await check_username_or_id(self.cause.split(" ")[1])
         if user_type == "channel":
             return await self.client.get_chat(self.cause.split(" ")[1])
-        elif user_type == "user":
+        if user_type == "user":
             return await self.client.get_users(self.cause.split(" ")[1])
-        else:
-            await self.message.edit("<b>Invalid user type</b>")
-            return None
+        await self.message.edit("<b>Invalid user type</b>")
+        return None
 
     def calculate_mute_seconds(self):
         mute_seconds: int = 0
@@ -798,11 +790,10 @@ class DemoteHandler:
         user_type = await check_username_or_id(self.cause.split(" ")[1])
         if user_type == "channel":
             return await self.client.get_chat(self.cause.split(" ")[1])
-        elif user_type == "user":
+        if user_type == "user":
             return await self.client.get_users(self.cause.split(" ")[1])
-        else:
-            await self.message.edit("<b>Invalid user type</b>")
-            return None
+        await self.message.edit("<b>Invalid user type</b>")
+        return None
 
     async def demote_user(self, user_id):
         try:
@@ -885,11 +876,10 @@ class PromoteHandler:
         user_type = await check_username_or_id(self.cause.split(" ")[1])
         if user_type == "channel":
             return await self.client.get_chat(self.cause.split(" ")[1])
-        elif user_type == "user":
+        if user_type == "user":
             return await self.client.get_users(self.cause.split(" ")[1])
-        else:
-            await self.message.edit("<b>Invalid user type</b>")
-            return None
+        await self.message.edit("<b>Invalid user type</b>")
+        return None
 
     async def promote_user(self, user_id):
         try:
@@ -1019,11 +1009,10 @@ class DeleteHistoryHandler:
         user_type = await check_username_or_id(self.cause.split(" ")[1])
         if user_type == "channel":
             return await self.client.get_chat(self.cause.split(" ")[1])
-        elif user_type == "user":
+        if user_type == "user":
             return await self.client.get_users(self.cause.split(" ")[1])
-        else:
-            await self.message.edit("<b>Invalid user type</b>")
-            return None
+        await self.message.edit("<b>Invalid user type</b>")
+        return None
 
     async def delete_user_history(self, user_id, name):
         try:
@@ -1179,8 +1168,7 @@ class NoteSendHandler:
     def prepare_photo(self, message):
         if message.caption:
             return InputMediaPhoto(message.photo.file_id, message.caption.markdown)
-        else:
-            return InputMediaPhoto(message.photo.file_id)
+        return InputMediaPhoto(message.photo.file_id)
 
     def prepare_video(self, message):
         if message.caption:
@@ -1190,8 +1178,7 @@ class NoteSendHandler:
                     message.video.thumbs[0].file_id,
                     message.caption.markdown,
                 )
-            else:
-                return InputMediaVideo(message.video.file_id, message.caption.markdown)
+            return InputMediaVideo(message.video.file_id, message.caption.markdown)
         elif message.video.thumbs:
             return InputMediaVideo(
                 message.video.file_id, message.video.thumbs[0].file_id
@@ -1202,8 +1189,7 @@ class NoteSendHandler:
     def prepare_audio(self, message):
         if message.caption:
             return InputMediaAudio(message.audio.file_id, message.caption.markdown)
-        else:
-            return InputMediaAudio(message.audio.file_id)
+        return InputMediaAudio(message.audio.file_id)
 
     def prepare_document(self, message):
         if message.caption:
@@ -1213,10 +1199,9 @@ class NoteSendHandler:
                     message.document.thumbs[0].file_id,
                     message.caption.markdown,
                 )
-            else:
-                return InputMediaDocument(
-                    message.document.file_id, message.caption.markdown
-                )
+            return InputMediaDocument(
+                message.document.file_id, message.caption.markdown
+            )
         elif message.document.thumbs:
             return InputMediaDocument(
                 message.document.file_id, message.document.thumbs[0].file_id

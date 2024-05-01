@@ -74,7 +74,7 @@ async def collect_afk_messages(bot: Client, message: Message):
             )
             CHAT_TYPE[GetChatID(message)] = 1
             return
-        elif GetChatID(message) in CHAT_TYPE:
+        if GetChatID(message) in CHAT_TYPE:
             if CHAT_TYPE[GetChatID(message)] == 50:
                 text = (
                     f"<b>This is an automated message\n"

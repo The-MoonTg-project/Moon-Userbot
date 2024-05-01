@@ -205,10 +205,9 @@ class Chat(Object):
     def _parse_dialog(client, peer, users: dict, chats: dict):
         if isinstance(peer, raw.types.PeerUser):
             return Chat._parse_user_chat(client, users[peer.user_id])
-        elif isinstance(peer, raw.types.PeerChat):
+        if isinstance(peer, raw.types.PeerChat):
             return Chat._parse_chat_chat(client, chats[peer.chat_id])
-        else:
-            return Chat._parse_channel_chat(client, chats[peer.channel_id])
+        return Chat._parse_channel_chat(client, chats[peer.channel_id])
 
 
 class Dialog(Object):
