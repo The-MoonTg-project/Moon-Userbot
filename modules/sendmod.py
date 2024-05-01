@@ -25,9 +25,7 @@ from utils.scripts import format_exc, format_module_help, format_small_module_he
 @Client.on_message(filters.command(["sendmod", "sm"], prefix) & filters.me)
 async def sendmod(client: Client, message: Message):
     if len(message.command) == 1:
-        await message.edit(
-            "<b>Module name to send is not provided</b>"
-        )
+        await message.edit("<b>Module name to send is not provided</b>")
         return
 
     await message.edit("<b>Dispatching...</b>")

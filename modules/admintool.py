@@ -57,13 +57,9 @@ def update_cache():
 
 @Client.on_message(filters.group & ~filters.me)
 async def admintool_handler(_, message: Message):
-    if (
-        message.sender_chat
-        and (
-            message.sender_chat.type == "supergroup"
-            or message.sender_chat.id
-            == db_cache.get(f"linked{message.chat.id}", 0)
-        )
+    if message.sender_chat and (
+        message.sender_chat.type == "supergroup"
+        or message.sender_chat.id == db_cache.get(f"linked{message.chat.id}", 0)
     ):
         raise ContinuePropagation
 
@@ -90,9 +86,8 @@ async def admintool_handler(_, message: Message):
             elif message.sender_chat:
                 await message.chat.ban_member(message.sender_chat.id)
 
-    if (
-        message.new_chat_members
-        and db_cache.get(f"welcome_enabled{message.chat.id}", False)
+    if message.new_chat_members and db_cache.get(
+        f"welcome_enabled{message.chat.id}", False
     ):
         await message.reply(
             db_cache.get(f"welcome_text{message.chat.id}"),
@@ -257,9 +252,7 @@ async def ro(client: Client, message: Message):
         db.set("core.ats", f"ro{message.chat.id}", perms_list)
 
         try:
-            await client.set_chat_permissions(
-                message.chat.id, ChatPermissions()
-            )
+            await client.set_chat_permissions(message.chat.id, ChatPermissions())
         except (UserAdminInvalid, ChatAdminRequired):
             await message.edit("<b>No rights</b>")
         else:

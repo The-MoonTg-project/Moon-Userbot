@@ -21,7 +21,6 @@ from pyrogram.types import Message
 from utils.misc import modules_help, prefix
 
 
-
 def subprocess_run(cmd):
     reply = ""
     subproc = Popen(
@@ -80,7 +79,7 @@ async def direct_link_generator(_, m: Message):
 
 
 def gdrive(url: str) -> str:
-    """ GDrive direct links generator """
+    """GDrive direct links generator"""
     drive = "https://drive.google.com"
     try:
         link = re.findall(r"\bhttps?://drive\.google\.com\S+", url)[0]
@@ -132,7 +131,6 @@ def gdrive(url: str) -> str:
     return reply
 
 
-
 def yandex_disk(url: str) -> str:
     """Yandex.Disk direct links generator
     Based on https://github.com/wldhx/yadisk-direct"""
@@ -180,7 +178,7 @@ def cm_ru(url: str) -> str:
 
 
 def mediafire(url: str) -> str:
-    """ MediaFire direct links generator """
+    """MediaFire direct links generator"""
     try:
         link = re.findall(r"\bhttps?://.*mediafire\.com\S+", url)[0]
     except IndexError:
@@ -197,7 +195,7 @@ def mediafire(url: str) -> str:
 
 
 def sourceforge(url: str) -> str:
-    """ SourceForge direct links generator """
+    """SourceForge direct links generator"""
     try:
         link = re.findall(r"\bhttps?://.*sourceforge\.net\S+", url)[0]
     except IndexError:
@@ -222,7 +220,7 @@ def sourceforge(url: str) -> str:
 
 
 def osdn(url: str) -> str:
-    """ OSDN direct links generator """
+    """OSDN direct links generator"""
     osdn_link = "https://osdn.net"
     try:
         link = re.findall(r"\bhttps?://.*osdn\.net\S+", url)[0]
@@ -243,7 +241,7 @@ def osdn(url: str) -> str:
 
 
 def androidfilehost(url: str) -> str:
-    """ AFH direct links generator """
+    """AFH direct links generator"""
     try:
         link = re.findall(r"\bhttps?://.*androidfilehost.*fid.*\S+", url)[0]
     except IndexError:
@@ -291,24 +289,25 @@ def androidfilehost(url: str) -> str:
 
 
 def useragent():
-   """
-   useragent random setter
-   """
-   useragents = BeautifulSoup(
-       requests.get(
-           "https://developers.whatismybrowser.com/"
-           "useragents/explore/operating_system_name/android/"
-       ).content,
-       "lxml",
-   ).findAll("td", {"class": "useragent"})
-   if not useragents:
-       return "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
-   user_agent = choice(useragents)
-   return user_agent.text
+    """
+    useragent random setter
+    """
+    useragents = BeautifulSoup(
+        requests.get(
+            "https://developers.whatismybrowser.com/"
+            "useragents/explore/operating_system_name/android/"
+        ).content,
+        "lxml",
+    ).findAll("td", {"class": "useragent"})
+    if not useragents:
+        return "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
+    user_agent = choice(useragents)
+    return user_agent.text
+
 
 modules_help["direct"] = {
-        "direct": "Url/reply to Url\
+    "direct": "Url/reply to Url\
 \n\n<b>Syntax : </b><code>.direct [url/reply] </code>\
 \n<b>Usage :</b> Generates direct download link from supported URL(s)\
 \n\n<b>Supported websites : </b><code>Google Drive - MEGA.nz - Cloud Mail - Yandex.Disk - AFH - MediaFire - SourceForge - OSDN</code>"
-    }
+}

@@ -53,9 +53,7 @@ async def short(_, message: Message):
     elif message.reply_to_message:
         link = message.reply_to_message.text
     else:
-        await message.edit(
-            f"<b>Usage: </b><code>{prefix}short [url to short]</code>"
-        )
+        await message.edit(f"<b>Usage: </b><code>{prefix}short [url to short]</code>")
         return
     r = http.request("GET", "https://clck.ru/--?url=" + link)
     await message.edit(
@@ -125,7 +123,7 @@ async def urldl(client: Client, message: Message):
             "".join(["▰" for _ in range(math.floor(percentage / 5))])
             + "".join(["▱" for _ in range(20 - math.floor(percentage / 5))])
             + f"\n<b>Progress:</b> {round(percentage, 2)}%"
-            )
+        )
         eta = downloader.get_eta(human=True)
         try:
             m = "<b>Trying to download...</b>\n"
@@ -182,15 +180,11 @@ async def upload_cmd(_, message: Message):
                 progress=progress, progress_args=(ms_, c_time, "`Downloading...`")
             )
         except ValueError:
-            await message.edit(
-                "<b>File to upload not found</b>"
-            )
+            await message.edit("<b>File to upload not found</b>")
             return
 
     if os.path.getsize(file_name) > max_size:
-        await message.edit(
-            f"<b>Files longer than {max_size_mb}MB isn't supported</b>"
-        )
+        await message.edit(f"<b>Files longer than {max_size_mb}MB isn't supported</b>")
         if os.path.exists(file_name):
             os.remove(file_name)
         return
@@ -211,7 +205,7 @@ async def upload_cmd(_, message: Message):
         url = response.text.replace("https://", "")
         await message.edit(
             f"<b>Your URL: {url}\nYour file will remain live for {file_age} days</b>",
-            disable_web_page_preview=True
+            disable_web_page_preview=True,
         )
     else:
         await message.edit(

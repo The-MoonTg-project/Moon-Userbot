@@ -108,6 +108,7 @@ async def get_full_user_inf(client: Client, message: Message):
     except Exception as e:
         await message.edit(format_exc(e))
 
+
 modules_help["user_info"] = {
     "inf [reply|id|username]": "Get brief information about user",
     "inffull [reply|id|username": "Get full information about user",

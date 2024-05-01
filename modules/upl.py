@@ -28,9 +28,7 @@ async def upl(client: Client, message: Message):
 
     try:
         await message.edit("<b>Uploading Now...</b>")
-        await client.send_document(
-            message.chat.id, link
-        )
+        await client.send_document(message.chat.id, link)
         await message.delete()
     except Exception as e:
         await message.edit(format_exc(e))
@@ -57,9 +55,7 @@ async def uplr(client: Client, message: Message):
 
     try:
         await message.edit("<b>Uploading Now...</b>")
-        await client.send_document(
-            message.chat.id, link
-        )
+        await client.send_document(message.chat.id, link)
         await message.delete()
     except Exception as e:
         await message.edit(format_exc(e))

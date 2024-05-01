@@ -49,17 +49,11 @@ async def help_cmd(_, message: Message):
         text += f"<b>The number of modules in the userbot: {len(modules_help)}</b>"
 
         if msg_edited:
-            await message.reply(
-                text, disable_web_page_preview=True
-            )
+            await message.reply(text, disable_web_page_preview=True)
         else:
-            await message.edit(
-                text, disable_web_page_preview=True
-            )
+            await message.edit(text, disable_web_page_preview=True)
     elif message.command[1].lower() in modules_help:
-        await message.edit(
-            format_module_help(message.command[1].lower(), prefix)
-        )
+        await message.edit(format_module_help(message.command[1].lower(), prefix))
     else:
         command_name = message.command[1].lower()
         for name, commands in modules_help.items():
@@ -74,9 +68,7 @@ async def help_cmd(_, message: Message):
                         f"{' <code>' + cmd[1] + '</code>' if len(cmd) > 1 else ''}"
                         f" — <i>{cmd_desc}</i>",
                     )
-        await message.edit(
-            f"<b>Module {command_name} not found</b>"
-        )
+        await message.edit(f"<b>Module {command_name} not found</b>")
         # TODO: refactor this cringe
         command_name = message.command[1].lower()
         for name, commands in modules_help.items():
@@ -91,9 +83,7 @@ async def help_cmd(_, message: Message):
                         f"{' <code>' + cmd[1] + '</code>' if len(cmd) > 1 else ''}"
                         f" — <i>{cmd_desc}</i>",
                     )
-        await message.edit(
-            f"<b>Module {command_name} not found</b>"
-        )
+        await message.edit(f"<b>Module {command_name} not found</b>")
 
 
 modules_help["help"] = {"help [module/command name]": "Get common/module/command help"}

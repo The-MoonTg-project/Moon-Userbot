@@ -37,9 +37,7 @@ from utils.scripts import format_exc
 )
 async def user_exec(client: Client, message: Message):
     if len(message.command) == 1:
-        await message.edit(
-            "<b>Code to execute isn't provided</b>"
-        )
+        await message.edit("<b>Code to execute isn't provided</b>")
         return
 
     code = message.text.split(maxsplit=1)[1]

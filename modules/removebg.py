@@ -83,8 +83,8 @@ def _check_rmbg(func):
         if not rmbg_key:
             await edit_or_reply(
                 message,
-                "<code>Is Your RMBG Api 'rmbg_key' Valid Or You Didn't Add It??</code>"
-                )
+                "<code>Is Your RMBG Api 'rmbg_key' Valid Or You Didn't Add It??</code>",
+            )
         else:
             await func(client, message)
 
@@ -129,13 +129,14 @@ async def rmbg(client: Client, message: Message):
         ms = (end - start).seconds
         await pablo.edit(
             f"<code>Removed image's Background in {ms} seconds, powered by </code> <b>@moonuserbot</b>"
-            )
+        )
         if os.path.exists("BG_rem.png"):
             os.remove("BG_rem.png")
     else:
         await pablo.edit(
             "ReMove.BG API returned Errors. Please report to @moonub_chat"
-            + f"\n`{output_file_name.content.decode('UTF-8')}")
+            + f"\n`{output_file_name.content.decode('UTF-8')}"
+        )
 
 
 @Client.on_message(filters.command("rebg", prefix) & filters.me)
@@ -149,9 +150,7 @@ async def rembg(client: Client, message: Message):
             try:
                 photo_data = await message.reply_to_message.download()
             except ValueError:
-                await message.edit(
-                    "<b>File not found</b>"
-                )
+                await message.edit("<b>File not found</b>")
                 return
         background_removed_data = remove_background(photo_data)
 

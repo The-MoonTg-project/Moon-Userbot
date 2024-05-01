@@ -134,7 +134,7 @@ async def afk_unset(_, message: Message):
         await message.edit(
             f"<code>While you were away (for {last_seen}), you received {sum(USERS.values()) + sum(GROUPS.values())} "
             f"messages from {len(USERS) + len(GROUPS)} chats</code>",
-)
+        )
         AFK = False
         AFK_TIME = ""
         AFK_REASON = ""
@@ -168,5 +168,3 @@ modules_help["afk"] = {
     "afk [reason]": "Go to AFK mode with reason as anything after .afk\nUsage: <code>.afk <reason></code>",
     "unafk": "Get out of AFK",
 }
-
-

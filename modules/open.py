@@ -105,7 +105,8 @@ async def openfile(client: Client, message: Message):
         )
         content_new = f"{code_start}\n{content}{code_end}"
         paste = subprocess.run(
-            ["rentry", "new", content_new], capture_output=True, text=True, check=True)
+            ["rentry", "new", content_new], capture_output=True, text=True, check=True
+        )
         await client.send_message("me", paste.stdout, disable_web_page_preview=True)
         lines = paste.stdout.split("\n")
         for line in lines:

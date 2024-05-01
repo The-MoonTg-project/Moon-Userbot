@@ -66,7 +66,9 @@ async def update(_, message: Message):
 
     await message.edit("<b>Updating...</b>")
     try:
-        subprocess.run([sys.executable, "-m", "pip", "install", "-U", "pip"], check=True)
+        subprocess.run(
+            [sys.executable, "-m", "pip", "install", "-U", "pip"], check=True
+        )
         subprocess.run(["git", "pull"], check=True)
         subprocess.run(
             [
@@ -78,10 +80,12 @@ async def update(_, message: Message):
                 "-r",
                 "requirements.txt",
             ],
-            check=True
+            check=True,
         )
         subprocess.run(
-            [sys.executable, "-m", "pip", "install", "-U", *requirements_list], check=True)
+            [sys.executable, "-m", "pip", "install", "-U", *requirements_list],
+            check=True,
+        )
     except Exception as e:
         await message.edit(format_exc(e))
         db.remove("core.updater", "restart_info")

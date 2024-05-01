@@ -47,7 +47,7 @@ async def sessions_list(client: Client, message: Message):
             f"<b>Official status:</b> <code>{'✅' if session.official_app else '❌️'}</code>\n"
             f"<b>2FA accepted:</b> <code>{'❌️️' if session.password_pending else '✅'}</code>\n"
             f"<b>Can accept calls / secret chats:</b> {'❌️️' if session.call_requests_disabled else '✅'} / {'❌️️' if session.encrypted_requests_disabled else '✅'}"
-            )
+        )
     answer = "<b>Active sessions at your account:</b>\n\n"
     chunk = []
     for s in formatted_sessions:
@@ -62,9 +62,7 @@ async def sessions_list(client: Client, message: Message):
     await message.delete()
 
 
-@Client.on_message(
-    filters.command(["sessionkiller", "sk"], prefix) & filters.me
-)
+@Client.on_message(filters.command(["sessionkiller", "sk"], prefix) & filters.me)
 async def sessionkiller(client: Client, message: Message):
     if len(message.command) == 1:
         if db.get("core.sessionkiller", "enabled", False):
@@ -85,9 +83,7 @@ async def sessionkiller(client: Client, message: Message):
             "auths_hashes",
             [
                 auth.hash
-                for auth in (
-                    await client.invoke(GetAuthorizations())
-                ).authorizations
+                for auth in (await client.invoke(GetAuthorizations())).authorizations
             ],
         )
 
@@ -95,24 +91,18 @@ async def sessionkiller(client: Client, message: Message):
         db.set("core.sessionkiller", "enabled", False)
         await message.edit("<b>Sessionkiller disabled!</b>")
     else:
-        await message.edit(
-            f"<b>Usage: {prefix}sessionkiller [enable|disable]</b>"
-        )
+        await message.edit(f"<b>Usage: {prefix}sessionkiller [enable|disable]</b>")
 
 
 @Client.on_raw_update()
-async def check_new_login(
-    client: Client, update: UpdateServiceNotification, _, __
-):
-    if not isinstance(
-        update, UpdateServiceNotification
-    ) or not update.type.startswith("auth"):
+async def check_new_login(client: Client, update: UpdateServiceNotification, _, __):
+    if not isinstance(update, UpdateServiceNotification) or not update.type.startswith(
+        "auth"
+    ):
         raise ContinuePropagation
     if not db.get("core.sessionkiller", "enabled", False):
         raise ContinuePropagation
-    authorizations = (await client.invoke(GetAuthorizations()))[
-        "authorizations"
-    ]
+    authorizations = (await client.invoke(GetAuthorizations()))["authorizations"]
     for auth in authorizations:
         if auth.current:
             continue
@@ -133,9 +123,9 @@ async def check_new_login(
                     "this feature, I deleted the attacker's session from your account. "
                     "You should change your 2FA password (if enabled), or set it.\n"
                 )
-            logined_time = datetime.utcfromtimestamp(
-                auth.date_created
-            ).strftime("%d-%m-%Y %H-%M-%S UTC")
+            logined_time = datetime.utcfromtimestamp(auth.date_created).strftime(
+                "%d-%m-%Y %H-%M-%S UTC"
+            )
             full_report = (
                 "<b>!!! ACTION REQUIRED !!!</b>\n"
                 + info_text
@@ -155,9 +145,7 @@ async def check_new_login(
             )
             # schedule sending report message so user will get notification
             schedule_date = int(time.time() + 15)
-            await client.send_message(
-                "me", full_report, schedule_date=schedule_date
-            )
+            await client.send_message("me", full_report, schedule_date=schedule_date)
             return
 
 

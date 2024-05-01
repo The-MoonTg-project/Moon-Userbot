@@ -221,4 +221,3 @@ modules_help["loader"] = {
     "loadallmods": "Load all custom modules (use it at your own risk)",
     "updateallmods": "Update all custom modules",
 }
-

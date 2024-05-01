@@ -15,13 +15,17 @@ api_url = "https://visioncraft.top"
 
 async def fetch_models():
     """Get all available SDXL models"""
-    async with aiohttp.ClientSession() as session, session.get("https://visioncraft.top/sd/models") as response:
+    async with aiohttp.ClientSession() as session, session.get(
+        "https://visioncraft.top/sd/models"
+    ) as response:
         return await response.json()
 
 
 async def fetch_upscale_models():
     """Get all available upscale models"""
-    async with aiohttp.ClientSession() as session, session.get("https://visioncraft.top/models-upscale") as response:
+    async with aiohttp.ClientSession() as session, session.get(
+        "https://visioncraft.top/models-upscale"
+    ) as response:
         return await response.json()
 
 
@@ -35,13 +39,17 @@ async def generate_gifs(data):
 
 async def generate_images(data):
     """Helper Function to generate image using SDXL"""
-    async with aiohttp.ClientSession() as session, session.post(f"{api_url}/sd", json=data) as response:
+    async with aiohttp.ClientSession() as session, session.post(
+        f"{api_url}/sd", json=data
+    ) as response:
         return await response.read()
 
 
 async def generate_dalle(data):
     """Helper Function to generate image using DALL-E 3"""
-    async with aiohttp.ClientSession() as session, session.post(f"{api_url}/dalle", json=data) as response:
+    async with aiohttp.ClientSession() as session, session.post(
+        f"{api_url}/dalle", json=data
+    ) as response:
         return await response.read()
 
 
@@ -85,7 +93,9 @@ async def transcribe_audio(api_key, audio_data, language, task):
         "task": task,
     }
 
-    async with aiohttp.ClientSession() as session, session.post(f"{api_url}/whisper", json=payload) as response:
+    async with aiohttp.ClientSession() as session, session.post(
+        f"{api_url}/whisper", json=payload
+    ) as response:
         return await response.json()
 
 
