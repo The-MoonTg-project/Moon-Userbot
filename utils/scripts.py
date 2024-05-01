@@ -328,7 +328,7 @@ def import_library(library_name: str, package_name: str = None):
 
 def resize_image(
     input_img, output=None, img_type="PNG", size: int = 512, size2: int = None
-    ):
+):
     if output is None:
         output = BytesIO()
         output.name = f"sticker.{img_type.lower()}"
@@ -355,7 +355,7 @@ async def load_module(
     client: Client,
     message: Message = None,
     core=False,
-    ) -> ModuleType:
+) -> ModuleType:
     if module_name in modules_help and not core:
         await unload_module(module_name, client)
 
