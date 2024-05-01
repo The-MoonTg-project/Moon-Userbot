@@ -71,7 +71,7 @@ def remove_background(photo_data):
         data={"size": "auto"},
         headers={"X-Api-Key": rmbg_key},
     )
-    if response.status_code == requests.codes.ok:
+    if response.status_code == 200:
         return BytesIO(response.content)
     print("Error:", response.status_code, response.text)
     return None
@@ -83,9 +83,8 @@ def _check_rmbg(func):
         if not rmbg_key:
             await edit_or_reply(
                 message,
-                "`Is Your RMBG Api 'rmbg_key' Valid Or You Didn't Add It??`",
-                parse_mode=enums.ParseMode.MARKDOWN,
-            )
+                "<code>Is Your RMBG Api 'rmbg_key' Valid Or You Didn't Add It??</code>"
+                )
         else:
             await func(client, message)
 
@@ -95,19 +94,13 @@ def _check_rmbg(func):
 @Client.on_message(filters.command("rmbg", prefix) & filters.me)
 @_check_rmbg
 async def rmbg(client: Client, message: Message):
-    pablo = await edit_or_reply(
-        message, "`Processing...`", parse_mode=enums.ParseMode.MARKDOWN
-    )
+    pablo = await edit_or_reply(message, "<code>Processing...</code>")
     if not message.reply_to_message:
-        await pablo.edit(
-            "`Reply To A Image Please!`", parse_mode=enums.ParseMode.MARKDOWN
-        )
+        await pablo.edit("<code>Reply To A Image Please!</code>")
         return
     cool = await convert_to_image(message, client)
     if not cool:
-        await pablo.edit(
-            "`Reply to a valid media first.`", parse_mode=enums.ParseMode.MARKDOWN
-        )
+        await pablo.edit("<code>Reply to a valid media first.</code>")
         return
     start = datetime.now()
     await pablo.edit("sending to ReMove.BG")
@@ -135,18 +128,14 @@ async def rmbg(client: Client, message: Message):
         end = datetime.now()
         ms = (end - start).seconds
         await pablo.edit(
-            "<code>Removed image's Background in {} seconds, powered by </code> <b>@moonuserbot</b>".format(
-                ms
+            f"<code>Removed image's Background in {ms} seconds, powered by </code> <b>@moonuserbot</b>"
             )
-        )
         if os.path.exists("BG_rem.png"):
             os.remove("BG_rem.png")
     else:
         await pablo.edit(
-            "ReMove.BG API returned Errors. Please report to @moonub_chat\n`{}".format(
-                output_file_name.content.decode("UTF-8")
-            )
-        )
+            "ReMove.BG API returned Errors. Please report to @moonub_chat"
+            + f"\n`{output_file_name.content.decode('UTF-8')}")
 
 
 @Client.on_message(filters.command("rebg", prefix) & filters.me)

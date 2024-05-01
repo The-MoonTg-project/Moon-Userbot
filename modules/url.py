@@ -121,11 +121,11 @@ async def urldl(client: Client, message: Message):
         diff = now - c_time
         percentage = downloader.get_progress() * 100
         speed = downloader.get_speed(human=True)
-        progress_str = "{0}{1}\n<b>Progress:</b> {2}%".format(
-            "".join(["▰" for _ in range(math.floor(percentage / 5))]),
-            "".join(["▱" for _ in range(20 - math.floor(percentage / 5))]),
-            round(percentage, 2),
-        )
+        progress_str = (
+            "".join(["▰" for _ in range(math.floor(percentage / 5))])
+            + "".join(["▱" for _ in range(20 - math.floor(percentage / 5))])
+            + f"\n<b>Progress:</b> {round(percentage, 2)}%"
+            )
         eta = downloader.get_eta(human=True)
         try:
             m = "<b>Trying to download...</b>\n"
