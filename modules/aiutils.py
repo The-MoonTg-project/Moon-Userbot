@@ -314,7 +314,8 @@ async def whisp(message: Message):
                 await message.edit("<code>Processing...</code>")
 
                 api_key = vca_api_key
-                audio = open(audio_data, "rb").read()
+                with open(audio_data, "rb") as audio_file:
+                    audio = audio_file.read()
                 language = "auto"
                 task = "transcribe"
                 task_result = await transcribe_audio(api_key, audio, language, task)
