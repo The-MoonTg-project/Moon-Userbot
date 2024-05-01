@@ -42,8 +42,6 @@ async def user_exec(client: Client, message: Message):
         )
         return
 
-    reply = message.reply_to_message
-
     code = message.text.split(maxsplit=1)[1]
     stdout = StringIO()
 
@@ -72,8 +70,6 @@ async def user_eval(client: Client, message: Message):
     if len(message.command) == 1:
         await message.edit("<b>Code to eval isn't provided</b>")
         return
-
-    reply = message.reply_to_message
 
     code = message.text.split(maxsplit=1)[1]
 
