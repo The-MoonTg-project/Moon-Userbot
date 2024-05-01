@@ -84,7 +84,9 @@ class MongoDatabase(Database):
         chat_history.append(message)
         self.set(f"core.cohere.user_{user_id}", "chat_history", chat_history)
 
-    def get_chat_history(self, user_id, default=[]):
+    def get_chat_history(self, user_id, default=None):
+        if default is None:
+            default = []
         return self.get(f"core.cohere.user_{user_id}", "chat_history", expected_value=[])
 
     def addaiuser(self, user_id):
@@ -202,7 +204,9 @@ class SqliteDatabase(Database):
         chat_history.append(message)
         self.set(f"core.cohere.user_{user_id}", "chat_history", chat_history)
 
-    def get_chat_history(self, user_id, default=[]):
+    def get_chat_history(self, user_id, default=None):
+        if default is None:
+            default = []
         return self.get(f"core.cohere.user_{user_id}", "chat_history", default=[])
 
     def addaiuser(self, user_id):
