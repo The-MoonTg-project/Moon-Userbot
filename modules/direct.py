@@ -23,11 +23,11 @@ from utils.misc import modules_help, prefix
 
 def subprocess_run(cmd):
     reply = ""
+    cmd_args = cmd.split()
     subproc = Popen(
-        cmd,
+        cmd_args,
         stdout=PIPE,
         stderr=PIPE,
-        shell=True,
         universal_newlines=True,
         executable="bash",
     )
