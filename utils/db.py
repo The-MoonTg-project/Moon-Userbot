@@ -86,7 +86,7 @@ class MongoDatabase(Database):
 
     def get_chat_history(self, user_id, default=[]):
         return self.get(f"core.cohere.user_{user_id}", "chat_history", expected_value=[])
-    
+
     def addaiuser(self, user_id):
         chatai_users = self.get("core.chatbot", "chatai_users", expected_value=[])
         if user_id not in chatai_users:
@@ -98,7 +98,7 @@ class MongoDatabase(Database):
         if user_id in chatai_users:
             chatai_users.remove(user_id)
             self.set("core.chatbot", "chatai_users", chatai_users)
-    
+
     def getaiusers(self):
         return self.get("core.chatbot", "chatai_users", expected_value=[])
 
@@ -216,7 +216,7 @@ class SqliteDatabase(Database):
         if user_id in chatai_users:
             chatai_users.remove(user_id)
             self.set("core.chatbot", "chatai_users", chatai_users)
-    
+
     def getaiusers(self):
         return self.get("core.chatbot", "chatai_users", default=[])
 

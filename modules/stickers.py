@@ -38,7 +38,7 @@ async def kang(client: Client, message: types.Message):
         await message.edit(
                     "<b>No arguments provided\n"
                     f"Usage: <code>{prefix}kang [pack]* [emoji]</code></b>",
-                    
+
                 )
         return
 
@@ -59,7 +59,7 @@ async def kang(client: Client, message: types.Message):
     if "StickerExample.psd" not in result.text:
         await message.edit(
                     "<b>Stickerpack doesn't exitst. Create it using @Stickers bot (via /newpack command)</b>",
-                    
+
                 )
         return
 
@@ -68,7 +68,7 @@ async def kang(client: Client, message: types.Message):
     except ValueError:
         await message.edit(
                     "<b>Replied message doesn't contain any downloadable media</b>",
-                    
+
                 )
         return
 
@@ -84,7 +84,7 @@ async def kang(client: Client, message: types.Message):
         await client.delete_messages("@stickers", interact_with_to_delete)
         await message.edit(
                     f"<b>Sticker added to <a href=https://t.me/addstickers/{pack}>pack</a></b>",
-                    
+
                 )
     else:
         await message.edit("<b>Something went wrong. Check history with @stickers</b>")

@@ -56,11 +56,11 @@ async def lgen(client: Client, message: Message):
             prompt = message.reply_to_message.text
         else:
             return await message.edit_text(f"<b>Usage: </b><code>{prefix}lgen [model_id]* [prompt/reply to prompt]*</code>\n <b>Available Models and IDs:</b> <blockquote>{models}</blockquote>")
-        
+
         for key, val in models.items():
             if val == model_id:
                 model_name = key
-        
+
         img = await ImageGeneration(model_id, prompt)
         if img is None or img == 1 or img == 2:
             return await message.edit_text("Something went wrong!")
@@ -69,7 +69,7 @@ async def lgen(client: Client, message: Message):
         img_url = img[0]
         with open("generated_image.png", 'wb') as f:
             f.write(requests.get(img_url, timeout=5).content)
-        
+
         await client.send_document(message.chat.id, "generated_image.png", caption=f"<b>Prompt: </b><code>{prompt}</code>\n<b>Model: </b><code>{model_name}</code>", reply_to_message_id=message_id)
         os.remove("generated_image.png")
     except Exception as e:

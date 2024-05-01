@@ -1,12 +1,12 @@
 from pyrogram import Client, enums
 
 moon_ = """
- _      ____  ____  _     
+ _      ____  ____  _
 / \__/|/  _ \/  _ \/ \  /|
 | |\/||| / \|| / \|| |\ ||
 | |  ||| \_/|| \_/|| | \||
 \_/  \|\____/\____/\_/  \|
-                          
+
 Copyright (C) 2020-2023 by MoonTg-project@Github, < https://github.com/The-MoonTg-project >.
 This file is part of < https://github.com/The-MoonTg-project/Moon-Userbot > project,
 and is released under the "GNU v3.0 License Agreement".
