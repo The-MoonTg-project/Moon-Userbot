@@ -74,9 +74,7 @@ async def main():
         raise
     except (errors.NotAcceptable, errors.Unauthorized) as e:
         logging.error(
-            "%s: %s\nMoving session file to my_account.session-old..." % (
-                e.__class__.__name__, e
-                )
+            f"{e.__class__.__name__}: {e}\nMoving session file to my_account.session-old..."
             )
         os.rename("./my_account.session", "./my_account.session-old")
         restart()
