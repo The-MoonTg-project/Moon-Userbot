@@ -444,6 +444,7 @@ def parse_meta_comments(code: str) -> Dict[str, str]:
 
     return {groups[i]: groups[i + 1] for i in range(0, len(groups), 2)}
 
+
 def ReplyCheck(message: Message):
     reply_id = None
 

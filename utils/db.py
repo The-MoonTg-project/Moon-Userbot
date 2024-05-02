@@ -228,6 +228,7 @@ class SqliteDatabase(Database):
     def getaiusers(self):
         return self.get("core.chatbot", "chatai_users", default=[])
 
+
 if config.db_type in ["mongo", "mongodb"]:
     db = MongoDatabase(config.db_url, config.db_name)
 else:

@@ -23,6 +23,7 @@ from pyrogram.types import Message
 
 from utils.misc import modules_help, prefix
 
+
 @Client.on_message(filters.command(["shell", "sh"], prefix) & filters.me)
 async def shell(_, message: Message):
     if len(message.command) < 2:

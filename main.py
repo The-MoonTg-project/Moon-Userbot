@@ -53,6 +53,7 @@ if config.STRINGSESSION:
 
 app = Client("my_account", **common_params)
 
+
 async def main():
     logging.basicConfig(
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -73,9 +74,10 @@ async def main():
         raise
     except (errors.NotAcceptable, errors.Unauthorized) as e:
         logging.error(
-            f"{e.__class__.__name__}: {e}\n"
-            f"Moving session file to my_account.session-old..."
-        )
+            "%s: %s\nMoving session file to my_account.session-old..." % (
+                e.__class__.__name__, e
+                )
+            )
         os.rename("./my_account.session", "./my_account.session-old")
         restart()
 
@@ -88,14 +90,14 @@ async def main():
                 path.stem, app, core="custom_modules" not in path.parent.parts
             )
         except Exception:
-            logging.warning(f"Can't import module {path.stem}", exc_info=True)
+            logging.warning("Can't import module %s", path.stem, exc_info=True)
             failed_modules += 1
         else:
             success_modules += 1
 
-    logging.info(f"Imported {success_modules} modules")
+    logging.info("Imported %s modules", success_modules)
     if failed_modules:
-        logging.warning(f"Failed to import {failed_modules} modules")
+        logging.warning("Failed to import %s modules", failed_modules)
 
     if info := db.get("core.updater", "restart_info"):
         text = {
