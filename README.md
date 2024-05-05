@@ -81,7 +81,7 @@ docker run --env API_ID=your_api_id --env API_HASH=your_api_hash --env DATABASE_
 **NOTE:** Make Sure you add appropriate env vars
 
 ## 🖥️ Local Host
-##Linux, Windows [only wsl]
+## Linux, Windows [only wsl]
 
 ### Update the packages
 
