@@ -60,11 +60,11 @@ class MongoDatabase(Database):
             {"var": variable}, {"var": variable, "val": value}, upsert=True
         )
 
-    def get(self, module: str, variable: str, expected_value=None):
+    def get(self, module: str, variable: str, default=None):
         if not isinstance(module, str) or not isinstance(variable, str):
             raise ValueError("Module and variable must be strings")
         doc = self._database[module].find_one({"var": variable})
-        return expected_value if doc is None else doc["val"]
+        return default if doc is None else doc["val"]
 
     def get_collection(self, module: str):
         if not isinstance(module, str):
@@ -87,22 +87,22 @@ class MongoDatabase(Database):
     def get_chat_history(self, user_id, default=None):
         if default is None:
             default = []
-        return self.get(f"core.cohere.user_{user_id}", "chat_history", expected_value=[])
+        return self.get(f"core.cohere.user_{user_id}", "chat_history", default=[])
 
     def addaiuser(self, user_id):
-        chatai_users = self.get("core.chatbot", "chatai_users", expected_value=[])
+        chatai_users = self.get("core.chatbot", "chatai_users", default=[])
         if user_id not in chatai_users:
             chatai_users.append(user_id)
             self.set("core.chatbot", "chatai_users", chatai_users)
 
     def remaiuser(self, user_id):
-        chatai_users = self.get("core.chatbot", "chatai_users", expected_value=[])
+        chatai_users = self.get("core.chatbot", "chatai_users", default=[])
         if user_id in chatai_users:
             chatai_users.remove(user_id)
             self.set("core.chatbot", "chatai_users", chatai_users)
 
     def getaiusers(self):
-        return self.get("core.chatbot", "chatai_users", expected_value=[])
+        return self.get("core.chatbot", "chatai_users", default=[])
 
 
 class SqliteDatabase(Database):
