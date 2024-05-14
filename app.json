@@ -1,0 +1,77 @@
+{
+  "name": "Moon-userbot",
+  "description": "A Simple, Fast, Customizable, Ai powered Userbot for Telegram with most easiest installation.",
+  "logo": "https://camo.githubusercontent.com/1efdfa6416b3cd08471d865ca9ebf0fbdd38602ea95425f18a9bec6aeeefe49b/68747470733a2f2f74656c656772612e70682f66696c652f3063333763326662306631393463633163303334342e6a7067",
+  "keywords": [
+    "telegram",
+    "Moon-userbot",
+    "bot",
+    "python",
+    "pyrogram"
+  ],
+  "env": {
+    "API_ID": {
+      "description": "Get it from my.telegram.org",
+      "required": true
+    },
+    "API_HASH": {
+      "description": "Get it from my.telegram.org",
+      "required": true
+    },
+    "PM_LIMIT": {
+      "description": "set your pm permit warn limit",
+      "value": "3",
+      "required": true
+    },
+    "DATABASE_URL": {
+      "description": "ONLY for MongoDB, get it from https://cloud.mongodb.com",
+      "required": true
+    },
+    "DATABASE_NAME": {
+      "description": "set database name",
+      "value": "moonub",
+      "required": true
+    },
+    "DATABASE_TYPE": {
+      "description": "set to sqlite3 if want to use sqlite3 db else leave blank",
+      "value": "mongodb",
+      "required": true
+    },
+    "STRINGSESSION": {
+      "description": "get your pyrogram v2 string on https://t.me/istringbot",
+      "required": true
+    },
+    "APIFLASH_KEY": {
+      "description": "ONLY, If you want to use web screenshot plugin You can get it from https://apiflash.com/dashboard/access_keys",
+      "required": false
+    },
+    "RMBG_KEY": {
+      "description": "ONLY, If you want to use removbg plugin You can get it from https://www.remove.bg/dashboard#api-key",
+      "required": false
+    },
+    "VT_KEY": {
+      "description": "ONLY, If you want to use VirusTotal plugin You can get it from https://www.virustotal.com/gui/",
+      "required": false
+    },
+    "GEMINI_KEY": {
+      "description": "ONLY, If you want to use gemini ai plugin You can get it from https://makersuite.google.com/app/apikey",
+      "required": false
+    },
+    "COHERE_KEY": {
+      "description": "ONLY, If you want to use cohere ai plugin You can get it from https://dashboard.cohere.com/api-keys",
+      "required": false
+    },
+    "VCA_API_KEY": {
+      "description": "ONLY, If you want to use ai tools like sdxl,upscale plugin You can get it from https://t.me/VisionCraft_bot",
+      "required": false
+    }
+  },
+  "buildpacks": [
+    {
+      "url": "heroku/python"
+    },
+    {
+      "url": "https://github.com/jonathanong/heroku-buildpack-ffmpeg-latest"
+    }
+  ]
+}
