@@ -69,6 +69,9 @@
 
 ## ☁️ Cloud Host
 [![Deploy To Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/deploy?type=git&repository=github.com/The-MoonTg-project/Moon-Userbot&branch=main&name=moonub)
+
+[![Deploy To Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/The-MoonTg-project/moonub-cloud)
+
  
 - **YT Video [How to deploy]**: <https://youtu.be/2m_yB7EllYc>
 
