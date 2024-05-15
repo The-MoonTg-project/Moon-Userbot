@@ -10,9 +10,7 @@ from utils.scripts import edit_or_reply
 
 @Client.on_message(filters.command("sgb", prefix) & filters.me)
 async def sg(client: Client, message: Message):
-    lol = await edit_or_reply(
-        message, "`Processing please wait`", parse_mode=enums.ParseMode.MARKDOWN
-    )
+    lol = await edit_or_reply(message, "<code>Processing please wait</code>")
     if message.reply_to_message and message.reply_to_message.from_user:
         user_id = message.reply_to_message.from_user.id
     else:
