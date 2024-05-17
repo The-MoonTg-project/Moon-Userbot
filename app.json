@@ -20,7 +20,7 @@
     },
     "PM_LIMIT": {
       "description": "set your pm permit warn limit",
-      "value": "3",
+      "value": "4",
       "required": true
     },
     "DATABASE_URL": {
@@ -28,12 +28,12 @@
       "required": true
     },
     "DATABASE_NAME": {
-      "description": "set database name",
+      "description": "set database name, if using sqlite then change it to `db.sqlite3`",
       "value": "moonub",
       "required": true
     },
     "DATABASE_TYPE": {
-      "description": "set to sqlite3 if want to use sqlite3 db else leave blank",
+      "description": "set to sqlite3 if want to use sqlite3 db",
       "value": "mongodb",
       "required": true
     },
@@ -43,27 +43,33 @@
     },
     "APIFLASH_KEY": {
       "description": "ONLY, If you want to use web screenshot plugin You can get it from https://apiflash.com/dashboard/access_keys",
-      "required": false
+      "value": "123456779:ABCDE",
+      "required": true
     },
     "RMBG_KEY": {
       "description": "ONLY, If you want to use removbg plugin You can get it from https://www.remove.bg/dashboard#api-key",
-      "required": false
+      "value": "123456779:ABCDE",
+      "required": true
     },
     "VT_KEY": {
       "description": "ONLY, If you want to use VirusTotal plugin You can get it from https://www.virustotal.com/gui/",
-      "required": false
+      "value": "123456779:ABCDE",
+      "required": true
     },
     "GEMINI_KEY": {
       "description": "ONLY, If you want to use gemini ai plugin You can get it from https://makersuite.google.com/app/apikey",
-      "required": false
+      "value": "123456779:ABCDE",
+      "required": true
     },
     "COHERE_KEY": {
       "description": "ONLY, If you want to use cohere ai plugin You can get it from https://dashboard.cohere.com/api-keys",
-      "required": false
+      "value": "123456779:ABCDE",
+      "required": true
     },
     "VCA_API_KEY": {
       "description": "ONLY, If you want to use ai tools like sdxl,upscale plugin You can get it from https://t.me/VisionCraft_bot",
-      "required": false
+      "value": "123456789:ABCDE",
+      "required": true
     }
   },
   "buildpacks": [
