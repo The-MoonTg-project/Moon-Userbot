@@ -38,7 +38,7 @@
       "required": true
     },
     "STRINGSESSION": {
-      "description": "get your pyrogram v2 string on https://t.me/istringbot",
+      "description": "Pyrogram V2 Session String. Don't use bots or else you'll be responsible for your actions. Gen yourself https://github.com/The-MoonTg-project/Moon-Userbot?tab=readme-ov-file#-optional-vars.",
       "required": true
     },
     "APIFLASH_KEY": {
