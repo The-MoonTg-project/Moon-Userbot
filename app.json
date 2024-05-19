@@ -25,7 +25,7 @@
     },
     "DATABASE_URL": {
       "description": "ONLY for MongoDB, get it from https://cloud.mongodb.com",
-      "required": true
+      "required": false
     },
     "DATABASE_NAME": {
       "description": "set database name, if using sqlite then change it to `db.sqlite3`",
@@ -39,7 +39,7 @@
     },
     "STRINGSESSION": {
       "description": "get your pyrogram v2 string on https://t.me/istringbot",
-      "required": true
+      "required": truetrue
     },
     "APIFLASH_KEY": {
       "description": "ONLY, If you want to use web screenshot plugin You can get it from https://apiflash.com/dashboard/access_keys",
