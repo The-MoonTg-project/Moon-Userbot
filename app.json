@@ -39,7 +39,7 @@
     },
     "STRINGSESSION": {
       "description": "get your pyrogram v2 string on https://t.me/istringbot",
-      "required": truetrue
+      "required": true
     },
     "APIFLASH_KEY": {
       "description": "ONLY, If you want to use web screenshot plugin You can get it from https://apiflash.com/dashboard/access_keys",
