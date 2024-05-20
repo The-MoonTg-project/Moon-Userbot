@@ -81,6 +81,9 @@
     },
     {
       "url": "https://github.com/getlantern/heroku-buildpack-yt-dlp"
+    },
+    {
+      "url": "https://github.com/code-rgb/mediainfo_buildpack_heroku"
     }
   ]
 }
