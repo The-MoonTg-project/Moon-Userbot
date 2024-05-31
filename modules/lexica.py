@@ -9,8 +9,8 @@ from utils.scripts import format_exc
 from utils.lexicapi import ImageGeneration, UpscaleImages, ImageModels
 
 
-@Client.on_message(filters.command("lupscale", prefix) & filters.me)
-async def lupscale(client: Client, message: Message):
+@Client.on_message(filters.command("upscale", prefix) & filters.me)
+async def upscale(client: Client, message: Message):
     """Upscale Image Using Lexica API"""
 
     await message.edit("<code>Processing...</code>")
@@ -84,6 +84,7 @@ async def lgen(client: Client, message: Message):
         with open("generated_image.png", "wb") as f:
             f.write(requests.get(img_url, timeout=5).content)
 
+        await message.delete()
         await client.send_document(
             message.chat.id,
             "generated_image.png",
@@ -97,5 +98,5 @@ async def lgen(client: Client, message: Message):
 
 modules_help["lexica"] = {
     "lgen [model_id]* [prompt/reply to prompt]*": "Generate Image with Lexica API",
-    "lupscale [cap/reply to image]*": "Upscale Image through Lexica API",
+    "upscale [cap/reply to image]*": "Upscale Image through Lexica API",
 }

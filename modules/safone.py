@@ -3,7 +3,7 @@ import requests
 import aiofiles
 import base64
 
-from pyrogram import Client, filters
+from pyrogram import Client, enums, filters
 from pyrogram.types import Message, InputMediaPhoto
 from pyrogram.errors import MediaCaptionTooLong, MessageTooLong
 
@@ -51,6 +51,48 @@ async def voice_characters():
     result = response.json()
 
     return ", ".join(result["characters"])
+
+
+@Client.on_message(filters.command("asq", prefix) & filters.me)
+async def asq(_, message: Message):
+    if len(message.command) > 1:
+        query = message.text.split(maxsplit=1)[1]
+    else:
+        await message.edit_text("Query not provided!")
+        return
+    await message.edit_text("Processing...")
+    response = requests.get(url=f"{url}/asq?query={query}", headers=headers, timeout=5)
+    if response.status_code != 200:
+        await message.edit_text("Something went wrong!")
+        return
+
+    result = response.json()
+
+    ans = result["answer"]
+    await message.edit_text(
+        f"Q. {query}\n A. {ans}", parse_mode=enums.ParseMode.MARKDOWN
+    )
+
+
+@Client.on_message(filters.command("sgemini", prefix) & filters.me)
+async def sgemini(_, message: Message):
+    if len(message.command) > 1:
+        prompt = message.text.split(maxsplit=1)[1]
+    else:
+        await message.edit_text("prompt not provided!")
+        return
+    await message.edit_text("Processing...")
+    response = requests.get(url=f"{url}/bard?query={prompt}", headers=headers)
+    if response.status_code != 200:
+        await message.edit_text("Something went wrong!")
+        return
+
+    result = response.json()
+
+    ans = result["message"]
+    await message.edit_text(
+        f"Prompt: {prompt}\n Ans: {ans}", parse_mode=enums.ParseMode.MARKDOWN
+    )
 
 
 @Client.on_message(filters.command("app", prefix) & filters.me)
@@ -291,7 +333,8 @@ async def tts(client: Client, message: Message):
 
 
 modules_help["safone"] = {
-    "app": "Search for an app on Play Store",
-    "tsearch": "Search Torrent",
+    "asq [query]*": "Asq"
+    "app [query]*": "Search for an app on Play Store",
+    "tsearch [query]*": "Search Torrent",
     "tts [character]* [text/reply to text]*": "Convert Text to Speech",
 }
