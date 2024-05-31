@@ -333,7 +333,7 @@ async def tts(client: Client, message: Message):
 
 
 modules_help["safone"] = {
-    "asq [query]*": "Asq"
+    "asq [query]*": "Asq",
     "app [query]*": "Search for an app on Play Store",
     "tsearch [query]*": "Search Torrent",
     "tts [character]* [text/reply to text]*": "Convert Text to Speech",
