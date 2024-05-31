@@ -1,8 +1,7 @@
-import base64
 import os
 
 import aiohttp
-from pyrogram import Client, enums, filters
+from pyrogram import Client, filters
 from pyrogram.errors import MessageTooLong
 from pyrogram.types import Message
 
