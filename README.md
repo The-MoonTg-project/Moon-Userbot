@@ -53,7 +53,8 @@
  - `STRINGSESSION`
      - only If you want to use on cloud hosts use [string_gen.py](https://github.com/The-MoonTg-project/Moon-Userbot/blob/main/string_gen.py) to generate OR
 [![Run on Repl.it](https://replit.com/badge)](https://replit.com/@ABHITHEMODDER/MoonUb-Session-Gen)
-     - Necessary for deployment through Docker/Koyeb
+> [!IMPORTANT]
+> `STRINGSESSION` is necessary for deployment through Docker/Cloud Host etc.
  
  - `APIFLASH_KEY` - ONLY,  If you want to use web screnshot plugin You can get it from [here](https://apiflash.com/dashboard/access_keys)
  
@@ -68,12 +69,12 @@
 - `VCA_API_KEY` - ONLY, If you want to use ai tools like sdxl,upscale plugin You can get it from [here](https://github.com/VisionCraft-org/VisionCraft?tab=readme-ov-file#obtaining-an-api-key)
 
 ## ☁️ Cloud Host
-[![Deploy To Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/deploy?type=git&repository=github.com/The-MoonTg-project/Moon-Userbot&branch=main&name=moonub)
-
-[![Deploy To Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/The-MoonTg-project/moonub-cloud)
+| Koyeb | Heroku | Render |
+|-------|--------|--------|
+| [![Deploy To Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/deploy?type=git&repository=github.com/The-MoonTg-project/Moon-Userbot&branch=main&name=moonub) | [![Deploy To Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/The-MoonTg-project/moonub-cloud) | [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/The-MoonTg-project/Moon-Userbot) |
 
  
-- **YT Video [How to deploy]**: <https://youtu.be/2m_yB7EllYc>
+- **YT Video [How to deploy on Koyeb]**: <https://youtu.be/2m_yB7EllYc>
 
 ## 🐳 Docker
 
@@ -81,7 +82,8 @@
 docker run --env API_ID=your_api_id --env API_HASH=your_api_hash --env DATABASE_TYPE=db_type --env STRINGSESSION=your_string_session --env PM_LIMIT=pm_permit_warn_limit --env DATABASE_NAME=db_name --env DATABASE_URL=mongo_db_url --env APIFLASH_KEY=api_flash_key --env RMBG_KEY=rmbg_key --env VT_KEY=vt_key --env GEMINI_KEY=gemini_key --env COHERE_KEY=cohere_key --env VCA_API_KEY=vc_key -d qbtaumai/moonuserbot:latest
 ```
 
-**NOTE:** Make Sure you add appropriate env vars
+> [!IMPORTANT]
+> Make Sure you add appropriate env vars
 
 ## 🖥️ Local Host
 ## Linux, Windows [only wsl]
@@ -89,33 +91,39 @@ docker run --env API_ID=your_api_id --env API_HASH=your_api_hash --env DATABASE_
 ### Update the packages
 
 ```shell
- sudo apt update && sudo apt upgrade -y
+sudo apt update && sudo apt upgrade -y
 ```
 
-### Install Git[If installed ignore]
+### Install Git
+
+> [!TIP]
+> Ignore if already installed
 
 ```shell
- sudo apt install git
+sudo apt install git
 ```
 
 ### Clone the repo
 
 ```shell
- git clone https://github.com/The-MoonTg-project/Moon-Userbot.git
+git clone https://github.com/The-MoonTg-project/Moon-Userbot.git
 ```
 
 ### Setup
 
 ```shell
- cd Moon-Userbot/ && sudo bash install.sh
+cd Moon-Userbot/ && sudo bash install.sh
 ```
 
-#### 📱 Termux (use [GitHUb](https://github.com/termux/termux-app/releases) version)
+#### 📱 Termux 
+> [!TIP]
+> use [GitHub](https://github.com/termux/termux-app/releases) version
 -------------------------------------------------------------------------------
 
 > **Full Installation instruction [Given here](https://telegra.ph/Moon-Userbot-Installation---Termux-02-09)**
 
-**NOTE: If you choose MongoDB for your cloud then you need to setup `mongo_db_url`**
+> [!NOTE]
+> If you choose MongoDB for your cloud then you need to setup `mongo_db_url`**
 
 **Recommended: `sqlite`**
 
