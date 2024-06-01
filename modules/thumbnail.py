@@ -1,7 +1,7 @@
 import os
-import imghdr
+from PIL import Image
 
-from pyrogram import Client, enums, filters
+from pyrogram import Client, filters
 from pyrogram.types import Message
 
 from utils.misc import prefix, modules_help
@@ -14,9 +14,8 @@ async def setthumb(_, message: Message):
         if not os.path.exists(THUMB_PATH):
             os.makedirs(THUMB_PATH)
         new_thumb = await message.reply_to_message.download()
-        type_thumb = imghdr.what(new_thumb)
-        if type_thumb:
-            if type_thumb in ["png", "jpg", "jpeg"]:
+        with Image.open(new_thumb) as img:
+            if img.format in ["PNG", "JPG", "JPEG"]:
                 new_path = os.path.join(THUMB_PATH, "thumb.jpg")
                 os.rename(new_thumb, new_path)
                 await message.edit_text("Thumbnail set successfully!")
