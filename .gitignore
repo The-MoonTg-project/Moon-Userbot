@@ -15,5 +15,6 @@ __pycache__/
 config.ini
 unknown_errors.txt
 moonlogs.txt
+thumb.jpg
 .env
 .trunk/
