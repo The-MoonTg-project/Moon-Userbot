@@ -331,6 +331,7 @@ async def tts(client: Client, message: Message):
         if os.path.exists(f"{prompt}.mp3"):
             os.remove(f"{prompt}.mp3")
 
+
 @Client.on_message(filters.command(["carbonnowsh", "carboon", "carbon", "cboon"], prefix) & filters.me)
 async def carbon(client: Client, message: Message):
     if message.reply_to_message.text:
@@ -343,14 +344,16 @@ async def carbon(client: Client, message: Message):
         message_id = message.id
         filepath = f"downloads/{message.document.file_name}"
         await message.download(filepath)
-        text = open(filepath, "r", encoding="utf-8").read()
+        with open(filepath, "r", encoding="utf-8") as f:
+            text = f.read()
         if os.path.exists(filepath):
             os.remove(filepath)
     elif message.reply_to_message.document:
         message_id = message.reply_to_message.id
         filepath = f"downloads/{message.reply_to_message.document.file_name}"
         await message.reply_to_message.download(filepath)
-        text = open(filepath, "r", encoding="utf-8").read()
+        with open(filepath, "r", encoding="utf-8") as f:
+            text = f.read()
         if os.path.exists(filepath):
             os.remove(filepath)
     else:
@@ -369,7 +372,6 @@ async def carbon(client: Client, message: Message):
     image_data = base64.b64decode(image)
     with open(image_file, "wb") as f:
         f.write(image_data)
-
 
     await message.delete()
     try:
