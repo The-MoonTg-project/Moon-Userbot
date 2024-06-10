@@ -316,6 +316,8 @@ async def tts(client: Client, message: Message):
             audio=f"{prompt}.mp3",
             caption=f"<b>Characters:</b> <code>{character}</code>\n<b>Prompt:</b> <code>{prompt}</code>",
         )
+        if os.path.exists(f"{prompt}.mp3"):
+            os.remove(f"{prompt}.mp3")
 
     except KeyError:
         try:
@@ -327,12 +329,11 @@ async def tts(client: Client, message: Message):
             )
     except Exception as e:
         await message.edit_text(format_exc(e))
-    finally:
-        if os.path.exists(f"{prompt}.mp3"):
-            os.remove(f"{prompt}.mp3")
 
 
-@Client.on_message(filters.command(["carbonnowsh", "carboon", "carbon", "cboon"], prefix) & filters.me)
+@Client.on_message(
+    filters.command(["carbonnowsh", "carboon", "carbon", "cboon"], prefix) & filters.me
+)
 async def carbon(client: Client, message: Message):
     if message.reply_to_message.text:
         text = message.reply_to_message.text
