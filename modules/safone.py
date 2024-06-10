@@ -396,6 +396,29 @@ async def carbon(client: Client, message: Message):
         os.remove(image_file)
 
 
+@Client.on_message(filters.command("ccgen", prefix) & filters.me)
+async def ccgen(_, message: Message):
+    if len(message.command) > 1:
+        bins = message.text.split(maxsplit=1)[1]
+    else:
+        await message.edit_text("Code not provided!")
+        return
+    await message.edit_text("Processing...")
+    response = requests.get(url=f"{url}/ccgen?bins={bins}", headers=headers)
+    if response.status_code != 200:
+        await message.edit_text("Something went wrong")
+        return
+
+    result = response.json()
+
+    cards = result["results"][0]["cards"]
+    cards_str = "\n".join([f'"{card}"' for card in cards])
+    bins = result["results"][0]["bin"]
+    await message.edit_text(
+        f"Bins: <code>{bins}</code>\nTotal: <code>{len(cards)}</code>\nCards: \n<code>{cards_str}</code>"
+    )
+
+
 modules_help["safone"] = {
     "asq [query]*": "Asq",
     "app [query]*": "Search for an app on Play Store",
@@ -403,4 +426,5 @@ modules_help["safone"] = {
     "tts [character]* [text/reply to text]*": "Convert Text to Speech",
     "sgemini [prompt]*": "Gemini Model through safone api",
     "carbon [code/file/reply]": "Create beautiful image with your code",
+    "ccgen [bins]*": "Generate credit cards",
 }
