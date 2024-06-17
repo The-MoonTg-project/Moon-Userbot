@@ -16,6 +16,7 @@
 
 import os
 import sys
+import shutil
 import subprocess
 
 from pyrogram import Client, filters
@@ -25,6 +26,8 @@ from utils.misc import modules_help, prefix, requirements_list
 from utils.db import db
 from utils.scripts import format_exc, restart
 
+def check_command(command):
+    return shutil.which(command) is not None
 
 @Client.on_message(filters.command("restart", prefix) & filters.me)
 async def restart_cmd(_, message: Message):
@@ -66,6 +69,10 @@ async def update(_, message: Message):
 
     await message.edit("<b>Updating...</b>")
     try:
+        if not check_command('termux-setup-storage'):
+            subprocess.run(
+                [sys.executable, "-m", "pip", "install", "-U", "pip"], check=True
+            )
         subprocess.run(["git", "pull"], check=True)
         subprocess.run(
             [
