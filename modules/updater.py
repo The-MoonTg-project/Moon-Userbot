@@ -26,8 +26,10 @@ from utils.misc import modules_help, prefix, requirements_list
 from utils.db import db
 from utils.scripts import format_exc, restart
 
+
 def check_command(command):
     return shutil.which(command) is not None
+
 
 @Client.on_message(filters.command("restart", prefix) & filters.me)
 async def restart_cmd(_, message: Message):
