@@ -66,9 +66,6 @@ async def update(_, message: Message):
 
     await message.edit("<b>Updating...</b>")
     try:
-        # subprocess.run(
-        #     [sys.executable, "-m", "pip", "install", "-U", "pip"], check=True
-        # )
         subprocess.run(["git", "pull"], check=True)
         subprocess.run(
             [
