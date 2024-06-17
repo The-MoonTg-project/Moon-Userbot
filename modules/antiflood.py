@@ -1,3 +1,5 @@
+# to avoid flood in Chat
+
 from . import get_help
 
 __doc__ = get_help("help_antiflood")
