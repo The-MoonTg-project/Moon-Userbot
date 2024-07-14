@@ -49,6 +49,8 @@ async def restart_cmd(_, message: Message):
         return
 
     await message.edit("<b>Restarting...</b>")
+    if os.path.exists("moonlogs.txt"):
+        os.remove("moonlogs.txt")
     restart()
 
 
@@ -97,6 +99,8 @@ async def update(_, message: Message):
         db.remove("core.updater", "restart_info")
     else:
         await message.edit("<b>Updating: done! Restarting...</b>")
+        if os.path.exists("moonlogs.txt"):
+            os.remove("moonlogs.txt")
         restart()
 
 

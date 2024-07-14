@@ -34,6 +34,21 @@ async def upl(client: Client, message: Message):
         await message.edit(format_exc(e))
 
 
+@Client.on_message(filters.command("moonlogs", prefix) & filters.me)
+async def upl(client: Client, message: Message):
+    link = "moonlogs.txt"
+    try:
+        if os.path.exists(link):
+            await message.edit("<b>Uploading Now...</b>")
+            await client.send_document(message.chat.id, link)
+            await message.delete()
+        return await message.edit(
+            f"<b>Error: </b><code>LOGS</code> file doesn't exist."
+        )
+    except Exception as e:
+        await message.edit(format_exc(e))
+
+
 @Client.on_message(filters.command("uplr", prefix) & filters.me)
 async def uplr(client: Client, message: Message):
     if len(message.command) > 1:
@@ -67,4 +82,5 @@ async def uplr(client: Client, message: Message):
 modules_help["uplud"] = {
     "upl [filepath]/[reply to path]*": "Upload a file from your local machine to Telegram",
     "uplr [filepath]/[reply to path]*": "Upload a file from your local machine to Telegram, delete the file after uploading",
+    "moonlogs": "Upload the moonlogs.txt file to Telegram"
 }
