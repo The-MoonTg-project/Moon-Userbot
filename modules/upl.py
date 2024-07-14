@@ -35,7 +35,7 @@ async def upl(client: Client, message: Message):
 
 
 @Client.on_message(filters.command("moonlogs", prefix) & filters.me)
-async def upl(client: Client, message: Message):
+async def mupl(client: Client, message: Message):
     link = "moonlogs.txt"
     try:
         if os.path.exists(link):
@@ -43,7 +43,7 @@ async def upl(client: Client, message: Message):
             await client.send_document(message.chat.id, link)
             await message.delete()
         return await message.edit(
-            f"<b>Error: </b><code>LOGS</code> file doesn't exist."
+            "<b>Error: </b><code>LOGS</code> file doesn't exist."
         )
     except Exception as e:
         await message.edit(format_exc(e))
