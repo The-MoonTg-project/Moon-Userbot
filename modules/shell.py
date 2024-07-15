@@ -20,6 +20,7 @@ from time import perf_counter
 
 from pyrogram import Client, filters
 from pyrogram.types import Message
+from pyrogram.errors import MessageTooLong
 
 from utils.misc import modules_help, prefix
 
@@ -53,7 +54,10 @@ async def shell(_, message: Message):
         if stderr:
             text += f"<b>Error:</b>\n<code>{stderr}</code>\n\n"
         text += f"<b>Completed in {round(stop_time - start_time, 5)} seconds with code {cmd_obj.returncode}</b>"
-    await message.edit(text)
+    try:
+        await message.edit(text)
+    except MessageTooLong:
+        await message.edit(text[:-100])
     cmd_obj.kill()
 
 

@@ -65,9 +65,9 @@ Do not spam further messages else I may have to block you!</i>
     if db.get("core.antipm", "block", False):
         await client.block_user(user_info)
 
-    if db.get("core.antipm", f"disallowusers{id}") == user_id != db.get(
+    if db.get("core.antipm", f"disallowusers{ids}") == user_id != db.get(
         "core.antipm", f"allowusers{ids}"
-    ) or db.get("core.antipm", f"disallowusers{id}") != user_id != db.get(
+    ) or db.get("core.antipm", f"disallowusers{ids}") != user_id != db.get(
         "core.antipm", f"allowusers{ids}"
     ):
         await client.send_message(message.chat.id, f"{default_text}")
