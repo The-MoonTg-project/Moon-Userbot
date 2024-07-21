@@ -19,7 +19,7 @@
 ***A Simple, Fast, Customizable, Ai powered Userbot for Telegram made after Dragon-Userbot abandoned***
 
 > [!WARNING]
-> the use of this Telegram Userbot is at your own risk, and you are solely responsible for any consequences that may arise from your use of this software. The developer of this Userbot shall not be held liable for any damages or consequences that may occur as a result of your use of this software, whether such use is lawful, unlawful, or malicious. By using this Userbot, you acknowledge that you have read and understood this warning, and that you agree to comply with all applicable laws and regulations, and to use this software responsibly and ethically.
+> The use of this Telegram Userbot is at your own risk, and you are solely responsible for any consequences that may arise from your use of this Userbot. The developer of this Userbot shall not be held liable for any damages or consequences that may occur as a result of your use of this software, whether such use is lawful, unlawful, or malicious. By using this Userbot, you acknowledge that you have read and understood this warning, and that you agree to comply with all applicable laws and regulations, and to use this software responsibly and ethically.
 
 ## 🤖 Ai powers
 
