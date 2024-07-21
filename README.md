@@ -18,6 +18,9 @@
 
 ***A Simple, Fast, Customizable, Ai powered Userbot for Telegram made after Dragon-Userbot abandoned***
 
+> [!WARNING]
+> the use of this Telegram Userbot is at your own risk, and you are solely responsible for any consequences that may arise from your use of this software. The developer of this Userbot shall not be held liable for any damages or consequences that may occur as a result of your use of this software, whether such use is lawful, unlawful, or malicious. By using this Userbot, you acknowledge that you have read and understood this warning, and that you agree to comply with all applicable laws and regulations, and to use this software responsibly and ethically.
+
 ## 🤖 Ai powers
 
 - Gemini Pro Ai [ ✅ ]
@@ -144,7 +147,13 @@ Contributions of any type are welcome like `custom_modules` etc. Feel free to do
 * [AbhiTheModder](https://github.com/AbhiTheModder)
  
 ### Written on [Pyrogram\[Pyrofork\]❤️](https://github.com/Mayuri-Chan/pyrofork) and [pytgcalls❤️](https://github.com/MarshalX/tgcalls/tree/main/pytgcalls)
- 
+
+## Disclaimer 
+> [!WARNING]
+> The use of this Telegram Userbot is entirely at your own risk. The developer of this Userbot is not responsible for any misuse, damage, or legal consequences that may arise from your use of this software.
+>> It is your responsibility to ensure that you use this Userbot in accordance with all applicable laws and regulations, and that you do not engage in any activities that may cause harm to others or violate their privacy. This includes, but is not limited to, the use of this Userbot to send spam, harass others, or engage in any other form of unlawful or malicious activity.
+>> The developer of this Userbot does not endorse or condone any such activities, and any such use of this software is strictly prohibited. By using this Userbot, you acknowledge that you are solely responsible for your own actions and that the developer of this Userbot shall not be held liable for any damages or consequences that may arise from your use of this software.
+>> It is your responsibility to ensure that you have obtained all necessary permissions and consents before using this Userbot to interact with others, and that you respect their privacy and rights. The developer of this Userbot shall not be held liable for any breach of privacy or rights that may occur as a result of your use of this software.
 
 ## Licence
 
