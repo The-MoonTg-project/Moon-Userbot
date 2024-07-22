@@ -54,6 +54,27 @@ if [[ $pm_limit = "" ]]; then
 fi
 
 echo
+echo "Do you want to use musicbot? (y/n)"
+read -r -p "MUSIC_BOT > " musicbot
+if [[ $musicbot = "y" ]]; then
+  echo
+  echo "Enter SECOND_SESSION_STRING to be used by musicbot"
+  read -r -p "SECOND_SESSION > " second_session
+  if [[ $second_session = "" ]]; then
+    echo "SECOND_SESSION not provided by user"
+    second_session=""
+  else
+    echo
+    echo "Please provide handler to be used by msuicbot"
+    read -r -p "MUSIC_HANDLER > " music_handler
+    if [[ $music_handler = "" ]]; then
+      echo "MUSIC_HANDLER not provided by user"
+      music_handler=""
+    fi
+  fi
+fi
+
+echo
 echo "Enter APIFLASH_KEY for webshot plugin"
 echo "You can get it here -> https://apiflash.com/dashboard/access_keys"
 read -r -p "APIFLASH_KEY > " apiflash_key
@@ -162,6 +183,8 @@ GEMINI_KEY=${gemini_key}
 VCA_API_KEY=${vca_api_key}
 COHERE_KEY=${cohere_key}
 PM_LIMIT=${pm_limit}
+SECOND_SESSION=${second_session}
+MUSIC_HANDLER=${music_handler}
 EOL
 
 chown -R $SUDO_USER:$SUDO_USER .

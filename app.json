@@ -19,9 +19,17 @@
       "required": true
     },
     "PM_LIMIT": {
-      "description": "set your pm permit warn limit",
+      "description": "set your pm permit warn limit, default is 4",
       "value": "4",
       "required": true
+    },
+    "SECOND_SESSION": {
+      "description": "Pyrorogram v2 session string for music bot, only fill this if you want to use music bot feature",
+      "required": false
+    },
+    "MUSIC_HANDLER": {
+      "description": "set your music bot handler, only fill this if you want to use music bot feature, available handlers are: ,.!@; make sure tit doesn't conflict with your main prefix",
+      "required": false
     },
     "DATABASE_URL": {
       "description": "ONLY for MongoDB, get it from https://cloud.mongodb.com",
