@@ -16,5 +16,6 @@ config.ini
 unknown_errors.txt
 moonlogs.txt
 thumb.jpg
+musicbot/
 .env
 .trunk/
