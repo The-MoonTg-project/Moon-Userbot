@@ -92,7 +92,7 @@ async def edit_or_send_as_file(
     return await message.edit(tex)
 
 
-def get_text(message: Message) -> None|str:
+def get_text(message: Message) -> None | str:
     """Extract Text From Commands"""
     text_to_return = message.text
     if message.text is None:
