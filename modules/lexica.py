@@ -5,7 +5,7 @@ from pyrogram import Client, filters
 from pyrogram.types import Message
 
 from utils.misc import modules_help, prefix
-from utils.scripts import format_exc
+from utils.scripts import format_exc, format_module_help
 from utils.lexicapi import ImageGeneration, UpscaleImages, ImageModels
 
 
@@ -38,6 +38,7 @@ async def upscale(client: Client, message: Message):
             reply_to_message_id=message_id,
         )
         os.remove(upscaled_image)
+        os.remove(photo_data)
     except Exception as e:
         await message.edit(format_exc(e))
 
@@ -53,9 +54,7 @@ async def lgen(client: Client, message: Message):
         if len(message.command) > 2:
             model_id = int(message.text.split()[1])
             if model_id not in models_ids:
-                return await message.edit_text(
-                    f"<b>Usage: </b><code>{prefix}lgen [model_id]* [prompt/reply to prompt]*</code>\n <b>Available Models and IDs:</b> <blockquote>{models}</blockquote>"
-                )
+                return await message.edit_text(format_module_help("lgen"))
             message_id = None
             prompt = " ".join(message.text.split()[2:])
         elif message.reply_to_message and len(message.command) > 1:
