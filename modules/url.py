@@ -37,7 +37,7 @@ from utils.scripts import format_exc, humanbytes, progress
 
 def generate_screenshot(url):
     api_url = f"https://api.apiflash.com/v1/urltoimage?access_key={apiflash_key}&url={url}&format=png"
-    response = requests.get(api_url, timeout=5)
+    response = requests.get(api_url)
     if response.status_code == 200:
         return BytesIO(response.content)
     return None
