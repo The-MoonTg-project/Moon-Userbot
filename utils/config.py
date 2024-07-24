@@ -13,7 +13,6 @@ api_hash = os.getenv("API_HASH", env.str("API_HASH"))
 STRINGSESSION = os.getenv("STRINGSESSION", env.str("STRINGSESSION"))
 
 second_session = os.getenv("SECOND_SESSION", env.str("SECOND_SESSION", ""))
-music_handler = os.getenv("MUSIC_HANDLER", env.str("MUSIC_HANDLER", ""))
 
 db_type = os.getenv("DATABASE_TYPE", env.str("DATABASE_TYPE"))
 db_url = os.getenv("DATABASE_URL", env.str("DATABASE_URL", ""))
