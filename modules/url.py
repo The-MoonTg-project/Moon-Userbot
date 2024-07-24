@@ -88,22 +88,49 @@ async def urldl(client: Client, message: Message):
     content_type = resp.headers.get("Content-Type").split(";")[0]
     extension = mimetypes.guess_extension(content_type)
 
+    # Check if the file is an executable binary
+    is_executable = content_type in [
+        "application/octet-stream",
+        "application/x-msdownload",
+    ]
+
+    # Get the file extension from the URL
+    url_extension = os.path.splitext(link)[1].lower()
+
     try:
         os.makedirs("downloads")
-        if ext == extension:
+        if is_executable:
             file_name = "downloads/" + link.split("/")[-1]
+            if not file_name.endswith(url_extension):
+                file_name += url_extension
+        elif extension:
+            file_name = "downloads/" + link.split("/")[-1]
+            if not file_name.endswith(extension):
+                file_name += extension
         else:
-            file_name = "downloads/" + link.split("/")[-1] + extension
+            file_name = "downloads/" + link.split("/")[-1]
     except FileNotFoundError:
-        if ext == extension:
+        if is_executable:
             file_name = "downloads/" + link.split("/")[-1]
+            if not file_name.endswith(url_extension):
+                file_name += url_extension
+        elif extension:
+            file_name = "downloads/" + link.split("/")[-1]
+            if not file_name.endswith(extension):
+                file_name += extension
         else:
-            file_name = "downloads/" + link.split("/")[-1] + extension
+            file_name = "downloads/" + link.split("/")[-1]
     except FileExistsError:
-        if ext == extension:
+        if is_executable:
             file_name = "downloads/" + link.split("/")[-1]
+            if not file_name.endswith(url_extension):
+                file_name += url_extension
+        elif extension:
+            file_name = "downloads/" + link.split("/")[-1]
+            if not file_name.endswith(extension):
+                file_name += extension
         else:
-            file_name = "downloads/" + link.split("/")[-1] + extension
+            file_name = "downloads/" + link.split("/")[-1]
 
     downloader = SmartDL(link, file_name, progress_bar=False, timeout=10)
     start_t = datetime.now()
