@@ -34,7 +34,7 @@ from pyrogram import Client, errors, enums
 from pyrogram.errors import FloodWait, MessageNotModified
 from pyrogram.types import Message
 
-from utils import db
+from utils.db import db
 
 from .misc import modules_help, prefix, requirements_list
 
