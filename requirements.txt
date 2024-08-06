@@ -7,6 +7,7 @@ humanize
 pygments
 ffmpeg-python
 pymongo
+psutil
 Pillow>=9.0.0
 pytube
 click
