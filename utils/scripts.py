@@ -29,9 +29,12 @@ from types import ModuleType
 from typing import Dict, Tuple
 
 from PIL import Image
+import psutil
 from pyrogram import Client, errors, enums
 from pyrogram.errors import FloodWait, MessageNotModified
 from pyrogram.types import Message
+
+from utils import db
 
 from .misc import modules_help, prefix, requirements_list
 
@@ -211,6 +214,13 @@ def text(message: Message) -> str:
 
 
 def restart() -> None:
+    music_bot_pid = db.get("custom.musicbot", "music_bot_pid", None)
+    if music_bot_pid is not None:
+        try:
+            music_bot_process = psutil.Process(music_bot_pid)
+            music_bot_process.terminate()
+        except psutil.NoSuchProcess:
+            print("Music bot is not running.")
     os.execvp(sys.executable, [sys.executable, "main.py"])
 
 
@@ -318,12 +328,25 @@ def import_library(library_name: str, package_name: str = None):
         return importlib.import_module(library_name)
     except ImportError as exc:
         completed = subprocess.run(
-            [sys.executable, "-m", "pip", "install", package_name], check=True)
+            [sys.executable, "-m", "pip", "install", "--upgrade", package_name], check=True)
         if completed.returncode != 0:
             raise AssertionError(
                 f"Failed to install library {package_name} (pip exited with code {completed.returncode})"
                 ) from exc
         return importlib.import_module(library_name)
+
+
+def uninstall_library(package_name: str):
+    """
+    Uninstalls a library
+    :param package_name: package name in PyPi (pip uninstall example)
+    """
+    completed = subprocess.run(
+        [sys.executable, "-m", "pip", "uninstall", "-y", package_name], check=True)
+    if completed.returncode != 0:
+        raise AssertionError(
+            f"Failed to uninstall library {package_name} (pip exited with code {completed.returncode})"
+        )
 
 
 def resize_image(

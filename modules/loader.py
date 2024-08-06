@@ -7,6 +7,9 @@
 #  (at your option) any later version.
 import hashlib
 import os
+import shutil
+import subprocess
+import sys
 
 import requests
 from pyrogram import Client, filters
@@ -141,6 +144,9 @@ async def unload_mods(_, message: Message):
 
     if os.path.exists(f"{BASE_PATH}/modules/custom_modules/{module_name}.py"):
         os.remove(f"{BASE_PATH}/modules/custom_modules/{module_name}.py")
+        if module_name == "musicbot":
+            subprocess.run([sys.executable, "-m", "pip", "uninstall", "-y", "requirements.txt"], cwd=f"{BASE_PATH}/musicbot")
+            shutil.rmtree(f"{BASE_PATH}/musicbot")
         await message.edit(f"<b>The module <code>{module_name}</code> removed!</b>")
         restart()
     elif os.path.exists(f"{BASE_PATH}/modules/{module_name}.py"):
