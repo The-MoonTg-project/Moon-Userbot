@@ -82,6 +82,12 @@
     },
     {
       "url": "https://github.com/heroku/heroku-buildpack-apt"
+    },
+    {
+      "url": "https://github.com/heroku/heroku-buildpack-activestorage-preview"
+    },
+    {
+      "url": "https://github.com/The-MoonTg-project/heroku-buildpack-yt-dlp"
     }
   ]
 }
