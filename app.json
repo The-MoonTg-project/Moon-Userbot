@@ -81,13 +81,7 @@
       "url": "heroku/python"
     },
     {
-      "url": "https://github.com/jonathanong/heroku-buildpack-ffmpeg-latest"
-    },
-    {
-      "url": "https://github.com/The-MoonTg-project/heroku-buildpack-yt-dlp"
-    },
-    {
-      "url": "https://github.com/code-rgb/mediainfo_buildpack_heroku"
+      "url": "https://github.com/heroku/heroku-buildpack-apt"
     }
   ]
 }
