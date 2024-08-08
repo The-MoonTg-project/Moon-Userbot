@@ -34,6 +34,12 @@ async def upl(client: Client, message: Message):
         await message.edit(format_exc(e))
 
 
+@Client.on_message(filters.command("dlf", prefix) & filters.me)
+async def dlf(client: Client, message: Message):
+    if message.reply_to_message.document:
+        await client.download_media(message.reply_to_message)
+
+
 @Client.on_message(filters.command("moonlogs", prefix) & filters.me)
 async def mupl(client: Client, message: Message):
     link = "moonlogs.txt"

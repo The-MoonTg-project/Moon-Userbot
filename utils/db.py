@@ -129,7 +129,8 @@ class SqliteDatabase(Database):
 
         self._lock.acquire()
         try:
-            return self._cursor.execute(*args, **kwargs)
+            cursor = self._conn.cursor()
+            return cursor.execute(*args, **kwargs)
         except sqlite3.OperationalError as e:
             if str(e).startswith("no such table"):
                 sql = f"""
@@ -139,9 +140,10 @@ class SqliteDatabase(Database):
                 type TEXT NOT NULL
                 )
                 """
-                self._cursor.execute(sql)
+                cursor = self._conn.cursor()
+                cursor.execute(sql)
                 self._conn.commit()
-                return self._cursor.execute(*args, **kwargs)
+                return cursor.execute(*args, **kwargs)
             raise e from None
         finally:
             self._lock.release()
