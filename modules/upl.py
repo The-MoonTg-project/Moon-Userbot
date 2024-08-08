@@ -87,6 +87,7 @@ async def uplr(client: Client, message: Message):
 
 modules_help["uplud"] = {
     "upl [filepath]/[reply to path]*": "Upload a file from your local machine to Telegram",
+    "dlf": "Download a file from Telegram to your local machine",
     "uplr [filepath]/[reply to path]*": "Upload a file from your local machine to Telegram, delete the file after uploading",
     "moonlogs": "Upload the moonlogs.txt file to Telegram"
 }
