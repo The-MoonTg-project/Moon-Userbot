@@ -376,7 +376,7 @@ def resize_image(
 def resize_new_image(image_path, output_path, desired_width=None, desired_height=None):
     """
     Resize an image to the desired dimensions while maintaining the aspect ratio.
-    
+
     Args:
         image_path (str): Path to the input image file.
         output_path (str): Path to save the resized image.
@@ -384,20 +384,20 @@ def resize_new_image(image_path, output_path, desired_width=None, desired_height
         desired_height (int, optional): Desired height in pixels. If not provided, the aspect ratio will be maintained.
     """
     image = Image.open(image_path)
-    
+
     width, height = image.size
-    
+
     aspect_ratio = width / height
-    
+
     if desired_width and desired_height:
         new_width, new_height = desired_width, desired_height
     elif desired_height:
         new_width, new_height = int(desired_height * aspect_ratio), desired_height
     else:
         new_width, new_height = 150, 150
-    
+
     resized_image = image.resize((new_width, new_height), Image.Resampling.LANCZOS)
-    
+
     resized_image.save(output_path)
     if os.path.exists(image_path):
         os.remove(image_path)
