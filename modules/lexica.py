@@ -1,11 +1,14 @@
 import os
+import re
+import time
+from bs4 import BeautifulSoup
 import requests
 
 from pyrogram import Client, filters
 from pyrogram.types import Message
 
 from utils.misc import modules_help, prefix
-from utils.scripts import format_exc, format_module_help
+from utils.scripts import format_exc, format_module_help, progress
 from utils.lexicapi import ImageGeneration, UpscaleImages, ImageModels
 
 
@@ -95,7 +98,69 @@ async def lgen(client: Client, message: Message):
         await message.edit(format_exc(e))
 
 
+@Client.on_message(filters.command("linsta", prefix) & filters.me)
+async def linsta(client: Client, message: Message):
+    if len(message.command) < 2:
+        return await message.edit_text(
+            f"<b>Usage: </b><code>{prefix}linsta [link]*</code>"
+        )
+    link = message.text.split(maxsplit=1)[1]
+    url = f"https://social-dl.vercel.app/api/download?url={link}&platform=Instagram"
+    await message.edit_text("<code>Processing...</code>")
+    try:
+        response = requests.post(url)
+        if response.status_code == 200:
+            if response.json().get("code") == 2:
+                if response.json().get("message") == "success":
+                    download_url = response.json().get("content")[0].get("url")
+                    soup = BeautifulSoup(requests.get(link).text, "html.parser")
+                    title = soup.find("meta", property="og:title")
+                    if title:
+                        title_text = title["content"]
+                    title_text = re.sub(r"#\w+", "", title_text)
+                    title_text = title_text.replace("\n", "")
+                    title_text = re.sub(" +", " ", title_text)
+                    if ".mp4" in download_url:
+                        ext = ".mp4"
+                    elif ".jpg" in download_url:
+                        ext = ".jpg"
+                    elif ".png" in download_url:
+                        ext = ".png"
+                    elif ".webp" in download_url:
+                        ext = ".webp"
+                    elif ".gif" in download_url:
+                        ext = ".gif"
+                    with open(f"video_insta{ext}", "wb") as f:
+                        f.write(requests.get(download_url).content)
+                    await message.edit_text(
+                        "Video downloaded successfully... Uploading"
+                    )
+                    await client.send_video(
+                        message.chat.id,
+                        f"video_insta{ext}",
+                        caption=f"<b>Title: </b><code>{title_text}</code>",
+                        progress=progress,
+                        progress_args=(
+                            message,
+                            time.time(),
+                            "Video downloaded successfully... Uploading",
+                        ),
+                    )
+                    if os.path.exists(f"video_insta{ext}"):
+                        os.remove(f"video_insta{ext}")
+                    await message.delete()
+                else:
+                    await message.edit_text("Error: Failed to retrieve download URL")
+            else:
+                await message.edit_text("Error: Invalid response format")
+        else:
+            await message.edit_text("Error: Failed to send request")
+    except Exception as e:
+        await message.edit_text(format_exc(e))
+
+
 modules_help["lexica"] = {
     "lgen [model_id]* [prompt/reply to prompt]*": "Generate Image with Lexica API",
     "upscale [cap/reply to image]*": "Upscale Image through Lexica API",
+    "linsta [link]*": "Download Instagram Media",
 }
