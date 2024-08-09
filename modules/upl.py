@@ -36,8 +36,13 @@ async def upl(client: Client, message: Message):
 
 @Client.on_message(filters.command("dlf", prefix) & filters.me)
 async def dlf(client: Client, message: Message):
-    if message.reply_to_message.document:
+    if message.reply_to_message:
         await client.download_media(message.reply_to_message)
+        await message.edit("<b>Downloaded Successfully!</b>")
+    else:
+        await message.edit(
+            f"<b>Usage: </b><code>{prefix}dlf [reply to a file]</code>"
+        )
 
 
 @Client.on_message(filters.command("moonlogs", prefix) & filters.me)
