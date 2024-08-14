@@ -11,79 +11,76 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from pyrogram import Client
-from pyrogram import filters
+from pyrogram import Client, filters
 from pyrogram.types import Message
 
 from utils.misc import modules_help, prefix
 from utils.scripts import format_module_help
 
+current_page = 0
+total_pages = 0
+
+async def send_page(message, module_list, page, total_pages):
+    start_index = (page - 1) * 10
+    end_index = start_index + 10
+    page_modules = module_list[start_index:end_index]
+    text = f"<b>Help for <a href=https://t.me/Moonub_chat>Moon-Userbot</a></b>\n"
+    text += f"For more help on how to use a command, type <code>{prefix}help [module]</code>\n\n"
+    text += f"Page {page}/{total_pages}\n\n"
+    for module_name in page_modules:
+        commands = modules_help[module_name]
+        text += f"<b>• {module_name.title()}:</b> {', '.join([f'<code>{prefix + cmd_name.split()[0]}</code>' for cmd_name in commands.keys()])}\n"
+    text += f"\n<b>The number of modules in the userbot: {len(modules_help)}</b>"
+    await message.edit(text, disable_web_page_preview=True)
+
 
 @Client.on_message(filters.command(["help", "h"], prefix) & filters.me)
 async def help_cmd(_, message: Message):
     if len(message.command) == 1:
-        msg_edited = False
-        text = (
-            "<b>Help for <a href=https://t.me/Moonub_chat>Moon-Userbot</a></b>\n"
-            f"For more help on how to use a command, type <code>{prefix}help [module]</code>\n\n"
-            "Available Modules:\n"
-        )
-
-        for module_name, module_commands in modules_help.items():
-            text += f"<b>• {module_name.title()}:</b> {', '.join([f'<code>{prefix + cmd_name.split()[0]}</code>' for cmd_name in module_commands.keys()])}\n"
-            if len(text) >= 2048:
-                text += "</b>"
-                if msg_edited:
-                    await message.reply(
-                        text,
-                        disable_web_page_preview=True,
-                    )
-                else:
-                    await message.edit(
-                        text,
-                        disable_web_page_preview=True,
-                    )
-                    msg_edited = True
-                text = "<b>"
-
-        text += f"<b>The number of modules in the userbot: {len(modules_help)}</b>"
-
-        if msg_edited:
-            await message.reply(text, disable_web_page_preview=True)
-        else:
-            await message.edit(text, disable_web_page_preview=True)
+        global current_page, total_pages
+        module_list = list(modules_help.keys())
+        total_pages = (len(module_list) + 9) // 10
+        current_page = 1
+        await send_page(message, module_list, current_page, total_pages)
     elif message.command[1].lower() in modules_help:
         await message.edit(format_module_help(message.command[1].lower(), prefix))
     else:
         command_name = message.command[1].lower()
-        for name, commands in modules_help.items():
+        module_found = False
+        for module_name, commands in modules_help.items():
             for command in commands.keys():
                 if command.split()[0] == command_name:
                     cmd = command.split(maxsplit=1)
                     cmd_desc = commands[command]
+                    module_found = True
                     return await message.edit(
                         f"<b>Help for command <code>{prefix}{command_name}</code></b>\n"
-                        f"Module: {name} (<code>{prefix}help {name}</code>)\n\n"
+                        f"Module: {module_name} (<code>{prefix}help {module_name}</code>)\n\n"
                         f"<code>{prefix}{cmd[0]}</code>"
                         f"{' <code>' + cmd[1] + '</code>' if len(cmd) > 1 else ''}"
                         f" — <i>{cmd_desc}</i>",
                     )
-        await message.edit(f"<b>Module {command_name} not found</b>")
-        # TODO: refactor this cringe
-        command_name = message.command[1].lower()
-        for name, commands in modules_help.items():
-            for command in commands.keys():
-                if command.split()[0] == command_name:
-                    cmd = command.split(maxsplit=1)
-                    cmd_desc = commands[command]
-                    return await message.edit(
-                        f"<b>Help for command <code>{prefix}{command_name}</code></b>\n"
-                        f"Module: {name} (<code>{prefix}help {name}</code>)\n\n"
-                        f"<code>{prefix}{cmd[0]}</code>"
-                        f"{' <code>' + cmd[1] + '</code>' if len(cmd) > 1 else ''}"
-                        f" — <i>{cmd_desc}</i>",
-                    )
-        await message.edit(f"<b>Module {command_name} not found</b>")
+        if not module_found:
+            await message.edit(f"<b>Module or command {command_name} not found</b>")
+
+@Client.on_message(filters.reply & filters.text & filters.me)
+async def handle_navigation(_, message: Message):
+    global current_page
+    if message.reply_to_message:
+        if message.text.lower() == "n":
+            if current_page < total_pages:
+                current_page += 1
+                await send_page(message, list(modules_help.keys()), current_page, total_pages)
+                await message.reply_to_message.delete()
+            else:
+                await message.edit("No more pages available.")
+        elif message.text.lower() == "p":
+            if current_page > 1:
+                current_page -= 1
+                await send_page(message, list(modules_help.keys()), current_page, total_pages)
+                await message.reply_to_message.delete()
+            else:
+                await message.edit("This is the first page.")
 
 
 modules_help["help"] = {"help [module/command name]": "Get common/module/command help"}
