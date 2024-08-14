@@ -1,4 +1,3 @@
-version: "3"
 services:
     moonuserbot:
         image: qbtaumai/moonuserbot:latest
@@ -6,3 +5,9 @@ services:
         restart: unless-stopped
         env_file:
             - .env
+        networks:
+            - default
+
+networks:
+    default:
+        external: false
