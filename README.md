@@ -80,10 +80,30 @@
 - **YT Video [How to deploy on Koyeb]**: <https://youtu.be/2m_yB7EllYc>
 
 ## 🐳 Docker
+You can either use `docker run` or `docker compose`.
 
-```shell
-docker run --env API_ID=your_api_id --env API_HASH=your_api_hash --env DATABASE_TYPE=db_type --env STRINGSESSION=your_string_session --env PM_LIMIT=pm_permit_warn_limit --env DATABASE_NAME=db_name --env DATABASE_URL=mongo_db_url --env APIFLASH_KEY=api_flash_key --env RMBG_KEY=rmbg_key --env VT_KEY=vt_key --env GEMINI_KEY=gemini_key --env COHERE_KEY=cohere_key --env VCA_API_KEY=vc_key -d qbtaumai/moonuserbot:latest
-```
+### 👷‍♂️`docker run`:
+  - Start:
+    ```shell
+    docker run --env API_ID=your_api_id --env API_HASH=your_api_hash --env DATABASE_TYPE=db_type --env STRINGSESSION=your_string_session --env PM_LIMIT=pm_permit_warn_limit --env DATABASE_NAME=db_name --env DATABASE_URL=mongo_db_url --env APIFLASH_KEY=api_flash_key --env RMBG_KEY=rmbg_key --env VT_KEY=vt_key --env GEMINI_KEY=gemini_key --env COHERE_KEY=cohere_key --env VCA_API_KEY=vc_key -d qbtaumai/moonuserbot:latest
+    ```
+  - Updating:
+    ```shell
+    docker stop $(docker ps -q) && docker rm $(docker ps -a -q)
+    ```
+    then re-run the start command
+
+### 🍟 `docker compose` [recommended]:
+> [!NOTE]
+> To use docker compose you will have to put your environment vars in `.env` file check [.env.dist](/.env.dist) for example format
+  - Start:
+    ```shell
+    docker compose up -d
+    ```
+  - Updating & running:
+    ```shell
+    docker-compose down && docker-compose pull && docker-compose up -d
+    ```
 
 > [!IMPORTANT]
 > Make Sure you add appropriate env vars
