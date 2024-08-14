@@ -15,7 +15,7 @@ from pyrogram import Client, filters
 from pyrogram.types import Message
 
 from utils.misc import modules_help, prefix
-from utils.scripts import format_module_help
+from utils.scripts import format_module_help, with_reply
 
 current_page = 0
 total_pages = 0
@@ -63,24 +63,32 @@ async def help_cmd(_, message: Message):
         if not module_found:
             await message.edit(f"<b>Module or command {command_name} not found</b>")
 
-@Client.on_message(filters.reply & filters.text & filters.me)
+@Client.on_message(filters.command(["pn", "pp", "pq"], prefix) & filters.me)
+@with_reply
 async def handle_navigation(_, message: Message):
-    global current_page
     if message.reply_to_message:
-        if message.text.lower() == "n":
+        global current_page
+        if message.command[0].lower() == "pn":
             if current_page < total_pages:
                 current_page += 1
                 await send_page(message, list(modules_help.keys()), current_page, total_pages)
-                await message.reply_to_message.delete()
+                return await message.reply_to_message.delete()
             else:
                 await message.edit("No more pages available.")
-        elif message.text.lower() == "p":
+        elif message.command[0].lower() == "pp":
             if current_page > 1:
                 current_page -= 1
                 await send_page(message, list(modules_help.keys()), current_page, total_pages)
-                await message.reply_to_message.delete()
+                return await message.reply_to_message.delete()
             else:
-                await message.edit("This is the first page.")
+                return await message.edit("This is the first page.")
+        elif message.command[0].lower() == "pq":
+            await message.reply_to_message.delete()
+            return await message.edit("Help closed.")
 
 
-modules_help["help"] = {"help [module/command name]": "Get common/module/command help"}
+modules_help["help"] = {
+    "help [module/command name]": "Get common/module/command help",
+    "pn/pp/pq": "Navigate through help pages"
+    + " (pn: next page, pp: previous page, pq: quit help)",
+    }
