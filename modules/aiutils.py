@@ -670,6 +670,5 @@ modules_help["aiutils"] = {
     "vfxl [model]* [prompt/reply to prompt]*": "Text to Image with FLUX model",
     "vpixl [model]* [prompt/reply to prompt]*": "Text to Image with PixArt model",
     "vkxl [model]* [prompt/reply to prompt]*": "Text to Image with Kolors model",
-    "vdxl [model]* [prompt/reply to prompt]*": "Text to Image with SDXL model",
     "vgif [prompt/reply to prompt]*": "Text to GIF",
 }
