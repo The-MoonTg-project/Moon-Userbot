@@ -333,7 +333,7 @@ async def vfxl(c: Client, message: Message):
             "width": 1024,
             "height": 1024,
             "steps": 30,
-            "cfg_scale": 8,
+            "cfg_scale": 1,
             "sampler": "Euler",
             "upscale": True,
         }
