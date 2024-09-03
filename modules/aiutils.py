@@ -9,13 +9,13 @@ from utils.config import vca_api_key
 from utils.misc import modules_help, prefix
 from utils.scripts import format_exc
 
-api_url = "https://visioncraft.top"
+api_url = "https://visioncraft.top/api"
 
 
 async def fetch_models(category: str):
     """Get all available SDXL models"""
     async with aiohttp.ClientSession() as session, session.get(
-        f"https://visioncraft.top/image/models/{category}"
+        f"https://visioncraft.top/api/image/models/{category}"
     ) as response:
         return await response.json()
 
@@ -117,7 +117,7 @@ async def vdxl(c: Client, message: Message):
 
     except MessageTooLong:
         await message.edit_text(
-            f"<b>Model List is too long</b> See the Full List <a href='https://visioncraft.top/image/models/{model_category}'> Here </a>"
+            f"<b>Model List is too long</b> See the Full List <a href='https://visioncraft.top/api/image/models/{model_category}'> Here </a>"
         )
         return
 
@@ -198,7 +198,7 @@ async def vdxl2(c: Client, message: Message):
 
     except MessageTooLong:
         await message.edit_text(
-            f"<b>Model List is too long</b> See the Full List <a href='https://visioncraft.top/image/models/{model_category}'> Here </a>"
+            f"<b>Model List is too long</b> See the Full List <a href='https://visioncraft.top/api/image/models/{model_category}'> Here </a>"
         )
         return
 
@@ -279,7 +279,7 @@ async def vdxl3(c: Client, message: Message):
 
     except MessageTooLong:
         await message.edit_text(
-            f"<b>Model List is too long</b> See the Full List <a href='https://visioncraft.top/image/models/{model_category}'> Here </a>"
+            f"<b>Model List is too long</b> See the Full List <a href='https://visioncraft.top/api/image/models/{model_category}'> Here </a>"
         )
         return
 
@@ -360,7 +360,7 @@ async def vfxl(c: Client, message: Message):
 
     except MessageTooLong:
         await message.edit_text(
-            f"<b>Model List is too long</b> See the Full List <a href='https://visioncraft.top/image/models/{model_category}'> Here </a>"
+            f"<b>Model List is too long</b> See the Full List <a href='https://visioncraft.top/api/image/models/{model_category}'> Here </a>"
         )
         return
 
@@ -441,7 +441,7 @@ async def vpxl(c: Client, message: Message):
 
     except MessageTooLong:
         await message.edit_text(
-            f"<b>Model List is too long</b> See the Full List <a href='https://visioncraft.top/image/models/{model_category}'> Here </a>"
+            f"<b>Model List is too long</b> See the Full List <a href='https://visioncraft.top/api/image/models/{model_category}'> Here </a>"
         )
         return
 
@@ -522,7 +522,7 @@ async def vpixl(c: Client, message: Message):
 
     except MessageTooLong:
         await message.edit_text(
-            f"<b>Model List is too long</b> See the Full List <a href='https://visioncraft.top/image/models/{model_category}'> Here </a>"
+            f"<b>Model List is too long</b> See the Full List <a href='https://visioncraft.top/api/image/models/{model_category}'> Here </a>"
         )
         return
 
@@ -603,7 +603,7 @@ async def vkxl(c: Client, message: Message):
 
     except MessageTooLong:
         await message.edit_text(
-            f"<b>Model List is too long</b> See the Full List <a href='https://visioncraft.top/image/models/{model_category}'> Here </a>"
+            f"<b>Model List is too long</b> See the Full List <a href='https://visioncraft.top/api/image/models/{model_category}'> Here </a>"
         )
         return
 
