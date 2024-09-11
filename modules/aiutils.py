@@ -1,3 +1,4 @@
+import errno
 import os
 
 import aiohttp
@@ -29,11 +30,10 @@ async def generate_gifs(data):
 
 
 async def generate_images(data):
-    """Helper Function to generate image using SDXL"""
-    async with aiohttp.ClientSession() as session, session.post(
-        f"{api_url}/image/generate", json=data
-    ) as response:
-        return await response.read()
+    async with aiohttp.ClientSession() as session:
+        async with session.post(f"{api_url}/image/generate", json=data) as response:
+            result = await response.json()
+            return result
 
 
 async def download_image(session, image_url, filename):
@@ -82,38 +82,44 @@ async def vdxl(c: Client, message: Message):
             )
 
         data = {
-            "prompt": prompt,
             "model": model,
-            "negative_prompt": "canvas frame, cartoon, ((disfigured)), ((bad art)), ((deformed)),((extra limbs)),((close up)),((b&w)), weird colors, blurry, (((duplicate))), ((morbid)), ((mutilated)), [out of frame], extra fingers, mutated hands, ((poorly drawn hands)), ((poorly drawn face)), (((mutation))), (((deformed))), ((ugly)), blurry, ((bad anatomy)), (((bad proportions))), ((extra limbs)), cloned face, (((disfigured))), out of frame, ugly, extra limbs, (bad anatomy), gross proportions, (malformed limbs), ((missing arms)), ((missing legs)), (((extra arms))), (((extra legs))), mutated hands, (fused fingers), (too many fingers), (((long neck))), Photoshop, video game, ugly, tiling, poorly drawn hands, poorly drawn feet, poorly drawn face, out of frame, mutation, mutated, extra limbs, extra legs, extra arms, disfigured, deformed, cross-eye, body out of frame, blurry, bad art, bad anatomy",
+            "prompt": prompt,
+            "negative_prompt": "bad quality",
             "token": vca_api_key,
-            "image_count": 1,
+            "sampler": "Euler",
+            "steps": 30,
             "width": 1024,
             "height": 1024,
-            "steps": 30,
-            "cfg_scale": 8,
-            "sampler": "Euler",
-            "upscale": True,
+            "cfg_scale": 7,
+            "loras": {},
+            "seed": -1,
+            "stream": False,
         }
 
         response = await generate_images(data)
-
         try:
-            with open("generated_image.png", "wb") as f:
-                f.write(response)
-            await message.delete()
-            await c.send_document(
-                chat_id,
-                document="generated_image.png",
-                caption=f"<b>Prompt: </b><code>{prompt}</code>\n<b>Model: </b><code>{model}</code>",
-            )
-            os.remove("generated_image.png")
+            image_url = response["image_url"]
+            async with aiohttp.ClientSession() as session:
+                filename = f"{chat_id}_{message.id}.png"
+                await message.edit_text(f"<code>Downloading Image...</code>")
+                await download_image(session, image_url, filename)
+                await message.edit_text(f"<code>Uploading Image...</code>")
+                await c.send_document(
+                    chat_id,
+                    filename,
+                    caption=f"<b>Prompt: </b><code>{prompt}</code>\n<b>Model: </b><code>{model}</code>",
+                )
+                os.remove(filename)
+                await message.delete()
         except KeyError:
             try:
                 error = response["error"]
-                await message.edit_text(f"<code>{error}</code>")
+                mes = response["message"]
+                return await message.edit_text(f"<b>{error}: </b><code>{mes}</code>")
             except KeyError:
-                detail = response["detail"]
-                await message.edit_text(f"<code>{detail}</code>")
+                details = response["detail"]
+                mes = response["message"]
+                return await message.edit_text(f"<b>{details}: </b><code>{mes}</code>")
 
     except MessageTooLong:
         await message.edit_text(
@@ -139,14 +145,14 @@ async def vdxl2(c: Client, message: Message):
         if not message.reply_to_message and len(message.command) > 2:
             model_found = False
             for m in models:
-                if message.text.startswith(f"{prefix}vdxl {m}"):
+                if message.text.startswith(f"{prefix}vdxl2 {m}"):
                     model = m
-                    prompt = message.text[len(f"{prefix}vdxl {m}") :].strip()
+                    prompt = message.text[len(f"{prefix}vdxl2 {m}") :].strip()
                     model_found = True
                     break
             if not model_found:
                 return await message.edit_text(
-                    f"<b>Usage: </b><code>{prefix}vdxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
+                    f"<b>Usage: </b><code>{prefix}vdxl2 [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
                 )
         elif message.reply_to_message and len(message.command) > 1:
             model = message.text.split(maxsplit=1)[1]
@@ -155,46 +161,52 @@ async def vdxl2(c: Client, message: Message):
                 prompt = message.reply_to_message.text
             else:
                 return await message.edit_text(
-                    f"<b>Usage: </b><code>{prefix}vdxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
+                    f"<b>Usage: </b><code>{prefix}vdxl2 [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
                 )
         else:
             return await message.edit_text(
-                f"<b>Usage: </b><code>{prefix}vdxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
+                f"<b>Usage: </b><code>{prefix}vdxl2 [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
             )
 
         data = {
-            "prompt": prompt,
             "model": model,
-            "negative_prompt": "canvas frame, cartoon, ((disfigured)), ((bad art)), ((deformed)),((extra limbs)),((close up)),((b&w)), weird colors, blurry, (((duplicate))), ((morbid)), ((mutilated)), [out of frame], extra fingers, mutated hands, ((poorly drawn hands)), ((poorly drawn face)), (((mutation))), (((deformed))), ((ugly)), blurry, ((bad anatomy)), (((bad proportions))), ((extra limbs)), cloned face, (((disfigured))), out of frame, ugly, extra limbs, (bad anatomy), gross proportions, (malformed limbs), ((missing arms)), ((missing legs)), (((extra arms))), (((extra legs))), mutated hands, (fused fingers), (too many fingers), (((long neck))), Photoshop, video game, ugly, tiling, poorly drawn hands, poorly drawn feet, poorly drawn face, out of frame, mutation, mutated, extra limbs, extra legs, extra arms, disfigured, deformed, cross-eye, body out of frame, blurry, bad art, bad anatomy",
+            "prompt": prompt,
+            "negative_prompt": "bad quality",
             "token": vca_api_key,
-            "image_count": 1,
+            "sampler": "Euler",
+            "steps": 30,
             "width": 1024,
             "height": 1024,
-            "steps": 30,
-            "cfg_scale": 8,
-            "sampler": "Euler",
-            "upscale": True,
+            "cfg_scale": 7,
+            "loras": {},
+            "seed": -1,
+            "stream": False,
         }
 
         response = await generate_images(data)
-
         try:
-            with open("generated_image.png", "wb") as f:
-                f.write(response)
-            await message.delete()
-            await c.send_document(
-                chat_id,
-                document="generated_image.png",
-                caption=f"<b>Prompt: </b><code>{prompt}</code>\n<b>Model: </b><code>{model}</code>",
-            )
-            os.remove("generated_image.png")
+            image_url = response["image_url"]
+            async with aiohttp.ClientSession() as session:
+                filename = f"{chat_id}_{message.id}.png"
+                await message.edit_text(f"<code>Downloading Image...</code>")
+                await download_image(session, image_url, filename)
+                await message.edit_text(f"<code>Uploading Image...</code>")
+                await c.send_document(
+                    chat_id,
+                    filename,
+                    caption=f"<b>Prompt: </b><code>{prompt}</code>\n<b>Model: </b><code>{model}</code>",
+                )
+                os.remove(filename)
+                await message.delete()
         except KeyError:
             try:
                 error = response["error"]
-                await message.edit_text(f"<code>{error}</code>")
+                mes = response["message"]
+                return await message.edit_text(f"<b>{error}: </b><code>{mes}</code>")
             except KeyError:
-                detail = response["detail"]
-                await message.edit_text(f"<code>{detail}</code>")
+                details = response["detail"]
+                mes = response["message"]
+                return await message.edit_text(f"<b>{details}: </b><code>{mes}</code>")
 
     except MessageTooLong:
         await message.edit_text(
@@ -206,7 +218,7 @@ async def vdxl2(c: Client, message: Message):
         await message.edit_text(f"An error occurred: {format_exc(e)}")
 
 
-@Client.on_message(filters.command("vdxl2", prefix) & filters.me)
+@Client.on_message(filters.command("vdxl3", prefix) & filters.me)
 async def vdxl3(c: Client, message: Message):
     """Text to Image Generation Using SDXL"""
 
@@ -220,14 +232,14 @@ async def vdxl3(c: Client, message: Message):
         if not message.reply_to_message and len(message.command) > 2:
             model_found = False
             for m in models:
-                if message.text.startswith(f"{prefix}vdxl {m}"):
+                if message.text.startswith(f"{prefix}vdxl3 {m}"):
                     model = m
-                    prompt = message.text[len(f"{prefix}vdxl {m}") :].strip()
+                    prompt = message.text[len(f"{prefix}vdxl3 {m}") :].strip()
                     model_found = True
                     break
             if not model_found:
                 return await message.edit_text(
-                    f"<b>Usage: </b><code>{prefix}vdxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
+                    f"<b>Usage: </b><code>{prefix}vdxl3 [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
                 )
         elif message.reply_to_message and len(message.command) > 1:
             model = message.text.split(maxsplit=1)[1]
@@ -236,46 +248,52 @@ async def vdxl3(c: Client, message: Message):
                 prompt = message.reply_to_message.text
             else:
                 return await message.edit_text(
-                    f"<b>Usage: </b><code>{prefix}vdxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
+                    f"<b>Usage: </b><code>{prefix}vdxl3 [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
                 )
         else:
             return await message.edit_text(
-                f"<b>Usage: </b><code>{prefix}vdxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
+                f"<b>Usage: </b><code>{prefix}vdxl3 [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
             )
 
         data = {
-            "prompt": prompt,
             "model": model,
-            "negative_prompt": "canvas frame, cartoon, ((disfigured)), ((bad art)), ((deformed)),((extra limbs)),((close up)),((b&w)), weird colors, blurry, (((duplicate))), ((morbid)), ((mutilated)), [out of frame], extra fingers, mutated hands, ((poorly drawn hands)), ((poorly drawn face)), (((mutation))), (((deformed))), ((ugly)), blurry, ((bad anatomy)), (((bad proportions))), ((extra limbs)), cloned face, (((disfigured))), out of frame, ugly, extra limbs, (bad anatomy), gross proportions, (malformed limbs), ((missing arms)), ((missing legs)), (((extra arms))), (((extra legs))), mutated hands, (fused fingers), (too many fingers), (((long neck))), Photoshop, video game, ugly, tiling, poorly drawn hands, poorly drawn feet, poorly drawn face, out of frame, mutation, mutated, extra limbs, extra legs, extra arms, disfigured, deformed, cross-eye, body out of frame, blurry, bad art, bad anatomy",
+            "prompt": prompt,
+            "negative_prompt": "bad quality",
             "token": vca_api_key,
-            "image_count": 1,
+            "sampler": "Euler",
+            "steps": 30,
             "width": 1024,
             "height": 1024,
-            "steps": 30,
-            "cfg_scale": 8,
-            "sampler": "Euler",
-            "upscale": True,
+            "cfg_scale": 7,
+            "loras": {},
+            "seed": -1,
+            "stream": False,
         }
 
         response = await generate_images(data)
-
         try:
-            with open("generated_image.png", "wb") as f:
-                f.write(response)
-            await message.delete()
-            await c.send_document(
-                chat_id,
-                document="generated_image.png",
-                caption=f"<b>Prompt: </b><code>{prompt}</code>\n<b>Model: </b><code>{model}</code>",
-            )
-            os.remove("generated_image.png")
+            image_url = response["image_url"]
+            async with aiohttp.ClientSession() as session:
+                filename = f"{chat_id}_{message.id}.png"
+                await message.edit_text(f"<code>Downloading Image...</code>")
+                await download_image(session, image_url, filename)
+                await message.edit_text(f"<code>Uploading Image...</code>")
+                await c.send_document(
+                    chat_id,
+                    filename,
+                    caption=f"<b>Prompt: </b><code>{prompt}</code>\n<b>Model: </b><code>{model}</code>",
+                )
+                os.remove(filename)
+                await message.delete()
         except KeyError:
             try:
                 error = response["error"]
-                await message.edit_text(f"<code>{error}</code>")
+                mes = response["message"]
+                return await message.edit_text(f"<b>{error}: </b><code>{mes}</code>")
             except KeyError:
-                detail = response["detail"]
-                await message.edit_text(f"<code>{detail}</code>")
+                details = response["detail"]
+                mes = response["message"]
+                return await message.edit_text(f"<b>{details}: </b><code>{mes}</code>")
 
     except MessageTooLong:
         await message.edit_text(
@@ -301,14 +319,14 @@ async def vfxl(c: Client, message: Message):
         if not message.reply_to_message and len(message.command) > 2:
             model_found = False
             for m in models:
-                if message.text.startswith(f"{prefix}vdxl {m}"):
+                if message.text.startswith(f"{prefix}vfxl {m}"):
                     model = m
-                    prompt = message.text[len(f"{prefix}vdxl {m}") :].strip()
+                    prompt = message.text[len(f"{prefix}vfxl {m}") :].strip()
                     model_found = True
                     break
             if not model_found:
                 return await message.edit_text(
-                    f"<b>Usage: </b><code>{prefix}vdxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
+                    f"<b>Usage: </b><code>{prefix}vfxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
                 )
         elif message.reply_to_message and len(message.command) > 1:
             model = message.text.split(maxsplit=1)[1]
@@ -317,46 +335,52 @@ async def vfxl(c: Client, message: Message):
                 prompt = message.reply_to_message.text
             else:
                 return await message.edit_text(
-                    f"<b>Usage: </b><code>{prefix}vdxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
+                    f"<b>Usage: </b><code>{prefix}vfxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
                 )
         else:
             return await message.edit_text(
-                f"<b>Usage: </b><code>{prefix}vdxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
+                f"<b>Usage: </b><code>{prefix}vfxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
             )
 
         data = {
-            "prompt": prompt,
             "model": model,
-            "negative_prompt": "canvas frame, cartoon, ((disfigured)), ((bad art)), ((deformed)),((extra limbs)),((close up)),((b&w)), weird colors, blurry, (((duplicate))), ((morbid)), ((mutilated)), [out of frame], extra fingers, mutated hands, ((poorly drawn hands)), ((poorly drawn face)), (((mutation))), (((deformed))), ((ugly)), blurry, ((bad anatomy)), (((bad proportions))), ((extra limbs)), cloned face, (((disfigured))), out of frame, ugly, extra limbs, (bad anatomy), gross proportions, (malformed limbs), ((missing arms)), ((missing legs)), (((extra arms))), (((extra legs))), mutated hands, (fused fingers), (too many fingers), (((long neck))), Photoshop, video game, ugly, tiling, poorly drawn hands, poorly drawn feet, poorly drawn face, out of frame, mutation, mutated, extra limbs, extra legs, extra arms, disfigured, deformed, cross-eye, body out of frame, blurry, bad art, bad anatomy",
+            "prompt": prompt,
+            "negative_prompt": "bad quality",
             "token": vca_api_key,
-            "image_count": 1,
+            "sampler": "Euler",
+            "steps": 30,
             "width": 1024,
             "height": 1024,
-            "steps": 30,
             "cfg_scale": 1,
-            "sampler": "Euler",
-            "upscale": True,
+            "loras": {},
+            "seed": -1,
+            "stream": False,
         }
 
         response = await generate_images(data)
-
         try:
-            with open("generated_image.png", "wb") as f:
-                f.write(response)
-            await message.delete()
-            await c.send_document(
-                chat_id,
-                document="generated_image.png",
-                caption=f"<b>Prompt: </b><code>{prompt}</code>\n<b>Model: </b><code>{model}</code>",
-            )
-            os.remove("generated_image.png")
+            image_url = response["image_url"]
+            async with aiohttp.ClientSession() as session:
+                filename = f"{chat_id}_{message.id}.png"
+                await message.edit_text(f"<code>Downloading Image...</code>")
+                await download_image(session, image_url, filename)
+                await message.edit_text(f"<code>Uploading Image...</code>")
+                await c.send_document(
+                    chat_id,
+                    filename,
+                    caption=f"<b>Prompt: </b><code>{prompt}</code>\n<b>Model: </b><code>{model}</code>",
+                )
+                os.remove(filename)
+                await message.delete()
         except KeyError:
             try:
                 error = response["error"]
-                await message.edit_text(f"<code>{error}</code>")
+                mes = response["message"]
+                return await message.edit_text(f"<b>{error}: </b><code>{mes}</code>")
             except KeyError:
-                detail = response["detail"]
-                await message.edit_text(f"<code>{detail}</code>")
+                details = response["detail"]
+                mes = response["message"]
+                return await message.edit_text(f"<b>{details}: </b><code>{mes}</code>")
 
     except MessageTooLong:
         await message.edit_text(
@@ -382,14 +406,14 @@ async def vpxl(c: Client, message: Message):
         if not message.reply_to_message and len(message.command) > 2:
             model_found = False
             for m in models:
-                if message.text.startswith(f"{prefix}vdxl {m}"):
+                if message.text.startswith(f"{prefix}vpxl {m}"):
                     model = m
-                    prompt = message.text[len(f"{prefix}vdxl {m}") :].strip()
+                    prompt = message.text[len(f"{prefix}vpxl {m}") :].strip()
                     model_found = True
                     break
             if not model_found:
                 return await message.edit_text(
-                    f"<b>Usage: </b><code>{prefix}vdxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
+                    f"<b>Usage: </b><code>{prefix}vpxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
                 )
         elif message.reply_to_message and len(message.command) > 1:
             model = message.text.split(maxsplit=1)[1]
@@ -398,46 +422,52 @@ async def vpxl(c: Client, message: Message):
                 prompt = message.reply_to_message.text
             else:
                 return await message.edit_text(
-                    f"<b>Usage: </b><code>{prefix}vdxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
+                    f"<b>Usage: </b><code>{prefix}vpxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
                 )
         else:
             return await message.edit_text(
-                f"<b>Usage: </b><code>{prefix}vdxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
+                f"<b>Usage: </b><code>{prefix}vpxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
             )
 
         data = {
-            "prompt": prompt,
             "model": model,
-            "negative_prompt": "canvas frame, cartoon, ((disfigured)), ((bad art)), ((deformed)),((extra limbs)),((close up)),((b&w)), weird colors, blurry, (((duplicate))), ((morbid)), ((mutilated)), [out of frame], extra fingers, mutated hands, ((poorly drawn hands)), ((poorly drawn face)), (((mutation))), (((deformed))), ((ugly)), blurry, ((bad anatomy)), (((bad proportions))), ((extra limbs)), cloned face, (((disfigured))), out of frame, ugly, extra limbs, (bad anatomy), gross proportions, (malformed limbs), ((missing arms)), ((missing legs)), (((extra arms))), (((extra legs))), mutated hands, (fused fingers), (too many fingers), (((long neck))), Photoshop, video game, ugly, tiling, poorly drawn hands, poorly drawn feet, poorly drawn face, out of frame, mutation, mutated, extra limbs, extra legs, extra arms, disfigured, deformed, cross-eye, body out of frame, blurry, bad art, bad anatomy",
+            "prompt": prompt,
+            "negative_prompt": "bad quality",
             "token": vca_api_key,
-            "image_count": 1,
+            "sampler": "Euler",
+            "steps": 30,
             "width": 1024,
             "height": 1024,
-            "steps": 30,
-            "cfg_scale": 8,
-            "sampler": "Euler",
-            "upscale": True,
+            "cfg_scale": 7,
+            "loras": {},
+            "seed": -1,
+            "stream": False,
         }
 
         response = await generate_images(data)
-
         try:
-            with open("generated_image.png", "wb") as f:
-                f.write(response)
-            await message.delete()
-            await c.send_document(
-                chat_id,
-                document="generated_image.png",
-                caption=f"<b>Prompt: </b><code>{prompt}</code>\n<b>Model: </b><code>{model}</code>",
-            )
-            os.remove("generated_image.png")
+            image_url = response["image_url"]
+            async with aiohttp.ClientSession() as session:
+                filename = f"{chat_id}_{message.id}.png"
+                await message.edit_text(f"<code>Downloading Image...</code>")
+                await download_image(session, image_url, filename)
+                await message.edit_text(f"<code>Uploading Image...</code>")
+                await c.send_document(
+                    chat_id,
+                    filename,
+                    caption=f"<b>Prompt: </b><code>{prompt}</code>\n<b>Model: </b><code>{model}</code>",
+                )
+                os.remove(filename)
+                await message.delete()
         except KeyError:
             try:
                 error = response["error"]
-                await message.edit_text(f"<code>{error}</code>")
+                mes = response["message"]
+                return await message.edit_text(f"<b>{error}: </b><code>{mes}</code>")
             except KeyError:
-                detail = response["detail"]
-                await message.edit_text(f"<code>{detail}</code>")
+                details = response["detail"]
+                mes = response["message"]
+                return await message.edit_text(f"<b>{details}: </b><code>{mes}</code>")
 
     except MessageTooLong:
         await message.edit_text(
@@ -463,14 +493,14 @@ async def vpixl(c: Client, message: Message):
         if not message.reply_to_message and len(message.command) > 2:
             model_found = False
             for m in models:
-                if message.text.startswith(f"{prefix}vdxl {m}"):
+                if message.text.startswith(f"{prefix}vpixl {m}"):
                     model = m
-                    prompt = message.text[len(f"{prefix}vdxl {m}") :].strip()
+                    prompt = message.text[len(f"{prefix}vpixl {m}") :].strip()
                     model_found = True
                     break
             if not model_found:
                 return await message.edit_text(
-                    f"<b>Usage: </b><code>{prefix}vdxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
+                    f"<b>Usage: </b><code>{prefix}vpixl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
                 )
         elif message.reply_to_message and len(message.command) > 1:
             model = message.text.split(maxsplit=1)[1]
@@ -479,46 +509,52 @@ async def vpixl(c: Client, message: Message):
                 prompt = message.reply_to_message.text
             else:
                 return await message.edit_text(
-                    f"<b>Usage: </b><code>{prefix}vdxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
+                    f"<b>Usage: </b><code>{prefix}vpixl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
                 )
         else:
             return await message.edit_text(
-                f"<b>Usage: </b><code>{prefix}vdxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
+                f"<b>Usage: </b><code>{prefix}vpixl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
             )
 
         data = {
-            "prompt": prompt,
             "model": model,
-            "negative_prompt": "canvas frame, cartoon, ((disfigured)), ((bad art)), ((deformed)),((extra limbs)),((close up)),((b&w)), weird colors, blurry, (((duplicate))), ((morbid)), ((mutilated)), [out of frame], extra fingers, mutated hands, ((poorly drawn hands)), ((poorly drawn face)), (((mutation))), (((deformed))), ((ugly)), blurry, ((bad anatomy)), (((bad proportions))), ((extra limbs)), cloned face, (((disfigured))), out of frame, ugly, extra limbs, (bad anatomy), gross proportions, (malformed limbs), ((missing arms)), ((missing legs)), (((extra arms))), (((extra legs))), mutated hands, (fused fingers), (too many fingers), (((long neck))), Photoshop, video game, ugly, tiling, poorly drawn hands, poorly drawn feet, poorly drawn face, out of frame, mutation, mutated, extra limbs, extra legs, extra arms, disfigured, deformed, cross-eye, body out of frame, blurry, bad art, bad anatomy",
+            "prompt": prompt,
+            "negative_prompt": "bad quality",
             "token": vca_api_key,
-            "image_count": 1,
+            "sampler": "Euler",
+            "steps": 30,
             "width": 1024,
             "height": 1024,
-            "steps": 30,
-            "cfg_scale": 8,
-            "sampler": "Euler",
-            "upscale": True,
+            "cfg_scale": 7,
+            "loras": {},
+            "seed": -1,
+            "stream": False,
         }
 
         response = await generate_images(data)
-
         try:
-            with open("generated_image.png", "wb") as f:
-                f.write(response)
-            await message.delete()
-            await c.send_document(
-                chat_id,
-                document="generated_image.png",
-                caption=f"<b>Prompt: </b><code>{prompt}</code>\n<b>Model: </b><code>{model}</code>",
-            )
-            os.remove("generated_image.png")
+            image_url = response["image_url"]
+            async with aiohttp.ClientSession() as session:
+                filename = f"{chat_id}_{message.id}.png"
+                await message.edit_text(f"<code>Downloading Image...</code>")
+                await download_image(session, image_url, filename)
+                await message.edit_text(f"<code>Uploading Image...</code>")
+                await c.send_document(
+                    chat_id,
+                    filename,
+                    caption=f"<b>Prompt: </b><code>{prompt}</code>\n<b>Model: </b><code>{model}</code>",
+                )
+                os.remove(filename)
+                await message.delete()
         except KeyError:
             try:
                 error = response["error"]
-                await message.edit_text(f"<code>{error}</code>")
+                mes = response["message"]
+                return await message.edit_text(f"<b>{error}: </b><code>{mes}</code>")
             except KeyError:
-                detail = response["detail"]
-                await message.edit_text(f"<code>{detail}</code>")
+                details = response["detail"]
+                mes = response["message"]
+                return await message.edit_text(f"<b>{details}: </b><code>{mes}</code>")
 
     except MessageTooLong:
         await message.edit_text(
@@ -544,14 +580,14 @@ async def vkxl(c: Client, message: Message):
         if not message.reply_to_message and len(message.command) > 2:
             model_found = False
             for m in models:
-                if message.text.startswith(f"{prefix}vdxl {m}"):
+                if message.text.startswith(f"{prefix}vkxl {m}"):
                     model = m
-                    prompt = message.text[len(f"{prefix}vdxl {m}") :].strip()
+                    prompt = message.text[len(f"{prefix}vkxl {m}") :].strip()
                     model_found = True
                     break
             if not model_found:
                 return await message.edit_text(
-                    f"<b>Usage: </b><code>{prefix}vdxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
+                    f"<b>Usage: </b><code>{prefix}vkxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
                 )
         elif message.reply_to_message and len(message.command) > 1:
             model = message.text.split(maxsplit=1)[1]
@@ -560,46 +596,52 @@ async def vkxl(c: Client, message: Message):
                 prompt = message.reply_to_message.text
             else:
                 return await message.edit_text(
-                    f"<b>Usage: </b><code>{prefix}vdxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
+                    f"<b>Usage: </b><code>{prefix}vkxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
                 )
         else:
             return await message.edit_text(
-                f"<b>Usage: </b><code>{prefix}vdxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
+                f"<b>Usage: </b><code>{prefix}vkxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
             )
 
         data = {
-            "prompt": prompt,
             "model": model,
-            "negative_prompt": "canvas frame, cartoon, ((disfigured)), ((bad art)), ((deformed)),((extra limbs)),((close up)),((b&w)), weird colors, blurry, (((duplicate))), ((morbid)), ((mutilated)), [out of frame], extra fingers, mutated hands, ((poorly drawn hands)), ((poorly drawn face)), (((mutation))), (((deformed))), ((ugly)), blurry, ((bad anatomy)), (((bad proportions))), ((extra limbs)), cloned face, (((disfigured))), out of frame, ugly, extra limbs, (bad anatomy), gross proportions, (malformed limbs), ((missing arms)), ((missing legs)), (((extra arms))), (((extra legs))), mutated hands, (fused fingers), (too many fingers), (((long neck))), Photoshop, video game, ugly, tiling, poorly drawn hands, poorly drawn feet, poorly drawn face, out of frame, mutation, mutated, extra limbs, extra legs, extra arms, disfigured, deformed, cross-eye, body out of frame, blurry, bad art, bad anatomy",
+            "prompt": prompt,
+            "negative_prompt": "bad quality",
             "token": vca_api_key,
-            "image_count": 1,
+            "sampler": "Euler",
+            "steps": 30,
             "width": 1024,
             "height": 1024,
-            "steps": 30,
-            "cfg_scale": 8,
-            "sampler": "Euler",
-            "upscale": True,
+            "cfg_scale": 7,
+            "loras": {},
+            "seed": -1,
+            "stream": False,
         }
 
         response = await generate_images(data)
-
         try:
-            with open("generated_image.png", "wb") as f:
-                f.write(response)
-            await message.delete()
-            await c.send_document(
-                chat_id,
-                document="generated_image.png",
-                caption=f"<b>Prompt: </b><code>{prompt}</code>\n<b>Model: </b><code>{model}</code>",
-            )
-            os.remove("generated_image.png")
+            image_url = response["image_url"]
+            async with aiohttp.ClientSession() as session:
+                filename = f"{chat_id}_{message.id}.png"
+                await message.edit_text(f"<code>Downloading Image...</code>")
+                await download_image(session, image_url, filename)
+                await message.edit_text(f"<code>Uploading Image...</code>")
+                await c.send_document(
+                    chat_id,
+                    filename,
+                    caption=f"<b>Prompt: </b><code>{prompt}</code>\n<b>Model: </b><code>{model}</code>",
+                )
+                os.remove(filename)
+                await message.delete()
         except KeyError:
             try:
                 error = response["error"]
-                await message.edit_text(f"<code>{error}</code>")
+                mes = response["message"]
+                return await message.edit_text(f"<b>{error}: </b><code>{mes}</code>")
             except KeyError:
-                detail = response["detail"]
-                await message.edit_text(f"<code>{detail}</code>")
+                details = response["detail"]
+                mes = response["message"]
+                return await message.edit_text(f"<b>{details}: </b><code>{mes}</code>")
 
     except MessageTooLong:
         await message.edit_text(
