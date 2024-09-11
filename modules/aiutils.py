@@ -1,4 +1,3 @@
-import errno
 import os
 
 import aiohttp
@@ -30,10 +29,11 @@ async def generate_gifs(data):
 
 
 async def generate_images(data):
-    async with aiohttp.ClientSession() as session:
-        async with session.post(f"{api_url}/image/generate", json=data) as response:
-            result = await response.json()
-            return result
+    async with aiohttp.ClientSession() as session, session.post(
+        f"{api_url}/image/generate", json=data
+    ) as response:
+        result = await response.json()
+        return result
 
 
 async def download_image(session, image_url, filename):
@@ -101,9 +101,9 @@ async def vdxl(c: Client, message: Message):
             image_url = response["image_url"]
             async with aiohttp.ClientSession() as session:
                 filename = f"{chat_id}_{message.id}.png"
-                await message.edit_text(f"<code>Downloading Image...</code>")
+                await message.edit_text("<code>Downloading Image...</code>")
                 await download_image(session, image_url, filename)
-                await message.edit_text(f"<code>Uploading Image...</code>")
+                await message.edit_text("<code>Uploading Image...</code>")
                 await c.send_document(
                     chat_id,
                     filename,
@@ -188,9 +188,9 @@ async def vdxl2(c: Client, message: Message):
             image_url = response["image_url"]
             async with aiohttp.ClientSession() as session:
                 filename = f"{chat_id}_{message.id}.png"
-                await message.edit_text(f"<code>Downloading Image...</code>")
+                await message.edit_text("<code>Downloading Image...</code>")
                 await download_image(session, image_url, filename)
-                await message.edit_text(f"<code>Uploading Image...</code>")
+                await message.edit_text("<code>Uploading Image...</code>")
                 await c.send_document(
                     chat_id,
                     filename,
@@ -275,9 +275,9 @@ async def vdxl3(c: Client, message: Message):
             image_url = response["image_url"]
             async with aiohttp.ClientSession() as session:
                 filename = f"{chat_id}_{message.id}.png"
-                await message.edit_text(f"<code>Downloading Image...</code>")
+                await message.edit_text("<code>Downloading Image...</code>")
                 await download_image(session, image_url, filename)
-                await message.edit_text(f"<code>Uploading Image...</code>")
+                await message.edit_text("<code>Uploading Image...</code>")
                 await c.send_document(
                     chat_id,
                     filename,
@@ -362,9 +362,9 @@ async def vfxl(c: Client, message: Message):
             image_url = response["image_url"]
             async with aiohttp.ClientSession() as session:
                 filename = f"{chat_id}_{message.id}.png"
-                await message.edit_text(f"<code>Downloading Image...</code>")
+                await message.edit_text("<code>Downloading Image...</code>")
                 await download_image(session, image_url, filename)
-                await message.edit_text(f"<code>Uploading Image...</code>")
+                await message.edit_text("<code>Uploading Image...</code>")
                 await c.send_document(
                     chat_id,
                     filename,
@@ -449,9 +449,9 @@ async def vpxl(c: Client, message: Message):
             image_url = response["image_url"]
             async with aiohttp.ClientSession() as session:
                 filename = f"{chat_id}_{message.id}.png"
-                await message.edit_text(f"<code>Downloading Image...</code>")
+                await message.edit_text("<code>Downloading Image...</code>")
                 await download_image(session, image_url, filename)
-                await message.edit_text(f"<code>Uploading Image...</code>")
+                await message.edit_text("<code>Uploading Image...</code>")
                 await c.send_document(
                     chat_id,
                     filename,
@@ -536,9 +536,9 @@ async def vpixl(c: Client, message: Message):
             image_url = response["image_url"]
             async with aiohttp.ClientSession() as session:
                 filename = f"{chat_id}_{message.id}.png"
-                await message.edit_text(f"<code>Downloading Image...</code>")
+                await message.edit_text("<code>Downloading Image...</code>")
                 await download_image(session, image_url, filename)
-                await message.edit_text(f"<code>Uploading Image...</code>")
+                await message.edit_text("<code>Uploading Image...</code>")
                 await c.send_document(
                     chat_id,
                     filename,
@@ -623,9 +623,9 @@ async def vkxl(c: Client, message: Message):
             image_url = response["image_url"]
             async with aiohttp.ClientSession() as session:
                 filename = f"{chat_id}_{message.id}.png"
-                await message.edit_text(f"<code>Downloading Image...</code>")
+                await message.edit_text("<code>Downloading Image...</code>")
                 await download_image(session, image_url, filename)
-                await message.edit_text(f"<code>Uploading Image...</code>")
+                await message.edit_text("<code>Uploading Image...</code>")
                 await c.send_document(
                     chat_id,
                     filename,
