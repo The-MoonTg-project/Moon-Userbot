@@ -508,7 +508,7 @@ async def vfxl(c: Client, message: Message):
             "steps": 30,
             "width": 1024,
             "height": 1024,
-            "cfg_scale": 7,
+            "cfg_scale": 1,
             "loras": {},
             "seed": -1,
             "init_image": image_data if img2img else None,
