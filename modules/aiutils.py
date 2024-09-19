@@ -1,6 +1,27 @@
+#  Moon-Userbot - telegram userbot
+#  Copyright (C) 2020-present Moon Userbot Organization
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#  GNU General Public License for more details.
+
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 import os
 
 import aiohttp
+import base64
 from pyrogram import Client, filters
 from pyrogram.errors import MessageTooLong
 from pyrogram.types import Message
@@ -52,6 +73,7 @@ async def vdxl(c: Client, message: Message):
     await message.edit_text("<code>Please Wait...</code>")
 
     try:
+        img2img = False
         chat_id = message.chat.id
         model_category = "SDXL-1.0"
         models = await fetch_models(category=model_category)
@@ -68,7 +90,11 @@ async def vdxl(c: Client, message: Message):
                 return await message.edit_text(
                     f"<b>Usage: </b><code>{prefix}vdxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
                 )
-        elif message.reply_to_message and len(message.command) > 1:
+        elif (
+            message.reply_to_message
+            and len(message.command) > 1
+            and not message.reply_to_message.photo
+        ):
             model = message.text.split(maxsplit=1)[1]
             print(model)
             if model in models:
@@ -77,10 +103,44 @@ async def vdxl(c: Client, message: Message):
                 return await message.edit_text(
                     f"<b>Usage: </b><code>{prefix}vdxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
                 )
+        elif (
+            message.reply_to_message
+            and message.reply_to_message.photo
+            and len(message.command) > 1
+        ):
+            img2img = True
+            model = message.text.split(maxsplit=1)[1]
+            if model in models:
+                prompt = message.reply_to_message.caption
+                image_path = await message.reply_to_message.download()
+                with open(image_path, "rb") as image_file:
+                    image_data = base64.b64encode(image_file.read()).decode("utf-8")
+            else:
+                return await message.edit_text(
+                    f"<b>Usage: </b><code>{prefix}vdxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
+                )
         else:
             return await message.edit_text(
                 f"<b>Usage: </b><code>{prefix}vdxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
             )
+
+        data_img2img = {
+            "model": model,
+            "prompt": prompt,
+            "negative_prompt": "bad quality",
+            "token": vca_api_key,
+            "sampler": "Euler",
+            "steps": 30,
+            "width": 1024,
+            "height": 1024,
+            "cfg_scale": 7,
+            "loras": {},
+            "seed": -1,
+            "init_image": image_data if img2img else None,
+            "denoising_strength": 0.7,
+            "stream": False,
+            "nsfw_filter": False,
+        }
 
         data = {
             "model": model,
@@ -95,9 +155,10 @@ async def vdxl(c: Client, message: Message):
             "loras": {},
             "seed": -1,
             "stream": False,
+            "nsfw_filter": False,
         }
 
-        response = await generate_images(data)
+        response = await generate_images(data=data_img2img if img2img else data)
         try:
             image_url = response["image_url"]
             async with aiohttp.ClientSession() as session:
@@ -111,6 +172,8 @@ async def vdxl(c: Client, message: Message):
                     caption=f"<b>Prompt: </b><code>{prompt}</code>\n<b>Model: </b><code>{model}</code>",
                 )
                 os.remove(filename)
+                if img2img:
+                    os.remove(image_path)
                 await message.delete()
         except KeyError:
             try:
@@ -135,6 +198,7 @@ async def vdxl(c: Client, message: Message):
 @Client.on_message(filters.command("vdxl2", prefix) & filters.me)
 async def vdxl2(c: Client, message: Message):
     """Text to Image Generation Using SDXL"""
+    img2img = False
 
     await message.edit_text("<code>Please Wait...</code>")
 
@@ -164,10 +228,44 @@ async def vdxl2(c: Client, message: Message):
                 return await message.edit_text(
                     f"<b>Usage: </b><code>{prefix}vdxl2 [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
                 )
+        elif (
+            message.reply_to_message
+            and message.reply_to_message.photo
+            and len(message.command) > 1
+        ):
+            img2img = True
+            model = message.text.split(maxsplit=1)[1]
+            if model in models:
+                prompt = message.reply_to_message.caption
+                image_path = await message.reply_to_message.download()
+                with open(image_path, "rb") as image_file:
+                    image_data = base64.b64encode(image_file.read()).decode("utf-8")
+            else:
+                return await message.edit_text(
+                    f"<b>Usage: </b><code>{prefix}vdxl2 [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
+                )
         else:
             return await message.edit_text(
                 f"<b>Usage: </b><code>{prefix}vdxl2 [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
             )
+
+        data_img2img = {
+            "model": model,
+            "prompt": prompt,
+            "negative_prompt": "bad quality",
+            "token": vca_api_key,
+            "sampler": "Euler",
+            "steps": 30,
+            "width": 1024,
+            "height": 1024,
+            "cfg_scale": 7,
+            "loras": {},
+            "seed": -1,
+            "init_image": image_data if img2img else None,
+            "denoising_strength": 0.7,
+            "stream": False,
+            "nsfw_filter": False,
+        }
 
         data = {
             "model": model,
@@ -182,9 +280,10 @@ async def vdxl2(c: Client, message: Message):
             "loras": {},
             "seed": -1,
             "stream": False,
+            "nsfw_filter": False,
         }
 
-        response = await generate_images(data)
+        response = await generate_images(data_img2img if img2img else data)
         try:
             image_url = response["image_url"]
             async with aiohttp.ClientSession() as session:
@@ -198,6 +297,8 @@ async def vdxl2(c: Client, message: Message):
                     caption=f"<b>Prompt: </b><code>{prompt}</code>\n<b>Model: </b><code>{model}</code>",
                 )
                 os.remove(filename)
+                if img2img:
+                    os.remove(image_path)
                 await message.delete()
         except KeyError:
             try:
@@ -222,6 +323,7 @@ async def vdxl2(c: Client, message: Message):
 @Client.on_message(filters.command("vdxl3", prefix) & filters.me)
 async def vdxl3(c: Client, message: Message):
     """Text to Image Generation Using SDXL"""
+    img2img = False
 
     await message.edit_text("<code>Please Wait...</code>")
 
@@ -251,10 +353,44 @@ async def vdxl3(c: Client, message: Message):
                 return await message.edit_text(
                     f"<b>Usage: </b><code>{prefix}vdxl3 [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
                 )
+        elif (
+            message.reply_to_message
+            and message.reply_to_message.photo
+            and len(message.command) > 1
+        ):
+            img2img = True
+            model = message.text.split(maxsplit=1)[1]
+            if model in models:
+                prompt = message.reply_to_message.caption
+                image_path = await message.reply_to_message.download()
+                with open(image_path, "rb") as image_file:
+                    image_data = base64.b64encode(image_file.read()).decode("utf-8")
+            else:
+                return await message.edit_text(
+                    f"<b>Usage: </b><code>{prefix}vdxl3 [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
+                )
         else:
             return await message.edit_text(
                 f"<b>Usage: </b><code>{prefix}vdxl3 [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
             )
+
+        data_img2img = {
+            "model": model,
+            "prompt": prompt,
+            "negative_prompt": "bad quality",
+            "token": vca_api_key,
+            "sampler": "Euler",
+            "steps": 30,
+            "width": 1024,
+            "height": 1024,
+            "cfg_scale": 7,
+            "loras": {},
+            "seed": -1,
+            "init_image": image_data if img2img else None,
+            "denoising_strength": 0.7,
+            "stream": False,
+            "nsfw_filter": False,
+        }
 
         data = {
             "model": model,
@@ -269,9 +405,10 @@ async def vdxl3(c: Client, message: Message):
             "loras": {},
             "seed": -1,
             "stream": False,
+            "nsfw_filter": False,
         }
 
-        response = await generate_images(data)
+        response = await generate_images(data_img2img if img2img else data)
         try:
             image_url = response["image_url"]
             async with aiohttp.ClientSession() as session:
@@ -285,6 +422,8 @@ async def vdxl3(c: Client, message: Message):
                     caption=f"<b>Prompt: </b><code>{prompt}</code>\n<b>Model: </b><code>{model}</code>",
                 )
                 os.remove(filename)
+                if img2img:
+                    os.remove(image_path)
                 await message.delete()
         except KeyError:
             try:
@@ -309,6 +448,7 @@ async def vdxl3(c: Client, message: Message):
 @Client.on_message(filters.command("vfxl", prefix) & filters.me)
 async def vfxl(c: Client, message: Message):
     """Text to Image Generation Using SDXL"""
+    img2img = False
 
     await message.edit_text("<code>Please Wait...</code>")
 
@@ -338,10 +478,44 @@ async def vfxl(c: Client, message: Message):
                 return await message.edit_text(
                     f"<b>Usage: </b><code>{prefix}vfxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
                 )
+        elif (
+            message.reply_to_message
+            and message.reply_to_message.photo
+            and len(message.command) > 1
+        ):
+            img2img = True
+            model = message.text.split(maxsplit=1)[1]
+            if model in models:
+                prompt = message.reply_to_message.caption
+                image_path = await message.reply_to_message.download()
+                with open(image_path, "rb") as image_file:
+                    image_data = base64.b64encode(image_file.read()).decode("utf-8")
+            else:
+                return await message.edit_text(
+                    f"<b>Usage: </b><code>{prefix}vdxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
+                )
         else:
             return await message.edit_text(
                 f"<b>Usage: </b><code>{prefix}vfxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
             )
+
+        data_img2img = {
+            "model": model,
+            "prompt": prompt,
+            "negative_prompt": "bad quality",
+            "token": vca_api_key,
+            "sampler": "Euler",
+            "steps": 30,
+            "width": 1024,
+            "height": 1024,
+            "cfg_scale": 7,
+            "loras": {},
+            "seed": -1,
+            "init_image": image_data if img2img else None,
+            "denoising_strength": 0.7,
+            "stream": False,
+            "nsfw_filter": False,
+        }
 
         data = {
             "model": model,
@@ -356,9 +530,10 @@ async def vfxl(c: Client, message: Message):
             "loras": {},
             "seed": -1,
             "stream": False,
+            "nsfw_filter": False,
         }
 
-        response = await generate_images(data)
+        response = await generate_images(data_img2img if img2img else data)
         try:
             image_url = response["image_url"]
             async with aiohttp.ClientSession() as session:
@@ -372,6 +547,8 @@ async def vfxl(c: Client, message: Message):
                     caption=f"<b>Prompt: </b><code>{prompt}</code>\n<b>Model: </b><code>{model}</code>",
                 )
                 os.remove(filename)
+                if img2img:
+                    os.remove(image_path)
                 await message.delete()
         except KeyError:
             try:
@@ -396,6 +573,7 @@ async def vfxl(c: Client, message: Message):
 @Client.on_message(filters.command("vpxl", prefix) & filters.me)
 async def vpxl(c: Client, message: Message):
     """Text to Image Generation Using SDXL"""
+    img2img = False
 
     await message.edit_text("<code>Please Wait...</code>")
 
@@ -425,10 +603,44 @@ async def vpxl(c: Client, message: Message):
                 return await message.edit_text(
                     f"<b>Usage: </b><code>{prefix}vpxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
                 )
+        elif (
+            message.reply_to_message
+            and message.reply_to_message.photo
+            and len(message.command) > 1
+        ):
+            img2img = True
+            model = message.text.split(maxsplit=1)[1]
+            if model in models:
+                prompt = message.reply_to_message.caption
+                image_path = await message.reply_to_message.download()
+                with open(image_path, "rb") as image_file:
+                    image_data = base64.b64encode(image_file.read()).decode("utf-8")
+            else:
+                return await message.edit_text(
+                    f"<b>Usage: </b><code>{prefix}vpxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
+                )
         else:
             return await message.edit_text(
                 f"<b>Usage: </b><code>{prefix}vpxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
             )
+
+        data_img2img = {
+            "model": model,
+            "prompt": prompt,
+            "negative_prompt": "bad quality",
+            "token": vca_api_key,
+            "sampler": "Euler",
+            "steps": 30,
+            "width": 1024,
+            "height": 1024,
+            "cfg_scale": 7,
+            "loras": {},
+            "seed": -1,
+            "init_image": image_data if img2img else None,
+            "denoising_strength": 0.7,
+            "stream": False,
+            "nsfw_filter": False,
+        }
 
         data = {
             "model": model,
@@ -443,9 +655,10 @@ async def vpxl(c: Client, message: Message):
             "loras": {},
             "seed": -1,
             "stream": False,
+            "nsfw_filter": False,
         }
 
-        response = await generate_images(data)
+        response = await generate_images(data_img2img if img2img else data)
         try:
             image_url = response["image_url"]
             async with aiohttp.ClientSession() as session:
@@ -459,6 +672,8 @@ async def vpxl(c: Client, message: Message):
                     caption=f"<b>Prompt: </b><code>{prompt}</code>\n<b>Model: </b><code>{model}</code>",
                 )
                 os.remove(filename)
+                if img2img:
+                    os.remove(image_path)
                 await message.delete()
         except KeyError:
             try:
@@ -483,6 +698,7 @@ async def vpxl(c: Client, message: Message):
 @Client.on_message(filters.command("vpixl", prefix) & filters.me)
 async def vpixl(c: Client, message: Message):
     """Text to Image Generation Using SDXL"""
+    img2img = False
 
     await message.edit_text("<code>Please Wait...</code>")
 
@@ -512,10 +728,44 @@ async def vpixl(c: Client, message: Message):
                 return await message.edit_text(
                     f"<b>Usage: </b><code>{prefix}vpixl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
                 )
+        elif (
+            message.reply_to_message
+            and message.reply_to_message.photo
+            and len(message.command) > 1
+        ):
+            img2img = True
+            model = message.text.split(maxsplit=1)[1]
+            if model in models:
+                prompt = message.reply_to_message.caption
+                image_path = await message.reply_to_message.download()
+                with open(image_path, "rb") as image_file:
+                    image_data = base64.b64encode(image_file.read()).decode("utf-8")
+            else:
+                return await message.edit_text(
+                    f"<b>Usage: </b><code>{prefix}vpixl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
+                )
         else:
             return await message.edit_text(
                 f"<b>Usage: </b><code>{prefix}vpixl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
             )
+
+        data_img2img = {
+            "model": model,
+            "prompt": prompt,
+            "negative_prompt": "bad quality",
+            "token": vca_api_key,
+            "sampler": "Euler",
+            "steps": 30,
+            "width": 1024,
+            "height": 1024,
+            "cfg_scale": 7,
+            "loras": {},
+            "seed": -1,
+            "init_image": image_data if img2img else None,
+            "denoising_strength": 0.7,
+            "stream": False,
+            "nsfw_filter": False,
+        }
 
         data = {
             "model": model,
@@ -530,9 +780,10 @@ async def vpixl(c: Client, message: Message):
             "loras": {},
             "seed": -1,
             "stream": False,
+            "nsfw_filter": False,
         }
 
-        response = await generate_images(data)
+        response = await generate_images(data_img2img if img2img else data)
         try:
             image_url = response["image_url"]
             async with aiohttp.ClientSession() as session:
@@ -546,6 +797,8 @@ async def vpixl(c: Client, message: Message):
                     caption=f"<b>Prompt: </b><code>{prompt}</code>\n<b>Model: </b><code>{model}</code>",
                 )
                 os.remove(filename)
+                if img2img:
+                    os.remove(image_path)
                 await message.delete()
         except KeyError:
             try:
@@ -570,6 +823,7 @@ async def vpixl(c: Client, message: Message):
 @Client.on_message(filters.command("vkxl", prefix) & filters.me)
 async def vkxl(c: Client, message: Message):
     """Text to Image Generation Using SDXL"""
+    img2img = False
 
     await message.edit_text("<code>Please Wait...</code>")
 
@@ -599,10 +853,44 @@ async def vkxl(c: Client, message: Message):
                 return await message.edit_text(
                     f"<b>Usage: </b><code>{prefix}vkxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
                 )
+        elif (
+            message.reply_to_message
+            and message.reply_to_message.photo
+            and len(message.command) > 1
+        ):
+            img2img = True
+            model = message.text.split(maxsplit=1)[1]
+            if model in models:
+                prompt = message.reply_to_message.caption
+                image_path = await message.reply_to_message.download()
+                with open(image_path, "rb") as image_file:
+                    image_data = base64.b64encode(image_file.read()).decode("utf-8")
+            else:
+                return await message.edit_text(
+                    f"<b>Usage: </b><code>{prefix}vkxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
+                )
         else:
             return await message.edit_text(
                 f"<b>Usage: </b><code>{prefix}vkxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
             )
+
+        data_img2img = {
+            "model": model,
+            "prompt": prompt,
+            "negative_prompt": "bad quality",
+            "token": vca_api_key,
+            "sampler": "Euler",
+            "steps": 30,
+            "width": 1024,
+            "height": 1024,
+            "cfg_scale": 7,
+            "loras": {},
+            "seed": -1,
+            "init_image": image_data if img2img else None,
+            "denoising_strength": 0.7,
+            "stream": False,
+            "nsfw_filter": False,
+        }
 
         data = {
             "model": model,
@@ -617,9 +905,10 @@ async def vkxl(c: Client, message: Message):
             "loras": {},
             "seed": -1,
             "stream": False,
+            "nsfw_filter": False,
         }
 
-        response = await generate_images(data)
+        response = await generate_images(data_img2img if img2img else data)
         try:
             image_url = response["image_url"]
             async with aiohttp.ClientSession() as session:
@@ -633,6 +922,8 @@ async def vkxl(c: Client, message: Message):
                     caption=f"<b>Prompt: </b><code>{prompt}</code>\n<b>Model: </b><code>{model}</code>",
                 )
                 os.remove(filename)
+                if img2img:
+                    os.remove(image_path)
                 await message.delete()
         except KeyError:
             try:
@@ -705,6 +996,7 @@ async def vgif(c: Client, message: Message):
             "cfg_scale": 7,
             "sampler": "Euler",
             "loras": {},
+            "nsfw_filter": False,
         }
 
         response = await generate_video(data)
