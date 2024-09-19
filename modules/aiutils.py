@@ -20,12 +20,13 @@ async def fetch_models(category: str):
         return await response.json()
 
 
-async def generate_gifs(data):
-    """Helper Function to generate GIF"""
+async def generate_video(data):
+    """Generate a video using the provided data"""
     async with aiohttp.ClientSession() as session, session.post(
-        f"{api_url}/generate-gif", json=data, verify_ssl=False
+        f"{api_url}/image/generate", json=data
     ) as response:
-        return await response.json()
+        result = await response.json()
+        return result
 
 
 async def generate_images(data):
@@ -655,50 +656,87 @@ async def vkxl(c: Client, message: Message):
 
 @Client.on_message(filters.command("vgif", prefix) & filters.me)
 async def vgif(c: Client, message: Message):
-    """Text2GIF Using VisionCraft API"""
+    """Text to video Generation Using SDXL"""
+
+    await message.edit_text("<code>Please Wait...</code>")
+
     try:
         chat_id = message.chat.id
-        await message.edit_text("<code>Please Wait...</code>")
+        model_category = "SD-1.5"
+        models = await fetch_models(category=model_category)
 
-        if len(message.command) >= 2:
-            prompt = message.text.split(maxsplit=1)[1]
-        elif message.reply_to_message:
-            prompt = message.reply_to_message.text
+        if not message.reply_to_message and len(message.command) > 2:
+            model_found = False
+            for m in models:
+                if message.text.startswith(f"{prefix}vgif {m}"):
+                    model = m
+                    prompt = message.text[len(f"{prefix}vgif {m}") :].strip()
+                    model_found = True
+                    break
+            if not model_found:
+                return await message.edit_text(
+                    f"<b>Usage: </b><code>{prefix}vgif [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
+                )
+        elif message.reply_to_message and len(message.command) > 1:
+            model = message.text.split(maxsplit=1)[1]
+            print(model)
+            if model in models:
+                prompt = message.reply_to_message.text
+            else:
+                return await message.edit_text(
+                    f"<b>Usage: </b><code>{prefix}vgif [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
+                )
         else:
-            await message.edit_text(
-                f"<b>Usage: </b><code>{prefix}vgif [prompt/reply to prompt]*</code>"
+            return await message.edit_text(
+                f"<b>Usage: </b><code>{prefix}vgif [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
             )
-            return
 
         data = {
             "prompt": prompt,
-            "negative_prompt": "canvas frame, cartoon, ((disfigured)), ((bad art)), ((deformed)),((extra limbs)),((close up)),((b&w)), weird colors, blurry, (((duplicate))), ((morbid)), ((mutilated)), [out of frame], extra fingers, mutated hands, ((poorly drawn hands)), ((poorly drawn face)), (((mutation))), (((deformed))), ((ugly)), blurry, ((bad anatomy)), (((bad proportions))), ((extra limbs)), cloned face, (((disfigured))), out of frame, ugly, extra limbs, (bad anatomy), gross proportions, (malformed limbs), ((missing arms)), ((missing legs)), (((extra arms))), (((extra legs))), mutated hands, (fused fingers), (too many fingers), (((long neck))), Photoshop, video game, ugly, tiling, poorly drawn hands, poorly drawn feet, poorly drawn face, out of frame, mutation, mutated, extra limbs, extra legs, extra arms, disfigured, deformed, cross-eye, body out of frame, blurry, bad art, bad anatomy",
+            "model": model,
+            "negative_prompt": "EasyNegative, blurry, bad quality",
             "token": vca_api_key,
+            "width": 512,
+            "height": 512,
             "steps": 30,
-            "cfg_scale": 8,
+            "fps": 16,
+            "frames": 16,
+            "is_video": True,
+            "cfg_scale": 7,
             "sampler": "Euler",
+            "loras": {},
         }
 
-        response = await generate_gifs(data)
-
+        response = await generate_video(data)
         try:
-            image_url = response["images"][0]
+            image_url = response["image_url"]
             async with aiohttp.ClientSession() as session:
-                await download_image(session, image_url, "generated_image.gif")
-                await message.delete()
-                await c.send_animation(
+                filename = f"{chat_id}_{message.id}.gif"
+                await message.edit_text("<code>Downloading Image...</code>")
+                await download_image(session, image_url, filename)
+                await message.edit_text("<code>Uploading Image...</code>")
+                await c.send_document(
                     chat_id,
-                    animation="generated_image.gif",
-                    caption=f"<b>Prompt: </b><code>{prompt}</code>",
+                    filename,
+                    caption=f"<b>Prompt: </b><code>{prompt}</code>\n<b>Model: </b><code>{model}</code>",
                 )
-                os.remove("generated_image.gif")
+                os.remove(filename)
+                await message.delete()
         except KeyError:
             try:
                 error = response["error"]
-                await message.edit_text(f"<code>{error}</code>")
+                mes = response["message"]
+                return await message.edit_text(f"<b>{error}: </b><code>{mes}</code>")
             except KeyError:
-                detail = response["detail"]
-                await message.edit_text(f"<code>{detail}</code>")
+                details = response["detail"]
+                mes = response["message"]
+                return await message.edit_text(f"<b>{details}: </b><code>{mes}</code>")
+
+    except MessageTooLong:
+        await message.edit_text(
+            f"<b>Model List is too long</b> See the Full List <a href='https://visioncraft.top/api/image/models/{model_category}'> Here </a>"
+        )
+        return
 
     except Exception as e:
         await message.edit_text(f"An error occurred: {format_exc(e)}")
