@@ -20,12 +20,13 @@ async def fetch_models(category: str):
         return await response.json()
 
 
-async def generate_video(api_url, data):
-    async with aiohttp.ClientSession() as session:
-        async with session.post(f"{api_url}/image/generate", json=data) as response:
-            result = await response.json()
-            image_url = result["image_url"]
-            return image_url
+async def generate_video(data):
+    """Generate a video using the provided data"""
+    async with aiohttp.ClientSession() as session, session.post(
+        f"{api_url}/image/generate", json=data
+    ) as response:
+        result = await response.json()
+        return result
 
 
 async def generate_images(data):
@@ -654,7 +655,7 @@ async def vkxl(c: Client, message: Message):
 
 
 @Client.on_message(filters.command("vgif", prefix) & filters.me)
-async def vgiff(c: Client, message: Message):
+async def vgif(c: Client, message: Message):
     """Text to video Generation Using SDXL"""
 
     await message.edit_text("<code>Please Wait...</code>")
@@ -693,7 +694,7 @@ async def vgiff(c: Client, message: Message):
         data = {
             "prompt": prompt,
             "model": model,
-            "negative_prompt":"EasyNegative, blurry, bad quality",
+            "negative_prompt": "EasyNegative, blurry, bad quality",
             "token": vca_api_key,
             "width": 512,
             "height": 512,
@@ -703,7 +704,7 @@ async def vgiff(c: Client, message: Message):
             "is_video": True,
             "cfg_scale": 7,
             "sampler": "Euler",
-            "loras": {}
+            "loras": {},
         }
 
         response = await generate_video(data)
@@ -739,9 +740,6 @@ async def vgiff(c: Client, message: Message):
 
     except Exception as e:
         await message.edit_text(f"An error occurred: {format_exc(e)}")
-
-
-
 
 
 modules_help["aiutils"] = {
