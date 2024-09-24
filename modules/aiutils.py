@@ -90,35 +90,35 @@ async def vdxl(c: Client, message: Message):
                 return await message.edit_text(
                     f"<b>Usage: </b><code>{prefix}vdxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
                 )
-        elif (
-            message.reply_to_message
-            and len(message.command) > 1
-            and not message.reply_to_message.photo
-        ):
-            model = message.text.split(maxsplit=1)[1]
-            print(model)
-            if model in models:
-                prompt = message.reply_to_message.text
-            else:
+        elif message.reply_to_message and len(message.command) > 1:
+            model_found = False
+            for m in models:
+                if message.text.startswith(f"{prefix}vdxl {m}"):
+                    model = m
+                    prompt = message.reply_to_message.text
+                    model_found = True
+                    break
+            if not model_found:
                 return await message.edit_text(
                     f"<b>Usage: </b><code>{prefix}vdxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
                 )
-        elif (
-            message.reply_to_message
-            and message.reply_to_message.photo
-            and len(message.command) > 1
-        ):
-            img2img = True
-            model = message.text.split(maxsplit=1)[1]
-            if model in models:
-                prompt = message.reply_to_message.caption
-                image_path = await message.reply_to_message.download()
-                with open(image_path, "rb") as image_file:
-                    image_data = base64.b64encode(image_file.read()).decode("utf-8")
-            else:
-                return await message.edit_text(
-                    f"<b>Usage: </b><code>{prefix}vdxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
-                )
+        elif message.reply_to_message and len(message.command) == 1:
+            if message.reply_to_message.media:
+                model_found = False
+                for m in models:
+                    if message.reply_to_message.caption.startswith(f"{m}"):
+                        model = m
+                        prompt = message.reply_to_message.caption[len(f"{m}") :].strip()
+                        image_path = await message.reply_to_message.download()
+                        with open(image_path, "rb") as image_file:
+                            image_data = base64.b64encode(image_file.read()).decode("utf-8")
+                        img2img = True
+                        model_found = True
+                        break
+                if not model_found:
+                    return await message.edit_text(
+                        f"<b>Usage: </b><code>{prefix}vdxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
+                    )
         else:
             return await message.edit_text(
                 f"<b>Usage: </b><code>{prefix}vdxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
@@ -181,9 +181,12 @@ async def vdxl(c: Client, message: Message):
                 mes = response["message"]
                 return await message.edit_text(f"<b>{error}: </b><code>{mes}</code>")
             except KeyError:
-                details = response["detail"]
-                mes = response["message"]
-                return await message.edit_text(f"<b>{details}: </b><code>{mes}</code>")
+                try:
+                    details = response["detail"]
+                    mes = response["message"]
+                    return await message.edit_text(f"<b>{details}: </b><code>{mes}</code>")
+                except KeyError:
+                    return await message.edit_text("An Error Occurred, please try again later")
 
     except MessageTooLong:
         await message.edit_text(
@@ -220,30 +223,34 @@ async def vdxl2(c: Client, message: Message):
                     f"<b>Usage: </b><code>{prefix}vdxl2 [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
                 )
         elif message.reply_to_message and len(message.command) > 1:
-            model = message.text.split(maxsplit=1)[1]
-            print(model)
-            if model in models:
-                prompt = message.reply_to_message.text
-            else:
+            model_found = False
+            for m in models:
+                if message.text.startswith(f"{prefix}vdxl2 {m}"):
+                    model = m
+                    prompt = message.reply_to_message.text
+                    model_found = True
+                    break
+            if not model_found:
                 return await message.edit_text(
                     f"<b>Usage: </b><code>{prefix}vdxl2 [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
                 )
-        elif (
-            message.reply_to_message
-            and message.reply_to_message.photo
-            and len(message.command) > 1
-        ):
-            img2img = True
-            model = message.text.split(maxsplit=1)[1]
-            if model in models:
-                prompt = message.reply_to_message.caption
-                image_path = await message.reply_to_message.download()
-                with open(image_path, "rb") as image_file:
-                    image_data = base64.b64encode(image_file.read()).decode("utf-8")
-            else:
-                return await message.edit_text(
-                    f"<b>Usage: </b><code>{prefix}vdxl2 [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
-                )
+        elif message.reply_to_message and len(message.command) == 1:
+            if message.reply_to_message.media:
+                model_found = False
+                for m in models:
+                    if message.reply_to_message.caption.startswith(f"{m}"):
+                        model = m
+                        prompt = message.reply_to_message.caption[len(f"{m}") :].strip()
+                        image_path = await message.reply_to_message.download()
+                        with open(image_path, "rb") as image_file:
+                            image_data = base64.b64encode(image_file.read()).decode("utf-8")
+                        img2img = True
+                        model_found = True
+                        break
+                if not model_found:
+                    return await message.edit_text(
+                        f"<b>Usage: </b><code>{prefix}vdxl2 [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
+                    )
         else:
             return await message.edit_text(
                 f"<b>Usage: </b><code>{prefix}vdxl2 [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
@@ -306,9 +313,12 @@ async def vdxl2(c: Client, message: Message):
                 mes = response["message"]
                 return await message.edit_text(f"<b>{error}: </b><code>{mes}</code>")
             except KeyError:
-                details = response["detail"]
-                mes = response["message"]
-                return await message.edit_text(f"<b>{details}: </b><code>{mes}</code>")
+                try:
+                    details = response["detail"]
+                    mes = response["message"]
+                    return await message.edit_text(f"<b>{details}: </b><code>{mes}</code>")
+                except KeyError:
+                    return await message.edit_text("An Error Occurred, please try again later")
 
     except MessageTooLong:
         await message.edit_text(
@@ -345,30 +355,34 @@ async def vdxl3(c: Client, message: Message):
                     f"<b>Usage: </b><code>{prefix}vdxl3 [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
                 )
         elif message.reply_to_message and len(message.command) > 1:
-            model = message.text.split(maxsplit=1)[1]
-            print(model)
-            if model in models:
-                prompt = message.reply_to_message.text
-            else:
+            model_found = False
+            for m in models:
+                if message.text.startswith(f"{prefix}vdxl3 {m}"):
+                    model = m
+                    prompt = message.reply_to_message.text
+                    model_found = True
+                    break
+            if not model_found:
                 return await message.edit_text(
                     f"<b>Usage: </b><code>{prefix}vdxl3 [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
                 )
-        elif (
-            message.reply_to_message
-            and message.reply_to_message.photo
-            and len(message.command) > 1
-        ):
-            img2img = True
-            model = message.text.split(maxsplit=1)[1]
-            if model in models:
-                prompt = message.reply_to_message.caption
-                image_path = await message.reply_to_message.download()
-                with open(image_path, "rb") as image_file:
-                    image_data = base64.b64encode(image_file.read()).decode("utf-8")
-            else:
-                return await message.edit_text(
-                    f"<b>Usage: </b><code>{prefix}vdxl3 [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
-                )
+        elif message.reply_to_message and len(message.command) == 1:
+            if message.reply_to_message.media:
+                model_found = False
+                for m in models:
+                    if message.reply_to_message.caption.startswith(f"{m}"):
+                        model = m
+                        prompt = message.reply_to_message.caption[len(f"{m}") :].strip()
+                        image_path = await message.reply_to_message.download()
+                        with open(image_path, "rb") as image_file:
+                            image_data = base64.b64encode(image_file.read()).decode("utf-8")
+                        img2img = True
+                        model_found = True
+                        break
+                if not model_found:
+                    return await message.edit_text(
+                        f"<b>Usage: </b><code>{prefix}vdxl3 [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
+                    )
         else:
             return await message.edit_text(
                 f"<b>Usage: </b><code>{prefix}vdxl3 [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
@@ -431,9 +445,12 @@ async def vdxl3(c: Client, message: Message):
                 mes = response["message"]
                 return await message.edit_text(f"<b>{error}: </b><code>{mes}</code>")
             except KeyError:
-                details = response["detail"]
-                mes = response["message"]
-                return await message.edit_text(f"<b>{details}: </b><code>{mes}</code>")
+                try:
+                    details = response["detail"]
+                    mes = response["message"]
+                    return await message.edit_text(f"<b>{details}: </b><code>{mes}</code>")
+                except KeyError:
+                    return await message.edit_text("An Error Occurred, please try again later")
 
     except MessageTooLong:
         await message.edit_text(
@@ -470,29 +487,37 @@ async def vfxl(c: Client, message: Message):
                     f"<b>Usage: </b><code>{prefix}vfxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
                 )
         elif message.reply_to_message and len(message.command) > 1:
-            model = message.text.split(maxsplit=1)[1]
-            print(model)
-            if model in models:
-                prompt = message.reply_to_message.text
+            model_found = False
+            for m in models:
+                if message.text.startswith(f"{prefix}vfxl {m}"):
+                    model = m
+                    prompt = message.reply_to_message.text
+                    model_found = True
+                    break
+            if not model_found:
+                return await message.edit_text(
+                    f"<b>Usage: </b><code>{prefix}vpxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
+                )
+        elif message.reply_to_message and len(message.command) == 1:
+            if message.reply_to_message.media:
+                model_found = False
+                for m in models:
+                    if message.reply_to_message.caption.startswith(f"{m}"):
+                        model = m
+                        prompt = message.reply_to_message.caption[len(f"{m}") :].strip()
+                        image_path = await message.reply_to_message.download()
+                        with open(image_path, "rb") as image_file:
+                            image_data = base64.b64encode(image_file.read()).decode("utf-8")
+                        img2img = True
+                        model_found = True
+                        break
+                if not model_found:
+                    return await message.edit_text(
+                        f"<b>Usage: </b><code>{prefix}vfxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
+                    )
             else:
                 return await message.edit_text(
                     f"<b>Usage: </b><code>{prefix}vfxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
-                )
-        elif (
-            message.reply_to_message
-            and message.reply_to_message.photo
-            and len(message.command) > 1
-        ):
-            img2img = True
-            model = message.text.split(maxsplit=1)[1]
-            if model in models:
-                prompt = message.reply_to_message.caption
-                image_path = await message.reply_to_message.download()
-                with open(image_path, "rb") as image_file:
-                    image_data = base64.b64encode(image_file.read()).decode("utf-8")
-            else:
-                return await message.edit_text(
-                    f"<b>Usage: </b><code>{prefix}vdxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
                 )
         else:
             return await message.edit_text(
@@ -508,7 +533,7 @@ async def vfxl(c: Client, message: Message):
             "steps": 30,
             "width": 1024,
             "height": 1024,
-            "cfg_scale": 1,
+            "cfg_scale": 7,
             "loras": {},
             "seed": -1,
             "init_image": image_data if img2img else None,
@@ -556,9 +581,12 @@ async def vfxl(c: Client, message: Message):
                 mes = response["message"]
                 return await message.edit_text(f"<b>{error}: </b><code>{mes}</code>")
             except KeyError:
-                details = response["detail"]
-                mes = response["message"]
-                return await message.edit_text(f"<b>{details}: </b><code>{mes}</code>")
+                try:
+                    details = response["detail"]
+                    mes = response["message"]
+                    return await message.edit_text(f"<b>{details}: </b><code>{mes}</code>")
+                except KeyError:
+                    return await message.edit_text("An Error Occurred, please try again later")
 
     except MessageTooLong:
         await message.edit_text(
@@ -595,26 +623,34 @@ async def vpxl(c: Client, message: Message):
                     f"<b>Usage: </b><code>{prefix}vpxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
                 )
         elif message.reply_to_message and len(message.command) > 1:
-            model = message.text.split(maxsplit=1)[1]
-            print(model)
-            if model in models:
-                prompt = message.reply_to_message.text
-            else:
+            model_found = False
+            for m in models:
+                if message.text.startswith(f"{prefix}vpxl {m}"):
+                    model = m
+                    prompt = message.reply_to_message.text
+                    model_found = True
+                    break
+            if not model_found:
                 return await message.edit_text(
                     f"<b>Usage: </b><code>{prefix}vpxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
                 )
-        elif (
-            message.reply_to_message
-            and message.reply_to_message.photo
-            and len(message.command) > 1
-        ):
-            img2img = True
-            model = message.text.split(maxsplit=1)[1]
-            if model in models:
-                prompt = message.reply_to_message.caption
-                image_path = await message.reply_to_message.download()
-                with open(image_path, "rb") as image_file:
-                    image_data = base64.b64encode(image_file.read()).decode("utf-8")
+        elif message.reply_to_message and len(message.command) == 1:
+            if message.reply_to_message.media:
+                model_found = False
+                for m in models:
+                    if message.reply_to_message.caption.startswith(f"{m}"):
+                        model = m
+                        prompt = message.reply_to_message.caption[len(f"{m}") :].strip()
+                        image_path = await message.reply_to_message.download()
+                        with open(image_path, "rb") as image_file:
+                            image_data = base64.b64encode(image_file.read()).decode("utf-8")
+                        img2img = True
+                        model_found = True
+                        break
+                if not model_found:
+                    return await message.edit_text(
+                        f"<b>Usage: </b><code>{prefix}vpxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
+                    )
             else:
                 return await message.edit_text(
                     f"<b>Usage: </b><code>{prefix}vpxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
@@ -681,9 +717,12 @@ async def vpxl(c: Client, message: Message):
                 mes = response["message"]
                 return await message.edit_text(f"<b>{error}: </b><code>{mes}</code>")
             except KeyError:
-                details = response["detail"]
-                mes = response["message"]
-                return await message.edit_text(f"<b>{details}: </b><code>{mes}</code>")
+                try:
+                    details = response["detail"]
+                    mes = response["message"]
+                    return await message.edit_text(f"<b>{details}: </b><code>{mes}</code>")
+                except KeyError:
+                    return await message.edit_text("An Error Occurred, please try again later")
 
     except MessageTooLong:
         await message.edit_text(
@@ -720,30 +759,34 @@ async def vpixl(c: Client, message: Message):
                     f"<b>Usage: </b><code>{prefix}vpixl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
                 )
         elif message.reply_to_message and len(message.command) > 1:
-            model = message.text.split(maxsplit=1)[1]
-            print(model)
-            if model in models:
-                prompt = message.reply_to_message.text
-            else:
+            model_found = False
+            for m in models:
+                if message.text.startswith(f"{prefix}vpixl {m}"):
+                    model = m
+                    prompt = message.reply_to_message.text
+                    model_found = True
+                    break
+            if not model_found:
                 return await message.edit_text(
                     f"<b>Usage: </b><code>{prefix}vpixl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
                 )
-        elif (
-            message.reply_to_message
-            and message.reply_to_message.photo
-            and len(message.command) > 1
-        ):
-            img2img = True
-            model = message.text.split(maxsplit=1)[1]
-            if model in models:
-                prompt = message.reply_to_message.caption
-                image_path = await message.reply_to_message.download()
-                with open(image_path, "rb") as image_file:
-                    image_data = base64.b64encode(image_file.read()).decode("utf-8")
-            else:
-                return await message.edit_text(
-                    f"<b>Usage: </b><code>{prefix}vpixl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
-                )
+        elif message.reply_to_message and len(message.command) == 1:
+            if message.reply_to_message.media:
+                model_found = False
+                for m in models:
+                    if message.reply_to_message.caption.startswith(f"{m}"):
+                        model = m
+                        prompt = message.reply_to_message.caption[len(f"{m}") :].strip()
+                        image_path = await message.reply_to_message.download()
+                        with open(image_path, "rb") as image_file:
+                            image_data = base64.b64encode(image_file.read()).decode("utf-8")
+                        img2img = True
+                        model_found = True
+                        break
+                if not model_found:
+                    return await message.edit_text(
+                        f"<b>Usage: </b><code>{prefix}vpixl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
+                    )
         else:
             return await message.edit_text(
                 f"<b>Usage: </b><code>{prefix}vpixl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
@@ -806,9 +849,16 @@ async def vpixl(c: Client, message: Message):
                 mes = response["message"]
                 return await message.edit_text(f"<b>{error}: </b><code>{mes}</code>")
             except KeyError:
-                details = response["detail"]
-                mes = response["message"]
-                return await message.edit_text(f"<b>{details}: </b><code>{mes}</code>")
+                try:
+                    details = response["detail"]
+                    mes = response["message"]
+                    return await message.edit_text(
+                        f"<b>{details}: </b><code>{mes}</code>"
+                    )
+                except KeyError:
+                    return await message.edit_text(
+                        "An Error Occurred, please try again later"
+                    )
 
     except MessageTooLong:
         await message.edit_text(
@@ -845,30 +895,34 @@ async def vkxl(c: Client, message: Message):
                     f"<b>Usage: </b><code>{prefix}vkxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
                 )
         elif message.reply_to_message and len(message.command) > 1:
-            model = message.text.split(maxsplit=1)[1]
-            print(model)
-            if model in models:
-                prompt = message.reply_to_message.text
-            else:
+            model_found = False
+            for m in models:
+                if message.text.startswith(f"{prefix}vkxl {m}"):
+                    model = m
+                    prompt = message.reply_to_message.text
+                    model_found = True
+                    break
+            if not model_found:
                 return await message.edit_text(
                     f"<b>Usage: </b><code>{prefix}vkxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
                 )
-        elif (
-            message.reply_to_message
-            and message.reply_to_message.photo
-            and len(message.command) > 1
-        ):
-            img2img = True
-            model = message.text.split(maxsplit=1)[1]
-            if model in models:
-                prompt = message.reply_to_message.caption
-                image_path = await message.reply_to_message.download()
-                with open(image_path, "rb") as image_file:
-                    image_data = base64.b64encode(image_file.read()).decode("utf-8")
-            else:
-                return await message.edit_text(
-                    f"<b>Usage: </b><code>{prefix}vkxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
-                )
+        elif message.reply_to_message and len(message.command) == 1:
+            if message.reply_to_message.media:
+                model_found = False
+                for m in models:
+                    if message.reply_to_message.caption.startswith(f"{m}"):
+                        model = m
+                        prompt = message.reply_to_message.caption[len(f"{m}") :].strip()
+                        image_path = await message.reply_to_message.download()
+                        with open(image_path, "rb") as image_file:
+                            image_data = base64.b64encode(image_file.read()).decode("utf-8")
+                        img2img = True
+                        model_found = True
+                        break
+                if not model_found:
+                    return await message.edit_text(
+                        f"<b>Usage: </b><code>{prefix}vkxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
+                    )
         else:
             return await message.edit_text(
                 f"<b>Usage: </b><code>{prefix}vkxl [model]* [prompt/reply to prompt]*</code>\n <b>Available Models:</b> <blockquote>{models}</blockquote>"
@@ -931,9 +985,12 @@ async def vkxl(c: Client, message: Message):
                 mes = response["message"]
                 return await message.edit_text(f"<b>{error}: </b><code>{mes}</code>")
             except KeyError:
-                details = response["detail"]
-                mes = response["message"]
-                return await message.edit_text(f"<b>{details}: </b><code>{mes}</code>")
+                try:
+                    details = response["detail"]
+                    mes = response["message"]
+                    return await message.edit_text(f"<b>{details}: </b><code>{mes}</code>")
+                except KeyError:
+                    return await message.edit_text("An Error Occurred, please try again later")
 
     except MessageTooLong:
         await message.edit_text(
