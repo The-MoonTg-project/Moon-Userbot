@@ -9,6 +9,7 @@ __pycache__/
 *.sqlite3
 *-journal
 /venv/
+.venv/
 /downloads/
 /modules/custom_modules
 .idea
