@@ -24,7 +24,9 @@ import subprocess
 import sys
 import time
 import traceback
+from PIL import Image, ImageEnhance
 from io import BytesIO
+import aiohttp
 from types import ModuleType
 from typing import Dict, Tuple
 
@@ -124,7 +126,7 @@ async def progress(current, total, message, start, type_of_ps, file_name=None):
         progress_str = f"{''.join(['▰' for i in range(math.floor(percentage / 10))])}"
         progress_str += (
             f"{''.join(['▱' for i in range(10 - math.floor(percentage / 10))])}"
-            )
+        )
         progress_str += f"{round(percentage, 2)}%\n"
         tmp = f"{progress_str}{humanbytes(current)} of {humanbytes(total)}\n"
         tmp += f"ETA: {time_formatter(estimated_total_time)}"
@@ -133,7 +135,7 @@ async def progress(current, total, message, start, type_of_ps, file_name=None):
                 await message.edit(
                     f"{type_of_ps}\n**File Name:** `{file_name}`\n{tmp}",
                     parse_mode=enums.ParseMode.MARKDOWN,
-                    )
+                )
             except FloodWait as e:
                 await asyncio.sleep(e.x)
             except MessageNotModified:
@@ -142,7 +144,7 @@ async def progress(current, total, message, start, type_of_ps, file_name=None):
             try:
                 await message.edit(
                     f"{type_of_ps}\n{tmp}", parse_mode=enums.ParseMode.MARKDOWN
-                    )
+                )
             except FloodWait as e:
                 await asyncio.sleep(e.x)
             except MessageNotModified:
@@ -154,14 +156,14 @@ async def run_cmd(prefix: str) -> Tuple[str, str, int, int]:
     args = shlex.split(prefix)
     process = await asyncio.create_subprocess_exec(
         *args, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
-        )
+    )
     stdout, stderr = await process.communicate()
     return (
         stdout.decode("utf-8", "replace").strip(),
         stderr.decode("utf-8", "replace").strip(),
         process.returncode,
         process.pid,
-        )
+    )
 
 
 def mediainfo(media):
@@ -213,6 +215,25 @@ def text(message: Message) -> str:
     return message.text if message.text else message.caption
 
 
+async def make_carbon(code):
+    url = "https://carbonara.solopov.dev/api/cook"
+
+    async with aiohttp.ClientSession() as session:
+        async with session.post(url, json={"code": code}) as resp:
+            image_data = await resp.read()
+
+    carbon_image = Image.open(BytesIO(image_data))
+
+    enhancer = ImageEnhance.Brightness(carbon_image)
+    bright_image = enhancer.enhance(1.0)
+
+    output_image = BytesIO()
+    bright_image.save(output_image, format="PNG", quality=95)
+    output_image.name = "carbon.png"
+
+    return output_image
+
+
 def restart() -> None:
     music_bot_pid = db.get("custom.musicbot", "music_bot_pid", None)
     if music_bot_pid is not None:
@@ -231,7 +252,7 @@ def format_exc(e: Exception, suffix="") -> str:
         return (
             f"<b>Telegram API error!</b>\n"
             f"<code>[{e.CODE} {e.ID or e.NAME}] — {e.MESSAGE.format(value=e.value)}</code>\n\n<b>{suffix}</b>"
-            )
+        )
     return f"<b>Error!</b>\n" f"<code>{err}</code>"
 
 
@@ -260,7 +281,7 @@ async def interact_with(message: Message) -> Message:
     # noinspection PyProtectedMember
     response = [
         msg async for msg in message._client.get_chat_history(message.chat.id, limit=1)
-        ]
+    ]
     seconds_waiting = 0
 
     while response[0].from_user.is_self:
@@ -286,7 +307,7 @@ def format_module_help(module_name: str, full=True):
 
     help_text = (
         f"<b>Help for |{module_name}|\n\nUsage:</b>\n" if full else "<b>Usage:</b>\n"
-        )
+    )
 
     for command, desc in commands.items():
         cmd = command.split(maxsplit=1)
@@ -303,7 +324,7 @@ def format_small_module_help(module_name: str, full=True):
         f"<b>Help for |{module_name}|\n\nCommands list:\n"
         if full
         else "<b>Commands list:\n"
-        )
+    )
     for command, _desc in commands.items():
         cmd = command.split(maxsplit=1)
         args = " <code>" + cmd[1] + "</code>" if len(cmd) > 1 else ""
@@ -328,11 +349,13 @@ def import_library(library_name: str, package_name: str = None):
         return importlib.import_module(library_name)
     except ImportError as exc:
         completed = subprocess.run(
-            [sys.executable, "-m", "pip", "install", "--upgrade", package_name], check=True)
+            [sys.executable, "-m", "pip", "install", "--upgrade", package_name],
+            check=True,
+        )
         if completed.returncode != 0:
             raise AssertionError(
                 f"Failed to install library {package_name} (pip exited with code {completed.returncode})"
-                ) from exc
+            ) from exc
         return importlib.import_module(library_name)
 
 
@@ -342,7 +365,8 @@ def uninstall_library(package_name: str):
     :param package_name: package name in PyPi (pip uninstall example)
     """
     completed = subprocess.run(
-        [sys.executable, "-m", "pip", "uninstall", "-y", package_name], check=True)
+        [sys.executable, "-m", "pip", "uninstall", "-y", package_name], check=True
+    )
     if completed.returncode != 0:
         raise AssertionError(
             f"Failed to uninstall library {package_name} (pip exited with code {completed.returncode})"
@@ -449,7 +473,7 @@ async def load_module(
                 await message.edit(
                     "<b>Timeout while installed requirements."
                     + "Try to install them manually</b>"
-                    )
+                )
             raise TimeoutError("timeout while installing requirements") from e
 
         if proc.returncode != 0:
@@ -457,7 +481,7 @@ async def load_module(
                 await message.edit(
                     f"<b>Failed to install requirements (pip exited with code {proc.returncode}). "
                     f"Check logs for futher info</b>",
-                    )
+                )
             raise RuntimeError("failed to install requirements") from e
 
         module = importlib.import_module(path)

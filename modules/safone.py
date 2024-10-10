@@ -8,7 +8,7 @@ from pyrogram.types import Message, InputMediaPhoto
 from pyrogram.errors import MediaCaptionTooLong, MessageTooLong
 
 from utils.misc import prefix, modules_help
-from utils.scripts import format_exc
+from utils.scripts import format_exc, make_carbon
 
 url = "https://api.safone.dev"
 
@@ -29,7 +29,6 @@ headers = {
 
 
 async def telegraph(title, user_name, content):
-
     formatted_content = "<br>".join(content.split("\n"))
     formatted_content = "<p>" + formatted_content + "</p>"
 
@@ -45,7 +44,6 @@ async def telegraph(title, user_name, content):
 
 
 async def voice_characters():
-
     response = requests.get(url=f"{url}/speech/characters", headers=headers, timeout=5)
 
     result = response.json()
@@ -361,18 +359,8 @@ async def carbon(client: Client, message: Message):
         await message.edit_text("Query not provided!")
         return
     await message.edit_text("Processing...")
-    response = requests.get(url=f"{url}/carbon?code={text}", headers=headers)
-    if response.status_code != 200:
-        await message.edit_text("Something went wrong")
-        return
 
-    result = response.json()
-    image = result["image"]
-    image_file = "carbon.png"
-
-    image_data = base64.b64decode(image)
-    with open(image_file, "wb") as f:
-        f.write(image_data)
+    image_file = await make_carbon(text)
 
     await message.delete()
     try:
@@ -392,8 +380,8 @@ async def carbon(client: Client, message: Message):
         )
     except Exception as e:
         await message.edit_text(format_exc(e))
-    if os.path.exists(image_file):
-        os.remove(image_file)
+    if os.path.exists("carbon.png"):
+        os.remove("carbon.png")
 
 
 @Client.on_message(filters.command("ccgen", prefix) & filters.me)
