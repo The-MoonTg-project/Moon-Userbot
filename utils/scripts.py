@@ -280,10 +280,7 @@ def is_admin(func):
                 chat_admins.append(member)
             if chat_member in chat_admins:
                 return await func(client, message)
-            else:
-                await message.edit(
-                    "You need to be an admin to perform this action."
-                )
+            await message.edit("You need to be an admin to perform this action.")
         except UserNotParticipant:
             await message.edit(
                 "You need to be a participant in the chat to perform this action."
