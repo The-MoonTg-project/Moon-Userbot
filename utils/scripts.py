@@ -33,8 +33,9 @@ from typing import Dict, Tuple
 from PIL import Image
 import psutil
 from pyrogram import Client, errors, enums
-from pyrogram.errors import FloodWait, MessageNotModified
+from pyrogram.errors import FloodWait, MessageNotModified, UserNotParticipant
 from pyrogram.types import Message
+from pyrogram.enums import ChatMembersFilter
 
 from utils.db import db
 
@@ -262,6 +263,31 @@ def with_reply(func):
             await message.edit("<b>Reply to message is required</b>")
         else:
             return await func(client, message)
+
+    return wrapped
+
+
+def is_admin(func):
+    async def wrapped(client: Client, message: Message):
+        try:
+            chat_member = await client.get_chat_member(
+                message.chat.id, message.from_user.id
+            )
+            chat_admins = []
+            async for member in client.get_chat_members(
+                message.chat.id, filter=ChatMembersFilter.ADMINISTRATORS
+            ):
+                chat_admins.append(member)
+            if chat_member in chat_admins:
+                return await func(client, message)
+            else:
+                await message.edit(
+                    "You need to be an admin to perform this action."
+                )
+        except UserNotParticipant:
+            await message.edit(
+                "You need to be a participant in the chat to perform this action."
+            )
 
     return wrapped
 
