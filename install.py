@@ -14,7 +14,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import datetime
+from datetime import datetime
 import sys
 from pyrogram import Client
 
@@ -58,10 +58,10 @@ if __name__ == "__main__":
     try:
         app.send_message(
             "me",
-            f"<b>[{datetime.datetime.now()}] Moon-Userbot launched! \n"
-            "Channel: https://t.me/moonuserbot\n"
+            f"<b>[{datetime.now()}] Moon-Userbot launched! \n"
+            "Channel: @moonuserbot\n"
             "Custom modules: @moonub_modules\n"
-            "Chat [EN]: @moonub_chat\n"
+            "Chat: @moonub_chat\n"
             f"For restart, enter:</b>\n"
             f"<code>{restart}</code>"
         )

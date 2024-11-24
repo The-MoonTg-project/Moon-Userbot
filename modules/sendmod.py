@@ -5,13 +5,6 @@
 #  it under the terms of the GNU General Public License as published by
 #  the Free Software Foundation, either version 3 of the License, or
 #  (at your option) any later version.
-import os
-
-from pyrogram import Client, filters
-from pyrogram.types import Message
-
-from utils.misc import modules_help, prefix
-from utils.scripts import format_exc, format_module_help, format_small_module_help
 
 #  This program is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -20,6 +13,14 @@ from utils.scripts import format_exc, format_module_help, format_small_module_he
 
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+import os
+
+from pyrogram import Client, filters
+from pyrogram.types import Message
+
+from utils.misc import modules_help, prefix
+from utils.scripts import format_exc, format_module_help, format_small_module_help
 
 
 @Client.on_message(filters.command(["sendmod", "sm"], prefix) & filters.me)
