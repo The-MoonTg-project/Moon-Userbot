@@ -908,10 +908,7 @@ class PromoteHandler:
                 user_id,
                 privileges=ChatPrivileges(**self.common_privileges_promote),
             )
-            if (
-                len(self.cause.split()) > 1
-                and self.message.chat.type == "group"
-            ):
+            if len(self.cause.split()) > 1 and self.message.chat.type == "group":
                 await self.client.set_administrator_title(
                     self.chat_id,
                     user_id,

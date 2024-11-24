@@ -20,6 +20,7 @@ from utils.scripts import format_module_help, with_reply
 current_page = 0
 total_pages = 0
 
+
 async def send_page(message, module_list, page, total_pages):
     start_index = (page - 1) * 10
     end_index = start_index + 10
@@ -63,6 +64,7 @@ async def help_cmd(_, message: Message):
         if not module_found:
             await message.edit(f"<b>Module or command {command_name} not found</b>")
 
+
 @Client.on_message(filters.command(["pn", "pp", "pq"], prefix) & filters.me)
 @with_reply
 async def handle_navigation(_, message: Message):
@@ -71,14 +73,18 @@ async def handle_navigation(_, message: Message):
         if message.command[0].lower() == "pn":
             if current_page < total_pages:
                 current_page += 1
-                await send_page(message, list(modules_help.keys()), current_page, total_pages)
+                await send_page(
+                    message, list(modules_help.keys()), current_page, total_pages
+                )
                 return await message.reply_to_message.delete()
             else:
                 await message.edit("No more pages available.")
         elif message.command[0].lower() == "pp":
             if current_page > 1:
                 current_page -= 1
-                await send_page(message, list(modules_help.keys()), current_page, total_pages)
+                await send_page(
+                    message, list(modules_help.keys()), current_page, total_pages
+                )
                 return await message.reply_to_message.delete()
             else:
                 return await message.edit("This is the first page.")
@@ -91,4 +97,4 @@ modules_help["help"] = {
     "help [module/command name]": "Get common/module/command help",
     "pn/pp/pq": "Navigate through help pages"
     + " (pn: next page, pp: previous page, pq: quit help)",
-    }
+}

@@ -67,7 +67,6 @@ def check_extension(file_path):
     return extensions.get(ext, "<pre>")
 
 
-
 @Client.on_message(filters.command("open", prefix) & filters.me)
 async def openfile(client: Client, message: Message):
     if not message.reply_to_message:

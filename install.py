@@ -63,7 +63,7 @@ if __name__ == "__main__":
             "Custom modules: @moonub_modules\n"
             "Chat: @moonub_chat\n"
             f"For restart, enter:</b>\n"
-            f"<code>{restart}</code>"
+            f"<code>{restart}</code>",
         )
     except Exception as e:
         print(f"[ERROR]: Sending Message to me failed! {e}")

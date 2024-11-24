@@ -5,11 +5,11 @@ from lexica import AsyncClient, Client
 
 
 def ImageModels():
-    models = Client().models['models']['image']
+    models = Client().models["models"]["image"]
     dict_models = {}
     for model in models:
-        model_id = model['id']
-        model_name = model['name']
+        model_id = model["id"]
+        model_name = model["name"]
         dict_models[model_name] = model_id
     return dict_models
 
@@ -17,18 +17,18 @@ def ImageModels():
 async def ImageGeneration(model, prompt):
     try:
         output = await AsyncClient().generate(model, prompt, "")
-        if output['code'] != 1:
+        if output["code"] != 1:
             return 2
-        if output['code'] == 69:
-            return output['code']
-        task_id, request_id = output['task_id'], output['request_id']
+        if output["code"] == 69:
+            return output["code"]
+        task_id, request_id = output["task_id"], output["request_id"]
         await asyncio.sleep(20)
         tries = 0
         image_url = None
         resp = await AsyncClient().getImages(task_id, request_id)
         while True:
-            if resp['code'] == 2:
-                image_url = resp['img_urls']
+            if resp["code"] == 2:
+                image_url = resp["img_urls"]
                 break
             if tries > 15:
                 break
