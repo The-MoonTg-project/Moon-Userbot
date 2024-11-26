@@ -14,7 +14,7 @@
 [![License](https://img.shields.io/badge/License-GPL-pink)](https://github.com/The-MoonTg-project/Moon-Userbot/blob/main/LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://makeapullrequest.com)
 
-</p>
+
 
 ***A Simple, Fast, Customizable, Ai powered Userbot for Telegram made after Dragon-Userbot abandoned***
 
@@ -128,23 +128,15 @@ If you're using Docker Compose version 2.x, use the following commands to start 
 > [!IMPORTANT]
 > Make Sure you add appropriate env vars
 
-## 🖥️ Local Host
-## Linux, Windows [only wsl]
+## 🖥️ Self-hosted
+## 🐧 Linux (WSL compatible)
 
 ### Update the packages
-
-```shell
-sudo apt update && sudo apt upgrade -y
-```
 
 ### Install Git
 
 > [!TIP]
-> Ignore if already installed
-
-```shell
-sudo apt install git
-```
+> Ensure you have the git installed
 
 ### Clone the repo
 
@@ -152,11 +144,22 @@ sudo apt install git
 git clone https://github.com/The-MoonTg-project/Moon-Userbot.git
 ```
 
-### Setup
+### Installation
 
 ```shell
-cd Moon-Userbot/ && sudo bash install.sh
+cd Moon-Userbot 
+chmod +x install.sh
+./install.sh
 ```
+
+### Installer was tested on:
+- Arch Linux
+
+[//]: # (- Debian)
+[//]: # (- Ubuntu)
+[//]: # (- etc.)
+
+Feel free to test on other distros and let us know if it works!
 
 #### 📱 Termux 
 > [!TIP]
@@ -198,15 +201,15 @@ Contributions of any type are welcome like `custom_modules` etc. Feel free to do
 ## Licence
 
 ```plaintext
-                    GNU GENERAL PUBLIC LICENSE
-                        Version 3, 29 June 2007
+                    GNU GENERAL PUBLIC LICENSE
+                        Version 3, 29 June 2007
 
-  Copyright (C) 2007 Free Software Foundation, Inc. <https://fsf.org/>
-  Everyone is permitted to copy and distribute verbatim copies
-  of this license document, but changing it is not allowed.
+  Copyright (C) 2007 Free Software Foundation, Inc. <https://fsf.org/>
+  Everyone is permitted to copy and distribute verbatim copies
+  of this license document, but changing it is not allowed.
 
-                             Preamble
+                             Preamble
 
-   The GNU General Public License is a free, copyleft license for
- software and other kinds of works.
+   The GNU General Public License is a free, copyleft license for
+ software and other kinds of works.
 ```
