@@ -94,7 +94,7 @@ else
   read -r -p "API_HASH > " api_hash
 fi
 # Prompt for PM PERMIT warn limit
-# PM PERMIT warn limit is the number of messages a user can receive from others before giving them a warning
+# PM PERMIT warn limit is the number of messages a user can receive from others before giving them a warning, requires `antipm` plugin to be enabled
 echo
 echo "SET PM PERMIT warn limit"
 # Now below is more clear version:
