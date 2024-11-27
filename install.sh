@@ -97,7 +97,7 @@ fi
 # PM PERMIT warn limit is the number of messages a user can receive from others before giving them a warning
 echo
 echo "SET PM PERMIT warn limit"
-#Now below is more clear version:
+# Now below is more clear version:
 echo "Enter the number of messages others can send you before receiving a warning, and eventually a ban or leave empty for default (3)"
 read -r -p "PM_LIMIT warn limit > " pm_limit
 
