@@ -134,9 +134,7 @@ If you're using Docker Compose version 2.x, use the following commands to start 
 ### Update the packages
 
 ### Install Git
-
-> [!TIP]
-> Ensure you have the git installed
+There are instructions for installing on several different Unix distributions on the Git website, at https://git-scm.com/download/linux
 
 ### Clone the repo
 
