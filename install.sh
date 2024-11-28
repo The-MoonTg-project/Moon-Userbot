@@ -51,8 +51,8 @@ esac
 # Clone repository if not exists
 if [[ -d "Moon-Userbot" && "$(basename "$PWD")" != "Moon-Userbot" ]]; then
   cd Moon-Userbot || exit 2
-elif [[ "$(basename "$PWD")" == "Moon-Userbot" ]]; then
-  echo "Already in the correct repo, moving on."
+elif [[ "$(basename "$PWD")" == "Moon-Userbot" && -f ".env.dist" && -f "main.py" && -d "modules" ]]; then
+  echo "Already inside the Moon-Userbot repo, proceeding."
 else
   git clone https://github.com/The-MoonTg-project/Moon-Userbot || exit 2
   cd Moon-Userbot || exit 2
@@ -62,6 +62,7 @@ if [[ -f ".env" ]] && [[ -f "my_account.session" ]]; then
   echo "It seems that Moon-Userbot is already installed. Exiting..."
   exit
 fi
+
 # Create a virtual environment inside the cloned repository and activate it
 python3 -m venv venv
 source venv/bin/activate
