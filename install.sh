@@ -63,13 +63,19 @@ if [[ -f ".env" ]] && [[ -f "my_account.session" ]]; then
   exit
 fi
 
-# Create a virtual environment inside the cloned repository and activate it
-python3 -m venv venv
-source venv/bin/activate
+# Prompt user if they want to proceed with creating a virtual environment
+echo "It's recommended to use a virtual environment for Python projects."
+echo "Note: If your drive resources are very limited, you might consider not creating a virtual environment, but it shouldn't be rejected otherwise unless you know what you're doing."
+read -r -p "Would you like to create a virtual environment? (Y/n) > " create_venv
 
-# Upgrade pip and install wheel and pillow
-pip install -U pip wheel pillow
+if [[ "$create_venv" != "n" ]] && [[ "$create_venv" != "N" ]]; then
+    # Create a virtual environment inside the cloned repository and activate it
+    python3 -m venv venv
+    source venv/bin/activate
 
+    # Upgrade pip and install wheel and pillow
+    pip install -U pip wheel pillow
+fi
 # Install Python requirements
 pip install -U -r requirements.txt || exit 2
 # Prompt for API_ID and API_HASH
