@@ -232,7 +232,7 @@ while true; do
       db_type=mongodb
       break
       ;;
-    *)
+    3)
       db_name=db.sqlite3
       db_type=sqlite3
       break
