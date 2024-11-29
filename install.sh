@@ -121,7 +121,7 @@ fi
 # PM PERMIT warn limit is the number of messages a user can receive from others before giving them a warning, requires `antipm` plugin to be enabled
 printf "SET PM PERMIT warn limit\n"
 # Now below is more clear version:
-printf "The number of messages others can send you before receiving a warning, and eventually a ban or leave empty for default (3), requires $(antipm) plugin to be enabled\n"
+printf "The number of messages others can send you before receiving a warning, and eventually a ban or leave empty for default (3), requires antipm plugin to be enabled\n"
 read -r -p "PM_LIMIT warn limit > " pm_limit
 
 if [[ $pm_limit = "" ]]; then
@@ -217,7 +217,7 @@ while true; do
     if systemctl status mongodb; then
       wget -qO - https://www.mongodb.org/static/pgp/server-5.0.asc | apt-key add -
       source /etc/os-release
-      printf "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu ${UBUNTU_CODENAME}/mongodb-org/5.0 multiverse\n" | tee /etc/apt/sources.list.d/mongodb-org-5.0.list
+      echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu ${UBUNTU_CODENAME}/mongodb-org/5.0 multiverse\n" | tee /etc/apt/sources.list.d/mongodb-org-5.0.list
       apt update
       apt install mongodb -y
       systemctl daemon-reload
