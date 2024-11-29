@@ -23,6 +23,7 @@ from pyrogram.types import Message
 
 from utils.misc import modules_help, prefix
 from utils.scripts import ReplyCheck
+from utils.db import db
 
 # Variables
 AFK = False
@@ -59,13 +60,18 @@ async def collect_afk_messages(bot: Client, message: Message):
         CHAT_TYPE = GROUPS if is_group else USERS
 
         if GetChatID(message) not in CHAT_TYPE:
-            text = (
-                f"<b>Beep boop. This is an automated message.\n"
-                f"I am not available right now.\n"
-                f"Last seen: {last_seen}\n"
-                f"Reason: <code>{AFK_REASON.upper()}</code>\n"
-                f"See you after I'm done doing whatever I'm doing.</b>"
-            )
+            text = db.get("core.afk", "afk_msg", None)
+            if text is None:
+                text = (
+                    f"<b>Beep boop. This is an automated message.\n"
+                    f"I am not available right now.\n"
+                    f"Last seen: {last_seen}\n"
+                    f"Reason: <code>{AFK_REASON.upper()}</code>\n"
+                    f"See you after I'm done doing whatever I'm doing.</b>"
+                )
+            else:
+                last_seen = last_seen.replace("ago", "").strip()
+                text = text.format(last_seen=last_seen, reason=AFK_REASON)
             await bot.send_message(
                 chat_id=GetChatID(message),
                 text=text,
@@ -144,6 +150,39 @@ async def afk_unset(_, message: Message):
     await message.delete()
 
 
+@Client.on_message(filters.command("setafkmsg", prefix) & filters.me, group=3)
+async def set_afk_msg(_, message: Message):
+    if not message.reply_to_message:
+        return await message.edit("Reply to a message to set it as your AFK message.")
+
+    msg = message.reply_to_message
+    afk_msg = msg.text or msg.caption
+
+    if not afk_msg:
+        return await message.edit(
+            "Reply to a text or caption message to set it as your AFK message."
+        )
+
+    if len(afk_msg) > 200:
+        return await message.edit(
+            "AFK message is too long. It should be less than 200 characters."
+        )
+    if not "{reason}" in afk_msg:
+        return await message.edit(
+            "AFK message should contain <code>{reason}</code> to indicate where the reason will be placed."
+        )
+    if not "{last_seen}" in afk_msg:
+        return await message.edit(
+            "AFK message should contain <code>{last_seen}</code> to indicate where the last seen time will be placed."
+        )
+
+    old_afk_msg = db.get("core.afk", "afk_msg", None)
+    if old_afk_msg:
+        db.remove("core.afk", "afk_msg")
+    db.set("core.afk", "afk_msg", afk_msg)
+    await message.edit(f"AFK message set to:\n\n{afk_msg}")
+
+
 @Client.on_message(filters.me, group=3)
 async def auto_afk_unset(_, message: Message):
     global AFK, AFK_TIME, AFK_REASON, USERS, GROUPS
@@ -166,4 +205,5 @@ async def auto_afk_unset(_, message: Message):
 modules_help["afk"] = {
     "afk [reason]": "Go to AFK mode with reason as anything after .afk\nUsage: <code>.afk <reason></code>",
     "unafk": "Get out of AFK",
+    "setafkmsg": "Set your AFK message. Use <code>{reason}</code> and <code>{last_seen}</code> to indicate where the reason and last seen time will be placed.",
 }
