@@ -217,7 +217,7 @@ while true; do
     if systemctl status mongodb; then
       wget -qO - https://www.mongodb.org/static/pgp/server-5.0.asc | apt-key add -
       source /etc/os-release
-      echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu ${UBUNTU_CODENAME}/mongodb-org/5.0 multiverse\n" | tee /etc/apt/sources.list.d/mongodb-org-5.0.list
+      printf "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu %s/mongodb-org/5.0 multiverse\n" "${UBUNTU_CODENAME}" | tee /etc/apt/sources.list.d/mongodb-org-5.0.list
       apt update
       apt install mongodb -y
       systemctl daemon-reload
