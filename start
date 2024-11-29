@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-if [ -d ".venv"]; then
+if [ -d ".venv" ]; then
     . .venv/bin/activate
-elif [ -d "venv"]; then
+elif [ -d "venv" ]; then
     . venv/bin/activate
 fi
 
