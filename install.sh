@@ -328,18 +328,18 @@ EOL
     systemctl enable Moon
 
     printf "${GREEN}============================\\n"
-    printf "Great! Moon-Userbot installed successfully and running now!"
-    printf "Installation type: Systemd service"
-    printf "Start with: \"sudo systemctl start Moon\""
-    printf "Stop with: \"sudo systemctl stop Moon\""
+    printf "Great! Moon-Userbot installed successfully and running now!\n"
+    printf "Installation type: Systemd service\n"
+    printf "Start with: \"sudo systemctl start Moon\"\n"
+    printf "Stop with: \"sudo systemctl stop Moon\"\n"
     printf "============================${NC}\n"
     break
     ;;
   3)
     printf "${GREEN}============================\\n"
-    printf "Great! Moon-Userbot installed successfully!"
-    printf "Installation type: Custom"
-    printf "Start with: \"python3 main.py\""
+    printf "Great! Moon-Userbot installed successfully!\n"
+    printf "Installation type: Custom\n"
+    printf "Start with: \"python3 main.py\"\n"
     printf "============================${NC}\n"
     break
     ;;
