@@ -269,9 +269,6 @@ EOL
 chown -R $SUDO_USER:$SUDO_USER .
 
 
-
-su -c "python3 install.py ${install_type}" $SUDO_USER || exit 3
-
 # Configure the bot based on selected installation type
 while true; do
   # Prompt for installation type and execute accordingly
@@ -351,6 +348,8 @@ EOL
       ;;
   esac
 done
+
+  su -c "python3 install.py ${install_type}" $SUDO_USER || exit 3
 
 # Adjust the ownership of the Moon-Userbot directory again as a final step
 chown -R $SUDO_USER:$SUDO_USER .
