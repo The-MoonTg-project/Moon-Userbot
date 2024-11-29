@@ -79,6 +79,8 @@
  
 - **YT Video [How to deploy on Koyeb]**: <https://youtu.be/2m_yB7EllYc>
 
+**For Detailed Guide refer to [wiki](https://github.com/The-MoonTg-project/Moon-Userbot/wiki/Installation#koyeb-free)**
+
 ## 🐳 Docker
 
 You can either use `docker run` or `docker compose`.
