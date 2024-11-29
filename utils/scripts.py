@@ -216,25 +216,6 @@ def text(message: Message) -> str:
     return message.text if message.text else message.caption
 
 
-async def make_carbon(code):
-    url = "https://carbonara.solopov.dev/api/cook"
-
-    async with aiohttp.ClientSession() as session:
-        async with session.post(url, json={"code": code}) as resp:
-            image_data = await resp.read()
-
-    carbon_image = Image.open(BytesIO(image_data))
-
-    enhancer = ImageEnhance.Brightness(carbon_image)
-    bright_image = enhancer.enhance(1.0)
-
-    output_image = BytesIO()
-    bright_image.save(output_image, format="PNG", quality=95)
-    output_image.name = "carbon.png"
-
-    return output_image
-
-
 def restart() -> None:
     music_bot_pid = db.get("custom.musicbot", "music_bot_pid", None)
     if music_bot_pid is not None:
