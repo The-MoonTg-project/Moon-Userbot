@@ -138,13 +138,6 @@ if [[ $musicbot = "y" ]]; then
   if [[ $second_session = "" ]]; then
     printf "SECOND_SESSION not provided by user\n"
     second_session=""
-  else
-    printf "Please provide handler to be used by musicbotn\n"
-    read -r -p "MUSIC_HANDLER > " music_handler
-    if [[ $music_handler = "" ]]; then
-      printf "MUSIC_HANDLER not provided by user\n"
-      music_handler=""
-    fi
   fi
 fi
 
