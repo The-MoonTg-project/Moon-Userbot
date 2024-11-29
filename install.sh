@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-# skipcq
-
 # Define color codes
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -14,7 +12,7 @@ PACKAGE_MANAGER=""
 
 # Ensure the script is run with root privileges
 if [[ $UID != 0 ]]; then
-  printf "${YELLOW}This script requires root privileges.${NC}\n"
+  printf "${YELLOW}This script requires root privileges.${NC}\n" # skipcq
   printf "Please enter the root password to continue.\n"
   exec sudo "$0" "$@"
 else
