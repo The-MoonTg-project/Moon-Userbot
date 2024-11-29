@@ -90,14 +90,20 @@ You can either use `docker run` or `docker compose`.
 - Put your environment vars in `.env` file check [.env.dist](/.env.dist) for example format
 
 ### 👷‍♂️`docker run`:
+We also push images to [Docker Hub](https://hub.docker.com/), so you can use the following commands to start and update the service:
 
   - Start:
+    1. If you want to use normal image:
     ```shell
     docker run --env-file ./.env -d qbtaumai/moonuserbot:latest
     ```
+    2. If you want to use image with flask web (only recommended for heroku/koyeb/render etc.):
+    ```shell
+    docker run --env-file ./.env -d qbtaumai/moonubcloud:latest-cloud
+    ```
   - Updating:
     ```shell
-    docker stop $(docker ps -q) && docker rm $(docker ps -a -q)
+    docker stop $(docker ps -q)
     ```
     then re-run the start command
 

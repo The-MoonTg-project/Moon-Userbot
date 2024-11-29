@@ -1,7 +1,9 @@
 version: "3"
 services:
     moonuserbot:
-        image: qbtaumai/moonuserbot:latest
+        build:
+            context: .
+            dockerfile: Dockerfile
         container_name: moonuserbot
         restart: unless-stopped
         env_file:
