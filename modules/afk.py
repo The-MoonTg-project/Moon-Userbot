@@ -167,11 +167,11 @@ async def set_afk_msg(_, message: Message):
         return await message.edit(
             "AFK message is too long. It should be less than 200 characters."
         )
-    if not "{reason}" in afk_msg:
+    if "{reason}" not in afk_msg:
         return await message.edit(
             "AFK message should contain <code>{reason}</code> to indicate where the reason will be placed."
         )
-    if not "{last_seen}" in afk_msg:
+    if "{last_seen}" not in afk_msg:
         return await message.edit(
             "AFK message should contain <code>{last_seen}</code> to indicate where the last seen time will be placed."
         )
