@@ -1,24 +1,58 @@
 #!/bin/bash
-if command -v termux-setup-storage; then
-  echo For termux, please use https://raw.githubusercontent.com/The-MoonTg-project/Moon-Userbot/main/termux-install.sh
-  exit 1
-fi
+PACKAGE_MANAGER=""
 
+# Ensure the script is run with root privileges
 if [[ $UID != 0 ]]; then
-  echo Please run this script as root
+  echo "This script requires root privileges."
+  echo "Please enter the root password to continue."
+  exec sudo "$0" "$@"
+else
+  echo "Running with root privileges"
+fi
+
+# Detect available package manager
+if command -v apt &>/dev/null; then
+  PACKAGE_MANAGER="apt"
+elif command -v apk &>/dev/null; then
+  PACKAGE_MANAGER="apk"
+elif command -v yum &>/dev/null; then
+  PACKAGE_MANAGER="yum"
+elif command -v pacman &>/dev/null; then
+  PACKAGE_MANAGER="pacman"
+else
+  echo "Unsupported package manager. Please use a compatible distribution or update the installer script."
   exit 1
 fi
 
-apt update -y
-apt install python3 python3-pip git ffmpeg wget gnupg -y || exit 2
+if command -v termux-setup-storage; then
+  echo "For termux, please use https://raw.githubusercontent.com/The-MoonTg-project/Moon-Userbot/main/termux-install.sh"
+  exit 1
+fi
 
-su -c "python3 -m pip install -U pip" $SUDO_USER
-su -c "python3 -m pip install -U wheel pillow" $SUDO_USER
+# Install necessary packages based on detected package manager
+case "$PACKAGE_MANAGER" in
+  apt)
+    apt update -y
+    apt install python3 python3-venv git wget -y || exit 2
+    ;;
+  apk)
+    apk update
+    apk add python3 py3-virtualenv git wget || exit 2 # Packages here may be wrong, to verify
+    ;;
+  yum)
+    yum update -y
+    yum install python3 python3-venv git wget -y || exit 2 # Packages here may be wrong, to verify
+    ;;
+  pacman)
+    pacman -S --noconfirm python python-virtualenv git wget || exit 2
+    ;;
+esac
 
-if [[ -d "Moon-Userbot" ]]; then
-  cd Moon-Userbot
-elif [[ -f ".env.dist" ]] && [[ -f "main.py" ]] && [[ -d "modules" ]]; then
-  :
+# Clone repository if not exists
+if [[ -d "Moon-Userbot" && "$(basename "$PWD")" != "Moon-Userbot" ]]; then
+  cd Moon-Userbot || exit 2
+elif [[ "$(basename "$PWD")" == "Moon-Userbot" && -f ".env.dist" && -f "main.py" && -d "modules" ]]; then
+  echo "Already inside the Moon-Userbot repo, proceeding."
 else
   git clone https://github.com/The-MoonTg-project/Moon-Userbot || exit 2
   cd Moon-Userbot || exit 2
@@ -29,32 +63,59 @@ if [[ -f ".env" ]] && [[ -f "my_account.session" ]]; then
   exit
 fi
 
-su -c "python3 -m pip install -U -r requirements.txt" $SUDO_USER || exit 2
+# Prompt user if they want to proceed with creating a virtual environment
+echo "It's recommended to use a virtual environment for Python projects."
+echo "Note: If your drive resources are very limited, you might consider not creating a virtual environment, but it shouldn't be rejected otherwise unless you know what you're doing."
+read -r -p "Would you like to create a virtual environment? (Y/n) > " create_venv
 
+if [[ "$create_venv" != "n" ]] && [[ "$create_venv" != "N" ]]; then
+    # Create a virtual environment inside the cloned repository and activate it
+    python3 -m venv venv
+    source venv/bin/activate
+
+    # Upgrade pip and install wheel and pillow
+    pip install -U pip wheel pillow
+fi
+# Install Python requirements
+pip install -U -r requirements.txt || exit 2
+# Prompt for API_ID and API_HASH
 echo
 echo "Enter API_ID and API_HASH"
 echo "You can get it here -> https://my.telegram.org/"
-echo "Leave empty to use defaults (please note that default keys significantly increases your ban chances)"
+echo "Leave empty to use defaults (please note that using default keys is a **very bad idea** and significantly increases your ban chances)"
 read -r -p "API_ID > " api_id
 
+# Default API_ID and API_HASH
 if [[ $api_id = "" ]]; then
-  api_id="2040"
-  api_hash="b18441a1ff607e10a989891a5462e627"
+  echo "You have chosen to use the default API_ID and API_HASH, which is strongly discouraged."
+  echo "Please type 'I agree' to confirm that you understand the risks and still wish to proceed."
+  read -r -p "Confirmation > " confirmation
+  if [[ $confirmation = "I agree" ]]; then
+    api_id="2040"
+    api_hash="b18441a1ff607e10a989891a5462e627"
+  else
+    echo "Confirmation not provided. Exiting..."
+    exit 1
+  fi
 else
   read -r -p "API_HASH > " api_hash
 fi
-
+# Prompt for PM PERMIT warn limit
+# PM PERMIT warn limit is the number of messages a user can receive from others before giving them a warning, requires `antipm` plugin to be enabled
 echo
 echo "SET PM PERMIT warn limit"
+# Now below is more clear version:
+echo "Enter the number of messages others can send you before receiving a warning, and eventually a ban or leave empty for default (3)"
 read -r -p "PM_LIMIT warn limit > " pm_limit
 
 if [[ $pm_limit = "" ]]; then
   pm_limit="3"
-  echo "limit not provided by user set to default"
+  echo "Limit not provided by user; set to default"
 fi
 
+# Prompt for musicbot usage
 echo
-echo "Do you want to use musicbot? (y/n)"
+echo "Do you want to use musicbot? (y/N)"
 read -r -p "MUSIC_BOT > " musicbot
 if [[ $musicbot = "y" ]]; then
   echo
@@ -65,7 +126,7 @@ if [[ $musicbot = "y" ]]; then
     second_session=""
   else
     echo
-    echo "Please provide handler to be used by msuicbot"
+    echo "Please provide handler to be used by musicbot"
     read -r -p "MUSIC_HANDLER > " music_handler
     if [[ $music_handler = "" ]]; then
       echo "MUSIC_HANDLER not provided by user"
@@ -74,13 +135,13 @@ if [[ $musicbot = "y" ]]; then
   fi
 fi
 
-echo
+# Prompt for various API keys
 echo "Enter APIFLASH_KEY for webshot plugin"
 echo "You can get it here -> https://apiflash.com/dashboard/access_keys"
 read -r -p "APIFLASH_KEY > " apiflash_key
 
 if [[ $apiflash_key = "" ]]; then
-  echo "NOTE: API Not set you'll get errors with webshot & ws module"
+  echo "NOTE: API Not set; you'll get errors with webshot & ws module"
 fi
 
 echo
@@ -89,7 +150,7 @@ echo "You can get it here -> https://www.remove.bg/dashboard#api-key"
 read -r -p "RMBG_KEY > " rmbg_key
 
 if [[ $rmbg_key = "" ]]; then
-  echo "NOTE: API Not set you'll not be able to use remove background modules"
+  echo "NOTE: API Not set; you'll not be able to use remove background modules"
 fi
 
 echo
@@ -98,7 +159,7 @@ echo "You can get it here -> https://www.virustotal.com/"
 read -r -p "VT_KEY > " vt_key
 
 if [[ $vt_key = "" ]]; then
-  echo "NOTE: API Not set you'll not be able to use VirusTotal module"
+  echo "NOTE: API Not set; you'll not be able to use VirusTotal module"
 fi
 
 echo
@@ -107,7 +168,7 @@ echo "You can get it here -> https://makersuite.google.com/app/apikey"
 read -r -p "GEMINI_KEY > " gemini_key
 
 if [[ $gemini_key = "" ]]; then
-  echo "NOTE: API Not set you'll not be able to use Gemini AI modules"
+  echo "NOTE: API Not set; you'll not be able to use Gemini AI modules"
 fi
 
 echo
@@ -116,7 +177,7 @@ echo "You can get it here -> https://dashboard.cohere.com/api-keys"
 read -r -p "COHERE_KEY > " cohere_key
 
 if [[ $cohere_key = "" ]]; then
-  echo "NOTE: API Not set you'll not be able to use Coral AI modules"
+  echo "NOTE: API Not set; you'll not be able to use Coral AI modules"
 fi
 
 echo
@@ -125,47 +186,64 @@ echo "Learn How to Get One --> https://github.com/VisionCraft-org/VisionCraft?ta
 read -r -p "VCA_API_KEY > " vca_api_key
 
 if [[ $vca_api_key = "" ]]; then
-  echo "NOTE: API Not set you'll not be able to use aiutils module/pligins"
+  echo "NOTE: API Not set; you'll not be able to use aiutils module/plugins"
 fi
 
-echo
-echo "Choose database type:"
-echo "[1] MongoDB db_url"
-echo "[2] MongoDB localhost"
-echo "[3] Sqlite (default)"
-read -r -p "> " db_type
 
 echo
-case $db_type in
-  1)
-    echo "Please enter db_url"
-    echo "You can get it here -> https://mongodb.com/atlas"
-    read -r -p "> " db_url
-    db_name=Moon_Userbot
-    db_type=mongodb
-    ;;
-  2)
-    if systemctl status mongodb; then
-      wget -qO - https://www.mongodb.org/static/pgp/server-5.0.asc | apt-key add -
-      source /etc/os-release
-      echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu ${UBUNTU_CODENAME}/mongodb-org/5.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-5.0.list
-      apt update
-      apt install mongodb -y
-      systemctl daemon-reload
-      systemctl enable mongodb
-    fi
-    systemctl start mongodb
+while true; do
+  # Prompt for database type and database URL if MongoDB is selected
+  echo
+  echo "Choose database type:"
+  echo "[1] MongoDB db_url"
+  echo "[2] MongoDB localhost"
+  echo "[3] Sqlite (default)"
+  read -r -p "> " db_type
 
-    db_url=mongodb://localhost:27017
-    db_name=Moon_Userbot
-    db_type=mongodb
-    ;;
-  *)
-    db_name=db.sqlite3
-    db_type=sqlite3
-    ;;
-esac
+  case $db_type in
+    1)
+      echo "Please enter db_url"
+      echo "You can get it here -> https://mongodb.com/atlas"
+      read -r -p "> " db_url
+      db_name=Moon_Userbot
+      db_type=mongodb
+      break
+      ;;
+    2)
+      if ! command -v apt &>/dev/null; then
+        echo "This option requires apt package manager, which is not available on your system."
+        echo "Please choose a different database type."
+        continue
+      fi
 
+      if systemctl status mongodb; then
+        wget -qO - https://www.mongodb.org/static/pgp/server-5.0.asc | apt-key add -
+        source /etc/os-release
+        echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu ${UBUNTU_CODENAME}/mongodb-org/5.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-5.0.list
+        apt update
+        apt install mongodb -y
+        systemctl daemon-reload
+        systemctl enable mongodb
+      fi
+      systemctl start mongodb
+
+      db_url=mongodb://localhost:27017
+      db_name=Moon_Userbot
+      db_type=mongodb
+      break
+      ;;
+    3)
+      db_name=db.sqlite3
+      db_type=sqlite3
+      break
+      ;;
+    *)
+      echo "Invalid choice!"
+      ;;
+  esac
+done
+
+# Generate .env file with collected variables
 cat > .env << EOL
 API_ID=${api_id}
 API_HASH=${api_hash}
@@ -187,40 +265,50 @@ SECOND_SESSION=${second_session}
 MUSIC_HANDLER=${music_handler}
 EOL
 
+# Adjust the ownership of the Moon-Userbot directory
 chown -R $SUDO_USER:$SUDO_USER .
 
-echo
-echo "Choose installation type:"
-echo "[1] PM2"
-echo "[2] Systemd service"
-echo "[3] Custom (default)"
-read -r -p "> " install_type
 
-su -c "python3 install.py ${install_type}" $SUDO_USER || exit 3
+# Configure the bot based on selected installation type
+while true; do
+  # Prompt for installation type and execute accordingly
+  echo
+  echo "Choose installation type:"
+  echo "[1] PM2"
+  echo "[2] Systemd service"
+  echo "[3] Custom (default)"
+  read -r -p "> " install_type
 
-case $install_type in
-  1)
-    if ! command -v pm2; then
-      curl -fsSL https://deb.nodesource.com/setup_17.x | bash
-      apt install nodejs -y
-      npm install pm2 -g
-      su -c "pm2 startup" $SUDO_USER
-      env PATH=$PATH:/usr/bin /usr/lib/node_modules/pm2/bin/pm2 startup systemd -u $SUDO_USER --hp /home/$SUDO_USER
-    fi
-    su -c "pm2 start main.py --name Moon --interpreter python3" $SUDO_USER
-    su -c "pm2 save" $SUDO_USER
+  case $install_type in
+    1)
+      if ! command -v apt &>/dev/null; then
+        echo "This option requires apt package manager, which is not available on your system."
+        echo "Please choose a different installation type."
+        continue
+      fi
 
-    echo
-    echo "============================"
-    echo "Great! Moon-Userbot installed successfully and running now!"
-    echo "Installation type: PM2"
-    echo "Start with: \"pm2 start Moon\""
-    echo "Stop with: \"pm2 stop Moon\""
-    echo "Process name: Moon"
-    echo "============================"
-    ;;
-  2)
-    cat > /etc/systemd/system/Moon.service << EOL
+      if ! command -v pm2 &>/dev/null; then
+        curl -fsSL https://deb.nodesource.com/setup_17.x | bash
+        apt install nodejs -y
+        npm install pm2 -g
+        su -c "pm2 startup" $SUDO_USER
+        env PATH=$PATH:/usr/bin /usr/lib/node_modules/pm2/bin/pm2 startup systemd -u $SUDO_USER --hp /home/$SUDO_USER
+      fi
+      su -c "pm2 start main.py --name Moon --interpreter python3" $SUDO_USER
+      su -c "pm2 save" $SUDO_USER
+
+      echo
+      echo "============================"
+      echo "Great! Moon-Userbot installed successfully and running now!"
+      echo "Installation type: PM2"
+      echo "Start with: \"pm2 start Moon\""
+      echo "Stop with: \"pm2 stop Moon\""
+      echo "Process name: Moon"
+      echo "============================"
+      break
+      ;;
+    2)
+      cat > /etc/systemd/system/Moon.service << EOL
 [Unit]
 Description=Service for Moon Userbot
 [Service]
@@ -233,26 +321,35 @@ Group=${SUDO_USER}
 [Install]
 WantedBy=multi-user.target
 EOL
-    systemctl daemon-reload
-    systemctl start Moon
-    systemctl enable Moon
+      systemctl daemon-reload
+      systemctl start Moon
+      systemctl enable Moon
 
-    echo
-    echo "============================"
-    echo "Great! Moon-Userbot installed successfully and running now!"
-    echo "Installation type: Systemd service"
-    echo "Start with: \"sudo systemctl start Moon\""
-    echo "Stop with: \"sudo systemctl stop Moon\""
-    echo "============================"
-    ;;
-  *)
-    echo
-    echo "============================"
-    echo "Great! Moon-Userbot installed successfully!"
-    echo "Installation type: Custom"
-    echo "Start with: \"python3 main.py\""
-    echo "============================"
-    ;;
-esac
+      echo
+      echo "============================"
+      echo "Great! Moon-Userbot installed successfully and running now!"
+      echo "Installation type: Systemd service"
+      echo "Start with: \"sudo systemctl start Moon\""
+      echo "Stop with: \"sudo systemctl stop Moon\""
+      echo "============================"
+      break
+      ;;
+    3)
+      echo
+      echo "============================"
+      echo "Great! Moon-Userbot installed successfully!"
+      echo "Installation type: Custom"
+      echo "Start with: \"python3 main.py\""
+      echo "============================"
+      break
+      ;;
+    *)
+      echo "Invalid choice! Please enter 1, 2, or 3."
+      ;;
+  esac
+done
 
+  su -c "python3 install.py ${install_type}" $SUDO_USER || exit 3
+
+# Adjust the ownership of the Moon-Userbot directory again as a final step
 chown -R $SUDO_USER:$SUDO_USER .
