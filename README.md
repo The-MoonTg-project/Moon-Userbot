@@ -128,10 +128,8 @@ If you're using Docker Compose version 2.x, use the following commands to start 
 > [!IMPORTANT]
 > Make Sure you add appropriate env vars
 
-## 🖥️ Self-hosted
+## 🖥️ Local Host
 ## 🐧 Linux (WSL compatible)
-
-### Update the packages
 
 ### Install Git
 There are instructions for installing on several different Unix distributions on the Git website, at https://git-scm.com/download/linux
@@ -150,18 +148,17 @@ chmod +x install.sh
 ./install.sh
 ```
 
-### Installer was tested on:
-- Arch Linux
+**Installer tested on:**
+- Arch
+- Debian
+- Ubuntu
+- WSL (APT based distros)
 
-[//]: # (- Debian)
-[//]: # (- Ubuntu)
-[//]: # (- etc.)
-
-Feel free to test on other distros and let us know if it works!
+Feel free to test on other distros and let us know!
 
 #### 📱 Termux 
 > [!TIP]
-> use [GitHub](https://github.com/termux/termux-app/releases) version
+> Use [GitHub](https://github.com/termux/termux-app/releases) version
 -------------------------------------------------------------------------------
 
 > **Full Installation instruction [Given here](https://telegra.ph/Moon-Userbot-Installation---Termux-02-09)**
