@@ -260,7 +260,6 @@ VCA_API_KEY=${vca_api_key}
 COHERE_KEY=${cohere_key}
 PM_LIMIT=${pm_limit}
 SECOND_SESSION=${second_session}
-MUSIC_HANDLER=${music_handler}
 EOL
 
 # Adjust the ownership of the Moon-Userbot directory
