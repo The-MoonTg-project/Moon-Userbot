@@ -205,5 +205,5 @@ async def auto_afk_unset(_, message: Message):
 modules_help["afk"] = {
     "afk [reason]": "Go to AFK mode with reason as anything after .afk\nUsage: <code>.afk <reason></code>",
     "unafk": "Get out of AFK",
-    "setafkmsg": "Set your AFK message. Use <code>{reason}</code> and <code>{last_seen}</code> to indicate where the reason and last seen time will be placed.",
+    "setafkmsg [reply to message]*": "Set your AFK message. Use <code>{reason}</code> and <code>{last_seen}</code> to indicate where the reason and last seen time will be placed.",
 }

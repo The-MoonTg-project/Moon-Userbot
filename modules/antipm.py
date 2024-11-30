@@ -52,14 +52,18 @@ async def anti_pm_handler(client: Client, message: Message):
     user = await client.get_users(ids)
     u_f = user.first_name
     user_info = await client.resolve_peer(ids)
-    default_text = f"""<b>Hello, {u_f}!
+    default_text = db.get("core.antipm", "antipm_msg", None)
+    if default_text is None:
+        default_text = f"""<b>Hello, {u_f}!
 This is the Assistant Of {u_n}.</b>
 <i>My Boss is away or busy as of now, You can wait for him to respond.
 Do not spam further messages else I may have to block you!</i>
 
 <b>This is an automated message by the assistant.</b>
 <b><u>Currently You Have <code>{warns}</code> Warnings.</u></b>
-"""
+    """
+    else:
+        default_text = default_text.format(user=u_f, my_name=u_n, warns=warns)
     if db.get("core.antipm", "spamrep", False):
         await client.invoke(functions.messages.ReportSpam(peer=user_info))
     if db.get("core.antipm", "block", False):
@@ -179,10 +183,52 @@ async def del_contact(_, message: Message):
     await message.edit("User DisApproved!")
 
 
+@Client.on_message(filters.command(["setantipmmsg", "sam"], prefix) & filters.me)
+async def set_antipm_msg(_, message: Message):
+    if not message.reply_to_message:
+        return await message.edit(
+            "Reply to a message to set it as your antipm message."
+        )
+
+    msg = message.reply_to_message
+    afk_msg = msg.text or msg.caption
+
+    if not afk_msg:
+        return await message.edit(
+            "Reply to a text or caption message to set it as your antipm message."
+        )
+
+    if len(afk_msg) > 200:
+        return await message.edit(
+            "antipm message is too long. It should be less than 200 characters."
+        )
+
+    if "{user}" not in afk_msg:
+        return await message.edit(
+            "antipm message must contain <code>{user}</code> to mention the user."
+        )
+    if "{my_name}" not in afk_msg:
+        return await message.edit(
+            "antipm message must contain <code>{my_name}</code> to mention your name."
+        )
+    if "{warns}" not in afk_msg:
+        return await message.edit(
+            "antipm message must contain <code>{warns}</code> to mention the warns count."
+        )
+
+    old_afk_msg = db.get("core.antipm", "antipm_msg", None)
+    if old_afk_msg:
+        db.remove("core.antipm", "antipm_msg")
+    db.set("core.antipm", "antipm_msg", afk_msg)
+    await message.edit(f"antipm message set to:\n\n{afk_msg}")
+
+
 modules_help["antipm"] = {
     "antipm [enable|disable]*": "Enable Pm permit",
     "antipm_report [enable|disable]*": "Enable spam reporting",
     "antipm_block [enable|disable]*": "Enable user blocking",
+    "setantipmmsg [reply to message]*": "Set antipm message. Use {user} to mention the user and {my_name} to mention your name and {warns} to mention the warns count.",
+    "sam [reply to message]*": "Set antipm message. Use {user} to mention the user and {my_name} to mention your name and {warns} to mention the warns count.",
     "a": "Approve User",
     "d": "DisApprove User",
 }
