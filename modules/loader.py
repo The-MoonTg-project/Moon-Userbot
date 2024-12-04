@@ -247,14 +247,13 @@ async def load_all_mods(_, message: Message):
 
 
 @Client.on_message(filters.command(["unloadallmods", "ulmall"], prefix) & filters.me)
-async def load_all_mods(_, message: Message):
+async def unload_all_mods(_, message: Message):
     await message.edit("<b>Fetching info...</b>")
 
     if not os.path.exists(f"{BASE_PATH}/modules/custom_modules"):
         return await message.edit("<b>You don't have any modules installed</b>")
-    else:
-        shutil.rmtree(f"{BASE_PATH}/modules/custom_modules")
-        await message.edit("<b>Successfully unloaded all modules!\nRestarting...</b>")
+    shutil.rmtree(f"{BASE_PATH}/modules/custom_modules")
+    await message.edit("<b>Successfully unloaded all modules!\nRestarting...</b>")
 
     db.set(
         "core.updater",
