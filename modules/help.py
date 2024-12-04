@@ -27,7 +27,7 @@ async def send_page(message, module_list, page, total_page):
     page_modules = module_list[start_index:end_index]
     text = "<b>Help for <a href=https://t.me/Moonub_chat>Moon-Userbot</a></b>\n"
     text += f"For more help on how to use a command, type <code>{prefix}help [module]</code>\n\n"
-    text += f"Page {page}/{total_page}\n\n"
+    text += f"Help Page No: {page}/{total_page}\n\n"
     for module_name in page_modules:
         commands = modules_help[module_name]
         text += f"<b>• {module_name.title()}:</b> {', '.join([f'<code>{prefix + cmd_name.split()[0]}</code>' for cmd_name in commands.keys()])}\n"
@@ -68,7 +68,7 @@ async def help_cmd(_, message: Message):
 @Client.on_message(filters.command(["pn", "pp", "pq"], prefix) & filters.me)
 @with_reply
 async def handle_navigation(_, message: Message):
-    if message.reply_to_message:
+    if message.reply_to_message and "Help Page No:" in message.reply_to_message.text:
         global current_page
         if message.command[0].lower() == "pn":
             if current_page < total_pages:
