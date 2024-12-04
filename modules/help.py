@@ -21,13 +21,13 @@ current_page = 0
 total_pages = 0
 
 
-async def send_page(message, module_list, page, total_pages):
+async def send_page(message, module_list, page, total_page):
     start_index = (page - 1) * 10
     end_index = start_index + 10
     page_modules = module_list[start_index:end_index]
-    text = f"<b>Help for <a href=https://t.me/Moonub_chat>Moon-Userbot</a></b>\n"
+    text = "<b>Help for <a href=https://t.me/Moonub_chat>Moon-Userbot</a></b>\n"
     text += f"For more help on how to use a command, type <code>{prefix}help [module]</code>\n\n"
-    text += f"Page {page}/{total_pages}\n\n"
+    text += f"Page {page}/{total_page}\n\n"
     for module_name in page_modules:
         commands = modules_help[module_name]
         text += f"<b>• {module_name.title()}:</b> {', '.join([f'<code>{prefix + cmd_name.split()[0]}</code>' for cmd_name in commands.keys()])}\n"
@@ -77,8 +77,7 @@ async def handle_navigation(_, message: Message):
                     message, list(modules_help.keys()), current_page, total_pages
                 )
                 return await message.reply_to_message.delete()
-            else:
-                await message.edit("No more pages available.")
+            await message.edit("No more pages available.")
         elif message.command[0].lower() == "pp":
             if current_page > 1:
                 current_page -= 1
@@ -86,8 +85,7 @@ async def handle_navigation(_, message: Message):
                     message, list(modules_help.keys()), current_page, total_pages
                 )
                 return await message.reply_to_message.delete()
-            else:
-                return await message.edit("This is the first page.")
+            return await message.edit("This is the first page.")
         elif message.command[0].lower() == "pq":
             await message.reply_to_message.delete()
             return await message.edit("Help closed.")
