@@ -24,13 +24,11 @@ import subprocess
 import sys
 import time
 import traceback
-from PIL import Image, ImageEnhance
+from PIL import Image
 from io import BytesIO
-import aiohttp
 from types import ModuleType
 from typing import Dict, Tuple
 
-from PIL import Image
 import psutil
 from pyrogram import Client, errors, enums
 from pyrogram.errors import FloodWait, MessageNotModified, UserNotParticipant
