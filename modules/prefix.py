@@ -29,7 +29,18 @@ async def setprefix(_, message: Message):
     if len(message.command) > 1:
         pref = message.command[1]
         db.set("core.main", "prefix", pref)
-        await message.edit(f"<b>Prefix [ <code>{pref}</code> ] is set!</b>")
+        await message.edit(
+            f"<b>Prefix [ <code>{pref}</code> ] is set!\nRestarting...</b>"
+        )
+        db.set(
+            "core.updater",
+            "restart_info",
+            {
+                "type": "restart",
+                "chat_id": message.chat.id,
+                "message_id": message.id,
+            },
+        )
         restart()
     else:
         await message.edit("<b>The prefix must not be empty!</b>")

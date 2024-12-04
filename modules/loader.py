@@ -26,6 +26,7 @@ from pyrogram.types import Message
 
 from utils.misc import modules_help, prefix
 from utils.scripts import restart
+from utils.db import db
 
 
 BASE_PATH = os.path.abspath(os.getcwd())
@@ -85,35 +86,39 @@ async def loadmod(_, message: Message):
             "https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/"
         ):
             module_name = url.split("/")[-1].split(".")[0]
-        elif "/" not in url and "." not in url:
+        elif "." not in url:
             module_name = url.lower()
-            url = f"https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/{module_name}.py"
-        else:
-            if "/" in url:
-                for category in CATEGORIES:
-                    if url.startswith(f"{category}/"):
-                        url = f"https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/{url}.py"
-                        break
+            with open("modules/full.txt", "r") as f:
+                modules_dict = {
+                    line.split("/")[-1].split()[0]: line.strip() for line in f
+                }
+            if module_name in modules_dict:
+                url = f"https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/{modules_dict[module_name]}.py"
             else:
-                modules_hashes = requests.get(
-                    "https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/modules_hashes.txt"
-                ).text
-                resp = requests.get(url)
+                await message.edit(
+                    f"<b>Module <code>{module_name}</code> is not found</b>"
+                )
+                return
+        else:
+            modules_hashes = requests.get(
+                "https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/modules_hashes.txt"
+            ).text
+            resp = requests.get(url)
 
-                if not resp.ok:
-                    await message.edit(
-                        f"<b>Troubleshooting with downloading module <code>{url}</code></b>",
-                    )
-                    return
+            if not resp.ok:
+                await message.edit(
+                    f"<b>Troubleshooting with downloading module <code>{url}</code></b>",
+                )
+                return
 
-                if hashlib.sha256(resp.content).hexdigest() not in modules_hashes:
-                    return await message.edit(
-                        "<b>Only <a href=https://github.com/The-MoonTg-project/custom_modules/tree/main/modules_hashes.txt>"
-                        "verified</a> modules or from the official "
-                        "<a href=https://github.com/The-MoonTg-project/custom_modules>"
-                        "custom_modules</a> repository are supported!</b>",
-                        disable_web_page_preview=True,
-                    )
+            if hashlib.sha256(resp.content).hexdigest() not in modules_hashes:
+                return await message.edit(
+                    "<b>Only <a href=https://github.com/The-MoonTg-project/custom_modules/tree/main/modules_hashes.txt>"
+                    "verified</a> modules or from the official "
+                    "<a href=https://github.com/The-MoonTg-project/custom_modules>"
+                    "custom_modules</a> repository are supported!</b>",
+                    disable_web_page_preview=True,
+                )
 
             module_name = url.split("/")[-1].split(".")[0]
 
@@ -149,7 +154,18 @@ async def loadmod(_, message: Message):
             )
         os.rename(file_name, f"./modules/custom_modules/{module_name}.py")
 
-    await message.edit(f"<b>The module <code>{module_name}</code> is loaded!</b>")
+    await message.edit(
+        f"<b>The module <code>{module_name}</code> is loaded!\nRestarting...</b>"
+    )
+    db.set(
+        "core.updater",
+        "restart_info",
+        {
+            "type": "restart",
+            "chat_id": message.chat.id,
+            "message_id": message.id,
+        },
+    )
     restart()
 
 
@@ -173,7 +189,18 @@ async def unload_mods(_, message: Message):
                 cwd=f"{BASE_PATH}/musicbot",
             )
             shutil.rmtree(f"{BASE_PATH}/musicbot")
-        await message.edit(f"<b>The module <code>{module_name}</code> removed!</b>")
+        await message.edit(
+            f"<b>The module <code>{module_name}</code> removed!\nRestarting...</b>"
+        )
+        db.set(
+            "core.updater",
+            "restart_info",
+            {
+                "type": "restart",
+                "chat_id": message.chat.id,
+                "message_id": message.id,
+            },
+        )
         restart()
     elif os.path.exists(f"{BASE_PATH}/modules/{module_name}.py"):
         await message.edit(
@@ -183,34 +210,60 @@ async def unload_mods(_, message: Message):
         await message.edit(f"<b>Module <code>{module_name}</code> is not found</b>")
 
 
-@Client.on_message(filters.command(["loadallmods"], prefix) & filters.me)
+@Client.on_message(filters.command(["loadallmods", "lmall"], prefix) & filters.me)
 async def load_all_mods(_, message: Message):
     await message.edit("<b>Fetching info...</b>")
 
     if not os.path.exists(f"{BASE_PATH}/modules/custom_modules"):
         os.mkdir(f"{BASE_PATH}/modules/custom_modules")
 
-    modules_list = requests.get(
-        "https://api.github.com/repos/The-MoonTg-project/custom_modules/contents/"
-    ).json()
+    with open("modules/full.txt", "r") as f:
+        modules_list = f.read().splitlines()
 
-    new_modules = {}
-    for module_info in modules_list:
-        if not module_info["name"].endswith(".py"):
+    await message.edit("<b>Loading modules...</b>")
+    for module_name in modules_list:
+        url = f"https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/{module_name}.py"
+        resp = requests.get(url)
+        if not resp.ok:
             continue
-        if os.path.exists(f'{BASE_PATH}/modules/custom_modules/{module_info["name"]}'):
-            continue
-        new_modules[module_info["name"][:-3]] = module_info["download_url"]
-    if not new_modules:
-        return await message.edit("<b>All modules already loaded</b>")
-
-    await message.edit(f'<b>Loading new modules: {" ".join(new_modules.keys())}</b>')
-    for name, url in new_modules.items():
-        with open(f"./modules/custom_modules/{name}.py", "wb") as f:
-            f.write(requests.get(url).content)
+        with open(
+            f"./modules/custom_modules/{module_name.split('/')[1]}.py", "wb"
+        ) as f:
+            f.write(resp.content)
 
     await message.edit(
-        f'<b>Successfully loaded new modules: {" ".join(new_modules.keys())}</b>',
+        f"<b>Successfully loaded new modules: {len(modules_list)}\nRestarting...</b>",
+    )
+    db.set(
+        "core.updater",
+        "restart_info",
+        {
+            "type": "restart",
+            "chat_id": message.chat.id,
+            "message_id": message.id,
+        },
+    )
+    restart()
+
+
+@Client.on_message(filters.command(["unloadallmods", "ulmall"], prefix) & filters.me)
+async def load_all_mods(_, message: Message):
+    await message.edit("<b>Fetching info...</b>")
+
+    if not os.path.exists(f"{BASE_PATH}/modules/custom_modules"):
+        return await message.edit("<b>You don't have any modules installed</b>")
+    else:
+        shutil.rmtree(f"{BASE_PATH}/modules/custom_modules")
+        await message.edit("<b>Successfully unloaded all modules!\nRestarting...</b>")
+
+    db.set(
+        "core.updater",
+        "restart_info",
+        {
+            "type": "restart",
+            "chat_id": message.chat.id,
+            "message_id": message.id,
+        },
     )
     restart()
 
@@ -231,15 +284,18 @@ async def updateallmods(_, message: Message):
         if not module_name.endswith(".py"):
             continue
 
-        resp = requests.get(
-            f"https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/{module_name}"
-        )
-        if not resp.ok:
-            modules_installed.remove(module_name)
-            continue
+        with open("modules/full.txt", "r") as f:
+            modules_dict = {line.split("/")[-1].split()[0]: line.strip() for line in f}
+        if module_name in modules_dict:
+            resp = requests.get(
+                f"https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/{modules_dict[module_name]}.py"
+            )
+            if not resp.ok:
+                modules_installed.remove(module_name)
+                continue
 
-        with open(f"./modules/custom_modules/{module_name}", "wb") as f:
-            f.write(resp.content)
+            with open(f"./modules/custom_modules/{module_name}", "wb") as f:
+                f.write(resp.content)
 
     await message.edit(f"<b>Successfully updated {len(modules_installed)} modules</b>")
 
@@ -251,5 +307,13 @@ modules_help["loader"] = {
     "unloadmod [module_name]*": "Delete module",
     "modhash [link]*": "Get module hash by link",
     "loadallmods": "Load all custom modules (use it at your own risk)",
-    "updateallmods": "Update all custom modules",
+    "unloadallmods": "Unload all custom modules",
+    "updateallmods": "Update all custom modules"
+    "\n\n* - required argument"
+    "\n <b>short cmds:</b>"
+    "\n loadmod - lm"
+    "\n unloadmod - ulm"
+    "\n modhash - mh"
+    "\n loadallmods - lmall"
+    "\n unloadallmods - ulmall",
 }
