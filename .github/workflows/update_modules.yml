@@ -1,0 +1,47 @@
+name: Update Modules
+
+on:
+  repository_dispatch:
+    types:
+      - custom-modules-updated
+
+jobs:
+  update-modules:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Main repository
+        uses: actions/checkout@v3
+
+      - name: Checkout Modules repository
+        uses: actions/checkout@v3
+        with:
+          repository: The-MoonTg-project/custom_modules
+          path: custom_modules
+
+      - name: Update file
+        run: |
+          ls -R
+          cd custom_modules
+          printf "%s\n" "$(ls -d */*)" | sed 's/\.py$//' > ../modules/full.txt
+          cd ..
+          rm -rf custom_modules/
+
+      - name: Commit changes
+        run: |
+          git add ./modules/full.txt
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          echo "new_modules_available=true" >> $GITHUB_ENV
+
+      - name: Create Pull Request
+        if: success() && env.new_modules_available == 'true'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Update modules/full.txt"
+          branch: update-modules-file
+          title: "Update for custom_modules"
+          body: "This PR updates the modules/full.txt file with the latest changes."
