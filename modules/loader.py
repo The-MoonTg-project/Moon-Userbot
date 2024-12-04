@@ -29,6 +29,22 @@ from utils.scripts import restart
 
 
 BASE_PATH = os.path.abspath(os.getcwd())
+CATEGORIES = [
+    "ai",
+    "dl",
+    "admin",
+    "anime",
+    "fun",
+    "images",
+    "info",
+    "misc",
+    "music",
+    "news",
+    "paste",
+    "rev",
+    "tts",
+    "utils",
+]
 
 
 @Client.on_message(filters.command(["modhash", "mh"], prefix) & filters.me)
@@ -73,25 +89,31 @@ async def loadmod(_, message: Message):
             module_name = url.lower()
             url = f"https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/{module_name}.py"
         else:
-            modules_hashes = requests.get(
-                "https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/modules_hashes.txt"
-            ).text
-            resp = requests.get(url)
+            if "/" in url:
+                for category in CATEGORIES:
+                    if url.startswith(f"{category}/"):
+                        url = f"https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/{url}.py"
+                        break
+            else:
+                modules_hashes = requests.get(
+                    "https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/modules_hashes.txt"
+                ).text
+                resp = requests.get(url)
 
-            if not resp.ok:
-                await message.edit(
-                    f"<b>Troubleshooting with downloading module <code>{url}</code></b>",
-                )
-                return
+                if not resp.ok:
+                    await message.edit(
+                        f"<b>Troubleshooting with downloading module <code>{url}</code></b>",
+                    )
+                    return
 
-            if hashlib.sha256(resp.content).hexdigest() not in modules_hashes:
-                return await message.edit(
-                    "<b>Only <a href=https://github.com/The-MoonTg-project/custom_modules/tree/main/modules_hashes.txt>"
-                    "verified</a> modules or from the official "
-                    "<a href=https://github.com/The-MoonTg-project/custom_modules>"
-                    "custom_modules</a> repository are supported!</b>",
-                    disable_web_page_preview=True,
-                )
+                if hashlib.sha256(resp.content).hexdigest() not in modules_hashes:
+                    return await message.edit(
+                        "<b>Only <a href=https://github.com/The-MoonTg-project/custom_modules/tree/main/modules_hashes.txt>"
+                        "verified</a> modules or from the official "
+                        "<a href=https://github.com/The-MoonTg-project/custom_modules>"
+                        "custom_modules</a> repository are supported!</b>",
+                        disable_web_page_preview=True,
+                    )
 
             module_name = url.split("/")[-1].split(".")[0]
 
