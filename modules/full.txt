@@ -29,9 +29,9 @@ fun/circle
 fun/demotivator
 fun/dice
 fun/durov
+fun/f
 fun/fakeactions
 fun/fliptext
-fun/f
 fun/hearts
 fun/jac
 fun/mafia
@@ -46,8 +46,8 @@ images/imgur
 images/ncode
 images/pinterest
 images/risearch
-images/unsplash2
 images/unsplash
+images/unsplash2
 info/covidinfo
 info/forecast
 info/gsm
