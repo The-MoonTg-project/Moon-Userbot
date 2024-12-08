@@ -30,7 +30,7 @@ from types import ModuleType
 from typing import Dict, Tuple
 
 import psutil
-from pyrogram import Client, errors, enums
+from pyrogram import Client, errors, enums, filters
 from pyrogram.errors import FloodWait, MessageNotModified, UserNotParticipant
 from pyrogram.types import Message
 from pyrogram.enums import ChatMembersFilter
@@ -513,6 +513,15 @@ async def unload_module(module_name: str, client: Client) -> bool:
     del sys.modules[path]
 
     return True
+
+
+def no_prefix(handler):
+    def func(_, __, message):
+        if message.text and not message.text.startswith(handler):
+            return True
+        return False
+
+    return filters.create(func)
 
 
 def parse_meta_comments(code: str) -> Dict[str, str]:
