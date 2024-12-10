@@ -16,7 +16,6 @@
 
 import datetime
 import os
-import subprocess
 import time
 
 import aiofiles
@@ -26,6 +25,7 @@ from pyrogram.types import Message
 
 from utils.misc import modules_help, prefix
 from utils.scripts import edit_or_reply, format_exc, progress
+from utils.rentry import new
 
 
 async def read_file(file_path):
@@ -96,20 +96,19 @@ async def openfile(client: Client, message: Message):
             "<code>File Content is too long... Pasting to rentry...</code>"
         )
         content_new = f"```{code_start[11:-2]}\n{content}```"
-        paste = subprocess.run(
-            ["rentry", "new", content_new], capture_output=True, text=True, check=True
+        paste = new(url="", edit_code="", text=content_new)
+        if paste["status"] != "200":
+            await ms.edit_text(f"<b>Error:</b> <code>{paste['content']}</code>")
+            return
+        await client.send_message(
+            "me",
+            f"Here's your edit code for Url: {paste['url']}\nEdit code:  <code>{paste['edit_code']}</code>",
+            disable_web_page_preview=True,
         )
-        await client.send_message("me", paste.stdout, disable_web_page_preview=True)
-        lines = paste.stdout.split("\n")
-        for line in lines:
-            parts = line.split()
-            if parts[0].strip() == "Url:":
-                url = "".join(parts[1:]).split()[0]
-                await ms.edit_text(
-                    f"<b>File Name:</b> <code>{file_name[0]}</code>\n<b>Size:</b> <code>{file_size} bytes</code>\n<b>Last Modified:</b> <code>{last_modified}</code>\n<b>Content:</b> {url}\n<b>Note:</b> <code>Edit Code has been sent to your saved messages</code>",
-                    disable_web_page_preview=True,
-                )
-                break
+        await ms.edit_text(
+            f"<b>File Name:</b> <code>{file_name[0]}</code>\n<b>Size:</b> <code>{file_size} bytes</code>\n<b>Last Modified:</b> <code>{last_modified}</code>\n<b>Content:</b> {paste['url']}\n<b>Note:</b> <code>Edit Code has been sent to your saved messages</code>",
+            disable_web_page_preview=True,
+        )
 
     except Exception as e:
         await ms.edit_text(format_exc(e))

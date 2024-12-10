@@ -38,7 +38,6 @@
 #     "beautifulsoup4",
 #     "aiohttp",
 #     "aiofiles",
-#     "rentry",
 #     "pySmartDL",
 #     "lexica-api",
 # ]
