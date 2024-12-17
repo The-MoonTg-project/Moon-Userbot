@@ -12,6 +12,7 @@ ai/gemini
 ai/gpt3
 ai/grokai
 ai/huggingface
+ai/markitdown
 ai/midai
 ai/pdf2md
 ai/sdxl
