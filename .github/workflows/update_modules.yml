@@ -25,6 +25,7 @@ jobs:
           cd custom_modules
           printf "%s\n" "$(ls -d */*)" | sed 's/\.py$//' > ../modules/full.txt
           cd ..
+          rm -rf custom_modules/
 
       - name: Commit changes
         run: |
