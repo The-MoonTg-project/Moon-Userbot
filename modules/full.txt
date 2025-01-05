@@ -52,6 +52,7 @@ images/pinterest
 images/risearch
 images/unsplash
 images/unsplash2
+info/apksearch
 info/covidinfo
 info/forecast
 info/gsm
