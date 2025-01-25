@@ -9,6 +9,7 @@ ai/chatbot
 ai/cohere
 ai/flux
 ai/gemini
+ai/gpt
 ai/grokai
 ai/huggingface
 ai/markitdown
