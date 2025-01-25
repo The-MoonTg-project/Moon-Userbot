@@ -96,6 +96,7 @@ paste/haste
 rev/apkid
 rev/dexrepair
 rev/rasm
+tts/edge-tts
 tts/playht
 tts/tts
 utils/alive
