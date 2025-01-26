@@ -15,12 +15,13 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import os
+import time
 
 from pyrogram import Client, filters
 from pyrogram.types import Message
 
 from utils.misc import modules_help, prefix
-from utils.scripts import format_exc
+from utils.scripts import format_exc, progress
 
 
 @Client.on_message(filters.command("upl", prefix) & filters.me)
@@ -44,7 +45,12 @@ async def upl(client: Client, message: Message):
 
     try:
         await message.edit("<b>Uploading Now...</b>")
-        await client.send_document(message.chat.id, link)
+        await client.send_document(
+            message.chat.id,
+            link,
+            progress=progress,
+            progress_args=(message, time.time(), "<b>Uploading Now...</b>", link),
+        )
         await message.delete()
     except Exception as e:
         await message.edit(format_exc(e))
@@ -53,7 +59,11 @@ async def upl(client: Client, message: Message):
 @Client.on_message(filters.command("dlf", prefix) & filters.me)
 async def dlf(client: Client, message: Message):
     if message.reply_to_message:
-        await client.download_media(message.reply_to_message)
+        await client.download_media(
+            message.reply_to_message,
+            progress=progress,
+            progress_args=(message, time.time(), "<b>Uploading Now...</b>"),
+        )
         await message.edit("<b>Downloaded Successfully!</b>")
     else:
         await message.edit(f"<b>Usage: </b><code>{prefix}dlf [reply to a file]</code>")
@@ -65,7 +75,12 @@ async def mupl(client: Client, message: Message):
     try:
         if os.path.exists(link):
             await message.edit("<b>Uploading Now...</b>")
-            await client.send_document(message.chat.id, link)
+            await client.send_document(
+                message.chat.id,
+                link,
+                progress=progress,
+                progress_args=(message, time.time(), "<b>Uploading Now...</b>"),
+            )
             await message.delete()
         return await message.edit("<b>Error: </b><code>LOGS</code> file doesn't exist.")
     except Exception as e:
@@ -93,7 +108,12 @@ async def uplr(client: Client, message: Message):
 
     try:
         await message.edit("<b>Uploading Now...</b>")
-        await client.send_document(message.chat.id, link)
+        await client.send_document(
+            message.chat.id,
+            link,
+            progress=progress,
+            progress_args=(message, time.time(), "<b>Uploading Now...</b>", link),
+        )
         await message.delete()
     except Exception as e:
         await message.edit(format_exc(e))

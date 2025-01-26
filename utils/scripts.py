@@ -132,8 +132,7 @@ async def progress(current, total, message, start, type_of_ps, file_name=None):
         if file_name:
             try:
                 await message.edit(
-                    f"{type_of_ps}\n**File Name:** `{file_name}`\n{tmp}",
-                    parse_mode=enums.ParseMode.MARKDOWN,
+                    f"{type_of_ps}\n<b>File Name:</b> <code>{file_name}</code>\n{tmp}"
                 )
             except FloodWait as e:
                 await asyncio.sleep(e.x)
@@ -141,9 +140,7 @@ async def progress(current, total, message, start, type_of_ps, file_name=None):
                 pass
         else:
             try:
-                await message.edit(
-                    f"{type_of_ps}\n{tmp}", parse_mode=enums.ParseMode.MARKDOWN
-                )
+                await message.edit(f"{type_of_ps}\n{tmp}")
             except FloodWait as e:
                 await asyncio.sleep(e.x)
             except MessageNotModified:
