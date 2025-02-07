@@ -104,9 +104,9 @@ def load_missing_modules():
             if resp.ok:
                 with open(module_path, "wb") as f:
                     f.write(resp.content)
-                logging.info(f"Loaded missing module: {module_name}")
+                logging.info(f"Loaded missing module: %s", {module_name})
             else:
-                logging.warning(f"Failed to load module: {module_name}")
+                logging.warning(f"Failed to load module: %s", {module_name})
 
 
 async def main():
