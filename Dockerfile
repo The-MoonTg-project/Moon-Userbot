@@ -4,5 +4,7 @@ COPY . /app
 RUN apt-get -qq update && apt-get -qq install -y git wget ffmpeg mediainfo \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
-RUN python -m venv --copies /opt/venv && /opt/venv/bin/pip install --no-cache-dir -r requirements.txt
-CMD ["/opt/venv/bin/python", "main.py"]
+RUN python -m venv --copies /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+RUN pip install --no-cache-dir -r requirements.txt
+CMD ["python", "main.py"]
