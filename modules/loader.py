@@ -154,6 +154,10 @@ async def loadmod(_, message: Message):
             )
         os.rename(file_name, f"./modules/custom_modules/{module_name}.py")
 
+    all_modules = db.get("custom.modules", "allModules", [])
+    if module_name not in all_modules:
+        all_modules.append(module_name)
+        db.set("custom.modules", "allModules", all_modules)
     await message.edit(
         f"<b>The module <code>{module_name}</code> is loaded!\nRestarting...</b>"
     )
@@ -189,6 +193,10 @@ async def unload_mods(_, message: Message):
                 cwd=f"{BASE_PATH}/musicbot",
             )
             shutil.rmtree(f"{BASE_PATH}/musicbot")
+        all_modules = db.get("custom.modules", "allModules", [])
+        if module_name in all_modules:
+            all_modules.remove(module_name)
+            db.set("custom.modules", "allModules", all_modules)
         await message.edit(
             f"<b>The module <code>{module_name}</code> removed!\nRestarting...</b>"
         )
@@ -253,6 +261,7 @@ async def unload_all_mods(_, message: Message):
     if not os.path.exists(f"{BASE_PATH}/modules/custom_modules"):
         return await message.edit("<b>You don't have any modules installed</b>")
     shutil.rmtree(f"{BASE_PATH}/modules/custom_modules")
+    db.set("custom.modules", "allModules", [])
     await message.edit("<b>Successfully unloaded all modules!\nRestarting...</b>")
 
     db.set(

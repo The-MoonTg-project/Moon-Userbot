@@ -53,21 +53,22 @@ from pathlib import Path
 from pyrogram import Client, idle, errors
 from pyrogram.enums.parse_mode import ParseMode
 from pyrogram.raw.functions.account import GetAuthorizations, DeleteAccount
+import requests
 
 from utils import config
 from utils.db import db
 from utils.misc import gitrepo, userbot_version
 from utils.scripts import restart, load_module
 
-script_path = os.path.dirname(os.path.realpath(__file__))
-if script_path != os.getcwd():
-    os.chdir(script_path)
+SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
+if SCRIPT_PATH != os.getcwd():
+    os.chdir(SCRIPT_PATH)
 
 common_params = {
     "api_id": config.api_id,
     "api_hash": config.api_hash,
     "hide_password": True,
-    "workdir": script_path,
+    "workdir": SCRIPT_PATH,
     "app_version": userbot_version,
     "device_model": f"Moon-Userbot @ {gitrepo.head.commit.hexsha[:7]}",
     "system_version": platform.version() + " " + platform.machine(),
@@ -80,6 +81,32 @@ if config.STRINGSESSION:
     common_params["session_string"] = config.STRINGSESSION
 
 app = Client("my_account", **common_params)
+
+
+def load_missing_modules():
+    all_modules = db.get("custom.modules", "allModules", [])
+    if not all_modules:
+        return
+
+    if not os.path.exists(f"{SCRIPT_PATH}/modules/custom_modules"):
+        os.mkdir(f"{SCRIPT_PATH}/modules/custom_modules")
+
+    for module_name in all_modules:
+        module_path = f"{SCRIPT_PATH}/modules/custom_modules/{module_name}.py"
+        if not os.path.exists(module_path):
+            with open("modules/full.txt", "r") as f:
+                modules_dict = {
+                    line.split("/")[-1].split()[0]: line.strip() for line in f
+                }
+            if module_name in modules_dict:
+                url = f"https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/{modules_dict[module_name]}.py"
+            resp = requests.get(url)
+            if resp.ok:
+                with open(module_path, "wb") as f:
+                    f.write(resp.content)
+                logging.info(f"Loaded missing module: {module_name}")
+            else:
+                logging.warning(f"Failed to load module: {module_name}")
 
 
 async def main():
@@ -107,6 +134,7 @@ async def main():
         os.rename("./my_account.session", "./my_account.session-old")
         restart()
 
+    load_missing_modules()
     success_modules = 0
     failed_modules = 0
 
