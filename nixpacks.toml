@@ -2,7 +2,7 @@
 nixPkgs = ['...', 'git', 'wget', 'ffmpeg', 'mediainfo']
 
 [phases.install]
-cmds = ["pip install --no-cache-dir -r requirements.txt"]
+cmds = ["python -m venv --copies /opt/venv && . /opt/venv/bin/activate && pip install --no-cache-dir -r requirements.txt"]
 
 [start]
 cmd = "python main.py"
