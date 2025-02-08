@@ -30,7 +30,7 @@ in_contact_list = filters.create(lambda _, __, message: message.from_user.is_con
 
 is_support = filters.create(lambda _, __, message: message.chat.is_support)
 
-message_counts = {}
+USER_WARNINGS = {}
 
 
 @Client.on_message(
@@ -42,8 +42,6 @@ message_counts = {}
     & anti_pm_enabled
 )
 async def anti_pm_handler(client: Client, message: Message):
-    m_n = 0
-    warns = db.get("core.antipm", "warns", m_n)
     user_id = message.from_user.id
     ids = message.chat.id
     b_f = await client.get_me()
@@ -58,10 +56,12 @@ This is the Assistant Of {u_n}.</b>
 Do not spam further messages else I may have to block you!</i>
 
 <b>This is an automated message by the assistant.</b>
-<b><u>Currently You Have <code>{warns}</code> Warnings.</u></b>
+<b><u>Currently You Have <code>{USER_WARNINGS.get(user_id, 0)}</code> Warnings.</u></b>
     """
     else:
-        default_text = default_text.format(user=u_f, my_name=u_n, warns=warns)
+        default_text = default_text.format(
+            user=u_f, my_name=u_n, warns=USER_WARNINGS.get(user_id, 0)
+        )
 
     if db.get("core.antipm", "spamrep", False):
         user_info = await client.resolve_peer(ids)
@@ -81,24 +81,18 @@ Do not spam further messages else I may have to block you!</i>
         else:
             await client.send_message(message.chat.id, default_text)
 
-        if user_id in message_counts:
-            message_counts[user_id] += 1
-            m_n = db.get("core.antipm", "warns")
-            m_n_n = m_n + 1
-            db.set("core.antipm", "warns", m_n_n)
+        if user_id in USER_WARNINGS:
+            USER_WARNINGS[user_id] += 1
         else:
-            message_counts[user_id] = 1
-            m_n_n = 1
-            db.set("core.antipm", "warns", m_n_n)
+            USER_WARNINGS[user_id] = 1
 
-        if message_counts[user_id] > pm_limit:
+        if USER_WARNINGS[user_id] > pm_limit:
             await client.send_message(
                 message.chat.id,
                 "<b>Ehm...! That was your Last warn, Bye Bye see you L0L</b>",
             )
             await client.block_user(user_id)
-            del message_counts[user_id]
-            db.set("core.antipm", "warns", 0)
+            del USER_WARNINGS[user_id]
 
 
 @Client.on_message(filters.command(["antipm", "anti_pm"], prefix) & filters.me)
@@ -175,7 +169,8 @@ async def add_contact(_, message: Message):
     ids = message.chat.id
 
     db.set("core.antipm", f"allowusers{ids}", ids)
-    db.set("core.antipm", "warns", 0)
+    if ids in USER_WARNINGS:
+        del USER_WARNINGS[ids]
     await message.edit("User Approved!")
 
 
