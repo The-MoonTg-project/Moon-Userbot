@@ -30,7 +30,6 @@ in_contact_list = filters.create(lambda _, __, message: message.from_user.is_con
 
 is_support = filters.create(lambda _, __, message: message.chat.is_support)
 
-
 message_counts = {}
 
 
@@ -51,7 +50,6 @@ async def anti_pm_handler(client: Client, message: Message):
     u_n = b_f.first_name
     user = await client.get_users(ids)
     u_f = user.first_name
-    user_info = await client.resolve_peer(ids)
     default_text = db.get("core.antipm", "antipm_msg", None)
     if default_text is None:
         default_text = f"""<b>Hello, {u_f}!
@@ -64,17 +62,24 @@ Do not spam further messages else I may have to block you!</i>
     """
     else:
         default_text = default_text.format(user=u_f, my_name=u_n, warns=warns)
+
     if db.get("core.antipm", "spamrep", False):
+        user_info = await client.resolve_peer(ids)
         await client.invoke(functions.messages.ReportSpam(peer=user_info))
+
     if db.get("core.antipm", "block", False):
-        await client.block_user(user_info)
+        await client.block_user(user_id)
 
     if db.get("core.antipm", f"disallowusers{ids}") == user_id != db.get(
         "core.antipm", f"allowusers{ids}"
     ) or db.get("core.antipm", f"disallowusers{ids}") != user_id != db.get(
         "core.antipm", f"allowusers{ids}"
     ):
-        await client.send_message(message.chat.id, f"{default_text}")
+        default_pic = db.get("core.antipm", "antipm_pic", None)
+        if default_pic:
+            await client.send_photo(message.chat.id, default_pic, caption=default_text)
+        else:
+            await client.send_message(message.chat.id, default_text)
 
         if user_id in message_counts:
             message_counts[user_id] += 1
@@ -186,9 +191,9 @@ async def del_contact(_, message: Message):
 @Client.on_message(filters.command(["setantipmmsg", "sam"], prefix) & filters.me)
 async def set_antipm_msg(_, message: Message):
     if not message.reply_to_message:
-        return await message.edit(
-            "Reply to a message to set it as your antipm message."
-        )
+        db.set("core.antipm", "antipm_msg", None)
+        await message.edit("antipm message set to default.")
+        return
 
     msg = message.reply_to_message
     afk_msg = msg.text or msg.caption
@@ -223,12 +228,31 @@ async def set_antipm_msg(_, message: Message):
     await message.edit(f"antipm message set to:\n\n{afk_msg}")
 
 
+@Client.on_message(filters.command(["setantipmpic", "sap"], prefix) & filters.me)
+async def set_antipm_pic(_, message: Message):
+    if not message.reply_to_message or not message.reply_to_message.photo:
+        db.set("core.antipm", "antipm_pic", None)
+        await message.edit("antipm picture set to default.")
+        return
+
+    photo = message.reply_to_message.photo
+    file_id = photo.file_id
+
+    old_antipm_pic = db.get("core.antipm", "antipm_pic", None)
+    if old_antipm_pic:
+        db.remove("core.antipm", "antipm_pic")
+    db.set("core.antipm", "antipm_pic", file_id)
+    await message.edit("antipm picture set successfully.")
+
+
 modules_help["antipm"] = {
     "antipm [enable|disable]*": "Enable Pm permit",
     "antipm_report [enable|disable]*": "Enable spam reporting",
     "antipm_block [enable|disable]*": "Enable user blocking",
     "setantipmmsg [reply to message]*": "Set antipm message. Use {user} to mention the user and {my_name} to mention your name and {warns} to mention the warns count.",
     "sam [reply to message]*": "Set antipm message. Use {user} to mention the user and {my_name} to mention your name and {warns} to mention the warns count.",
+    "setantipmpic [reply to photo]*": "Set antipm picture.",
+    "sap [reply to photo]*": "Set antipm picture.",
     "a": "Approve User",
     "d": "DisApprove User",
 }
