@@ -69,11 +69,6 @@
       "description": "ONLY, If you want to use cohere ai plugin You can get it from https://dashboard.cohere.com/api-keys",
       "value": "123456779:ABCDE",
       "required": true
-    },
-    "VCA_API_KEY": {
-      "description": "ONLY, If you want to use ai tools like sdxl,upscale plugin You can get it from https://t.me/VisionCraft_bot",
-      "value": "123456789:ABCDE",
-      "required": true
     }
   },
   "buildpacks": [

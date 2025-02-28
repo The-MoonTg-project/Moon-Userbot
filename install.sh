@@ -182,14 +182,6 @@ if [[ $cohere_key = "" ]]; then
   printf "NOTE: API Not set; you'll not be able to use Coral AI modules\n"
 fi
 
-printf "Enter VCA_API_KEY for aiutils\n"
-printf "Learn How to Get One --> https://github.com/VisionCraft-org/VisionCraft?tab=readme-ov-file#obtaining-an-api-key\n"
-read -r -p "VCA_API_KEY > " vca_api_key
-
-if [[ $vca_api_key = "" ]]; then
-  printf "NOTE: API Not set; you'll not be able to use aiutils module/plugins\n"
-fi
-
 while true; do
   # Prompt for database type and database URL if MongoDB is selected
   printf "${YELLOW}Choose database type:${NC}\n" # skipcq
@@ -256,7 +248,6 @@ APIFLASH_KEY=${apiflash_key}
 RMBG_KEY=${rmbg_key}
 VT_KEY=${vt_key}
 GEMINI_KEY=${gemini_key}
-VCA_API_KEY=${vca_api_key}
 COHERE_KEY=${cohere_key}
 PM_LIMIT=${pm_limit}
 SECOND_SESSION=${second_session}

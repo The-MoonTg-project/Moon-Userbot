@@ -69,8 +69,6 @@
 
 - `COHERE_KEY` - ONLY, If you want to use cohere ai plugin You can get it from [here](https://dashboard.cohere.com/api-keys)
 
-- `VCA_API_KEY` - ONLY, If you want to use ai tools like sdxl,upscale plugin You can get it from [here](https://github.com/VisionCraft-org/VisionCraft?tab=readme-ov-file#obtaining-an-api-key)
-
 ## ☁️ Cloud Host
 | Koyeb | Heroku | Render |
 |-------|--------|--------|
