@@ -78,22 +78,29 @@ async def update(_, message: Message):
                 [sys.executable, "-m", "pip", "install", "-U", "pip"], check=True
             )
         subprocess.run(["git", "pull"], check=True)
-        subprocess.run(
-            [
-                sys.executable,
-                "-m",
-                "pip",
-                "install",
-                "-U",
-                "-r",
-                "requirements.txt",
-            ],
-            check=True,
-        )
-        subprocess.run(
-            [sys.executable, "-m", "pip", "install", "-U", *requirements_list],
-            check=True,
-        )
+
+        if (
+            os.path.exists("requirements.txt")
+            and os.path.getsize("requirements.txt") > 0
+        ):
+            subprocess.run(
+                [
+                    sys.executable,
+                    "-m",
+                    "pip",
+                    "install",
+                    "-U",
+                    "-r",
+                    "requirements.txt",
+                ],
+                check=True,
+            )
+
+        if requirements_list:
+            subprocess.run(
+                [sys.executable, "-m", "pip", "install", "-U", *requirements_list],
+                check=True,
+            )
     except Exception as e:
         await message.edit(format_exc(e))
         db.remove("core.updater", "restart_info")
