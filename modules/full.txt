@@ -110,6 +110,7 @@ utils/duckduckgo
 utils/fedutils
 utils/files
 utils/fwdall
+utils/gcast
 utils/getmsg
 utils/google
 utils/in
