@@ -88,25 +88,23 @@ def load_missing_modules():
     if not all_modules:
         return
 
-    if not os.path.exists(f"{SCRIPT_PATH}/modules/custom_modules"):
-        os.mkdir(f"{SCRIPT_PATH}/modules/custom_modules")
+    custom_modules_path = f"{SCRIPT_PATH}/modules/custom_modules"
+    os.makedirs(custom_modules_path, exist_ok=True)
+
+    with open("modules/full.txt", "r") as f:
+        modules_dict = {line.split("/")[-1].split()[0]: line.strip() for line in f}
 
     for module_name in all_modules:
-        module_path = f"{SCRIPT_PATH}/modules/custom_modules/{module_name}.py"
-        if not os.path.exists(module_path):
-            with open("modules/full.txt", "r") as f:
-                modules_dict = {
-                    line.split("/")[-1].split()[0]: line.strip() for line in f
-                }
-            if module_name in modules_dict:
-                url = f"https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/{modules_dict[module_name]}.py"
+        module_path = f"{custom_modules_path}/{module_name}.py"
+        if not os.path.exists(module_path) and module_name in modules_dict:
+            url = f"https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/{modules_dict[module_name]}.py"
             resp = requests.get(url)
             if resp.ok:
                 with open(module_path, "wb") as f:
                     f.write(resp.content)
-                logging.info("Loaded missing module: %s", {module_name})
+                logging.info("Loaded missing module: %s", module_name)
             else:
-                logging.warning("Failed to load module: %s", {module_name})
+                logging.warning("Failed to load module: %s", module_name)
 
 
 async def main():
