@@ -91,8 +91,13 @@ def load_missing_modules():
     custom_modules_path = f"{SCRIPT_PATH}/modules/custom_modules"
     os.makedirs(custom_modules_path, exist_ok=True)
 
-    with open("modules/full.txt", "r") as f:
-        modules_dict = {line.split("/")[-1].split()[0]: line.strip() for line in f}
+    try:
+        f = requests.get(
+                "https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/full.txt"
+            ).text
+    except Exception:
+        return logging.error("Failed to fetch custom modules list")
+    modules_dict = {line.split("/")[-1].split()[0]: line.strip() for line in f.splitlines()}
 
     for module_name in all_modules:
         module_path = f"{custom_modules_path}/{module_name}.py"

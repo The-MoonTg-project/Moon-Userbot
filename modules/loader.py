@@ -80,6 +80,7 @@ async def loadmod(_, message: Message):
         return
 
     if len(message.command) > 1:
+        await message.edit("<b>Fetching module...</b>")
         url = message.command[1].lower()
 
         if url.startswith(
@@ -88,10 +89,13 @@ async def loadmod(_, message: Message):
             module_name = url.split("/")[-1].split(".")[0]
         elif "." not in url:
             module_name = url.lower()
-            with open("modules/full.txt", "r") as f:
-                modules_dict = {
-                    line.split("/")[-1].split()[0]: line.strip() for line in f
-                }
+            try:
+                f = requests.get(
+                    "https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/full.txt"
+                ).text
+            except Exception:
+                return await message.edit("Failed to fetch custom modules list")
+            modules_dict = {line.split("/")[-1].split()[0]: line.strip() for line in f.splitlines()}
             if module_name in modules_dict:
                 url = f"https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/{modules_dict[module_name]}.py"
             else:
@@ -225,8 +229,13 @@ async def load_all_mods(_, message: Message):
     if not os.path.exists(f"{BASE_PATH}/modules/custom_modules"):
         os.mkdir(f"{BASE_PATH}/modules/custom_modules")
 
-    with open("modules/full.txt", "r") as f:
-        modules_list = f.read().splitlines()
+    try:
+        f = requests.get(
+            "https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/full.txt"
+        ).text
+    except Exception:
+        return await message.edit("Failed to fetch custom modules list")
+    modules_list = f.splitlines()
 
     await message.edit("<b>Loading modules...</b>")
     for module_name in modules_list:
@@ -291,9 +300,13 @@ async def updateallmods(_, message: Message):
     for module_name in modules_installed:
         if not module_name.endswith(".py"):
             continue
-
-        with open("modules/full.txt", "r") as f:
-            modules_dict = {line.split("/")[-1].split()[0]: line.strip() for line in f}
+        try:
+            f = requests.get(
+                "https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/full.txt"
+            ).text
+        except Exception:
+            return await message.edit("Failed to fetch custom modules list")
+        modules_dict = {line.split("/")[-1].split()[0]: line.strip() for line in f.splitlines()}
         if module_name in modules_dict:
             resp = requests.get(
                 f"https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/{modules_dict[module_name]}.py"
