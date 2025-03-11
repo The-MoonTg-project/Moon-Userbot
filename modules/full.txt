@@ -30,6 +30,7 @@ fun/animations
 fun/aniquotes
 fun/circle
 fun/demotivator
+fun/destroy
 fun/dice
 fun/durov
 fun/f
