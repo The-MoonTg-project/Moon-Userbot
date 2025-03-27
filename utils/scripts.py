@@ -198,12 +198,12 @@ def mediainfo(media):
 
 
 async def edit_or_reply(message, txt):
-    """Edit Message If Its From Self, Else Reply To Message"""
+    """Edit Message If It's From Self, Else Reply To Message"""
     if not message:
+        return
+    if message.from_user and message.from_user.is_self:
         return await message.edit(txt)
-    if not message.from_user:
-        return await message.edit(txt)
-    return await message.edit(txt)
+    return await message.reply(txt)
 
 
 def text(message: Message) -> str:
