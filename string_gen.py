@@ -1,6 +1,6 @@
 from pyrogram import Client, enums
 
-moon_ = """
+moon_ = r"""
  _      ____  ____  _
 / \__/|/  _ \/  _ \/ \  /|
 | |\/||| / \|| / \|| |\ ||
