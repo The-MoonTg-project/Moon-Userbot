@@ -59,6 +59,7 @@ from utils import config
 from utils.db import db
 from utils.misc import gitrepo, userbot_version
 from utils.scripts import restart, load_module
+from utils.rentry import rentry_cleanup_job
 
 SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
 if SCRIPT_PATH != os.getcwd():
@@ -182,6 +183,8 @@ async def main():
         )
 
     logging.info("Moon-Userbot started!")
+
+    app.loop.create_task(rentry_cleanup_job())
 
     await idle()
 

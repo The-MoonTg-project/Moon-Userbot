@@ -25,7 +25,7 @@ from pyrogram.types import Message
 
 from utils.misc import modules_help, prefix
 from utils.scripts import edit_or_reply, format_exc, progress
-from utils.rentry import new
+from utils.rentry import paste as rentry_paste
 
 
 async def read_file(file_path):
@@ -96,17 +96,20 @@ async def openfile(client: Client, message: Message):
             "<code>File Content is too long... Pasting to rentry...</code>"
         )
         content_new = f"```{code_start[11:-2]}\n{content}```"
-        paste = new(url="", edit_code="", text=content_new)
-        if paste["status"] != "200":
-            await ms.edit_text(f"<b>Error:</b> <code>{paste['content']}</code>")
+        try:
+            rentry_url, edit_code = await rentry_paste(
+                text=content_new, return_edit=True
+            )
+        except RuntimeError:
+            await ms.edit_text("<b>Error:</b> <code>Failed to paste to rentry</code>")
             return
         await client.send_message(
             "me",
-            f"Here's your edit code for Url: {paste['url']}\nEdit code:  <code>{paste['edit_code']}</code>",
+            f"Here's your edit code for Url: {rentry_url}\nEdit code:  <code>{edit_code}</code>",
             disable_web_page_preview=True,
         )
         await ms.edit_text(
-            f"<b>File Name:</b> <code>{file_name[0]}</code>\n<b>Size:</b> <code>{file_size} bytes</code>\n<b>Last Modified:</b> <code>{last_modified}</code>\n<b>Content:</b> {paste['url']}\n<b>Note:</b> <code>Edit Code has been sent to your saved messages</code>",
+            f"<b>File Name:</b> <code>{file_name[0]}</code>\n<b>Size:</b> <code>{file_size} bytes</code>\n<b>Last Modified:</b> <code>{last_modified}</code>\n<b>Content:</b> {rentry_url}\n<b>Note:</b> <code>Edit Code has been sent to your saved messages</code>",
             disable_web_page_preview=True,
         )
 
