@@ -230,13 +230,14 @@ async def set_antipm_pic(_, message: Message):
         await message.edit("antipm picture set to default.")
         return
 
-    photo = message.reply_to_message.photo
-    file_id = photo.file_id
+    await message.edit("Setting antipm picture...")
+
+    photo = await message.reply_to_message.download("./antipm_pic.jpg")
 
     old_antipm_pic = db.get("core.antipm", "antipm_pic", None)
     if old_antipm_pic:
         db.remove("core.antipm", "antipm_pic")
-    db.set("core.antipm", "antipm_pic", file_id)
+    db.set("core.antipm", "antipm_pic", photo)
     await message.edit("antipm picture set successfully.")
 
 
