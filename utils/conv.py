@@ -18,6 +18,7 @@ from collections import OrderedDict
 
 from pyrogram import Client, filters, types
 from pyrogram.handlers import MessageHandler
+from pyrogram.enums.parse_mode import ParseMode
 
 import asyncio
 from typing import Union, List, Dict, Optional
@@ -69,10 +70,9 @@ class Conversation:
         )
 
         if -999 not in self.client.dispatcher.groups:
-            self.client.dispatcher.groups[-999] = []
-            self.client.dispatcher.groups = OrderedDict(
-                sorted(self.client.dispatcher.groups.items())
-            )
+            new_groups = OrderedDict(self.client.dispatcher.groups)
+            new_groups[-999] = []
+            self.client.dispatcher.groups = new_groups
 
         self.client.dispatcher.groups[-999].append(self._handler_object)
 
@@ -137,7 +137,7 @@ class Conversation:
     async def send_message(
         self,
         text: str,
-        parse_mode: Optional[str] = object,
+        parse_mode: Optional[str] = ParseMode.HTML,
         entities: List[types.MessageEntity] = None,
         disable_web_page_preview: bool = None,
         disable_notification: bool = None,
