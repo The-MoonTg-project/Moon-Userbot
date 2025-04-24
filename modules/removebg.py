@@ -23,7 +23,7 @@ from utils.misc import modules_help, prefix
 from utils.scripts import edit_or_reply, format_exc
 
 
-async def convert_to_image(message, client) -> [None, str]:
+async def convert_to_image(message, client) -> None | str:
     """Convert Most Media Formats To Raw Image"""
     if not message:
         return None
@@ -37,6 +37,7 @@ async def convert_to_image(message, client) -> [None, str]:
         or message.reply_to_message.media
         or message.reply_to_message.animation
         or message.reply_to_message.audio
+        or message.reply_to_message.document
     ):
         return None
     if message.reply_to_message.photo:
@@ -61,6 +62,18 @@ async def convert_to_image(message, client) -> [None, str]:
         final_path = "fetched_thumb.png"
         vid_path = await client.download_media(message.reply_to_message)
         await exec(f"ffmpeg -i {vid_path} -filter:v scale=500:500 -an {final_path}")
+    elif message.reply_to_message.document:
+        if message.reply_to_message.document.mime_type == "image/jpeg":
+            final_path = await message.reply_to_message.download()
+        elif message.reply_to_message.document.mime_type == "image/png":
+            final_path = await message.reply_to_message.download()
+        elif message.reply_to_message.document.mime_type == "image/webp":
+            final_path = "webp_to_png_s_proton.png"
+            path_s = await message.reply_to_message.download()
+            im = Image.open(path_s)
+            im.save(final_path, "PNG")
+        else:
+            return None
     return final_path
 
 
@@ -172,6 +185,6 @@ async def rembg(client: Client, message: Message):
 
 
 modules_help["removebg"] = {
-    "rebg [reply to image]*": "reemove background from image without transparency",
+    "rebg [reply to image]*": "remove background from image without transparency",
     "rmbg [reply to image]*": "remove background from image with transparency",
 }
