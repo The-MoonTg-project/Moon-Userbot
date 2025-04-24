@@ -80,7 +80,7 @@ async def quote_cmd(client: Client, message: Message):
     response = requests.post(url, json=params)
     if not response.ok:
         return await message.edit(
-            f"<b>Quotes API error!</b>\n" f"<code>{response.text}</code>"
+            f"<b>Quotes API error!</b>\n<code>{response.text}</code>"
         )
 
     resized = resize_image(
@@ -200,17 +200,18 @@ async def render_message(app: Client, message: types.Message) -> dict:
             )
 
     def move_forwards(msg: types.Message):
-        if msg.forward_from:
-            msg.from_user = msg.forward_from
-        if msg.forward_sender_name:
-            msg.from_user.id = 0
-            msg.from_user.first_name = msg.forward_sender_name
-            msg.from_user.last_name = ""
-        if msg.forward_origin.chat.sender_chat:
-            msg.sender_chat = msg.forward_origin.chat.sender_chat
-            msg.from_user.id = 0
-        if msg.forward_signature:
-            msg.author_signature = msg.forward_signature
+        if msg.forward_origin:
+            if isinstance(msg.forward_origin, types.MessageOriginUser):
+                msg.from_user = msg.forward_origin.sender_user
+            elif isinstance(msg.forward_origin, types.MessageOriginHiddenUser):
+                msg.from_user.id = 0
+                msg.from_user.first_name = msg.forward_origin.sender_user_name
+                msg.from_user.last_name = ""
+            elif isinstance(msg.forward_origin, types.MessageOriginChat):
+                msg.sender_chat = msg.forward_origin.sender_chat
+                msg.from_user.id = 0
+                if msg.forward_origin.author_signature:
+                    msg.author_signature = msg.forward_origin.author_signature
 
     move_forwards(message)
 
@@ -223,7 +224,7 @@ async def render_message(app: Client, message: types.Message) -> dict:
         author["name"] = get_full_name(from_user)
         if message.author_signature:
             author["rank"] = message.author_signature
-        elif message.chat.type != "supergroup" or message.forward_origin.date:
+        elif message.chat.type != "supergroup" or message.forward_date:
             author["rank"] = ""
         else:
             try:
@@ -234,7 +235,9 @@ async def render_message(app: Client, message: types.Message) -> dict:
                 author["rank"] = getattr(member, "title", "") or (
                     "owner"
                     if member.status == "creator"
-                    else "admin" if member.status == "administrator" else ""
+                    else "admin"
+                    if member.status == "administrator"
+                    else ""
                 )
 
         if from_user.photo:
