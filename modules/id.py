@@ -61,7 +61,7 @@ async def ids(_, message: Message):
                 ]
             )
 
-        if rtm.forward_date and (ffc := rtm.forward_origin.chat.sender_chat):
+        if rtm.forward_origin.date and (ffc := rtm.forward_origin.chat.sender_chat):
             text = "\n".join(
                 [
                     text,

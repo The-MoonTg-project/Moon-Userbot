@@ -223,7 +223,7 @@ async def render_message(app: Client, message: types.Message) -> dict:
         author["name"] = get_full_name(from_user)
         if message.author_signature:
             author["rank"] = message.author_signature
-        elif message.chat.type != "supergroup" or message.forward_date:
+        elif message.chat.type != "supergroup" or message.forward_origin.date:
             author["rank"] = ""
         else:
             try:
