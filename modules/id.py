@@ -15,7 +15,7 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from pyrogram import Client, enums, filters
-from pyrogram.types import Message
+from pyrogram.types import Message, MessageOriginHiddenUser, MessageOriginUser
 
 from utils.misc import modules_help, prefix
 
@@ -41,6 +41,7 @@ async def ids(_, message: Message):
     )
 
     if rtm := message.reply_to_message:
+        # print(rtm)
         text += f"\n\nReplied Message ID: `{rtm.id}`"
 
         if user := rtm.from_user:
@@ -61,15 +62,24 @@ async def ids(_, message: Message):
                 ]
             )
 
-        if rtm.forward_origin.date and (ffc := rtm.forward_origin.chat.sender_chat):
-            text = "\n".join(
-                [
-                    text,
-                    f"\nForwarded Message ID: `{rtm.forward_from_message_id}`",
-                    f"Forwarded from Chat ID: `{ffc.id}`",
-                    f"Forwarded from Chat DC ID: `{ffc.dc_id}`",
-                ]
-            )
+        if rtm.forward_origin and rtm.forward_origin.date:
+            if isinstance(rtm.forward_origin, MessageOriginHiddenUser):
+                text = "\n".join(
+                    [
+                        text,
+                        "\nForwarded from a hidden user.",
+                    ]
+                )
+            elif ffc := rtm.forward_origin.sender_user:
+                # print(rtm.forward_origin)
+                text = "\n".join(
+                    [
+                        text,
+                        f"\nForwarded Message ID: `{getattr(rtm.forward_origin, 'message_id', None)}`",
+                        f"Forwarded from Chat ID: `{ffc.id}`",
+                        f"Forwarded from Chat DC ID: `{ffc.dc_id}`",
+                    ]
+                )
 
     await message.edit("**__" + text + "__**", parse_mode=enums.ParseMode.MARKDOWN)
 
