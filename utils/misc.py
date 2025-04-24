@@ -52,4 +52,4 @@ if len(gitrepo.tags) > 0:
     commits_since_tag = list(gitrepo.iter_commits(f"{gitrepo.tags[-1].name}..HEAD"))
 else:
     commits_since_tag = []
-userbot_version = f"2.0.{len(commits_since_tag)}"
+userbot_version = f"2.5.{len(commits_since_tag)}"
