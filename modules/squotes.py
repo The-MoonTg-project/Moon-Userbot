@@ -206,8 +206,8 @@ async def render_message(app: Client, message: types.Message) -> dict:
             msg.from_user.id = 0
             msg.from_user.first_name = msg.forward_sender_name
             msg.from_user.last_name = ""
-        if msg.forward_from_chat:
-            msg.sender_chat = msg.forward_from_chat
+        if msg.forward_origin.chat.sender_chat:
+            msg.sender_chat = msg.forward_origin.chat.sender_chat
             msg.from_user.id = 0
         if msg.forward_signature:
             msg.author_signature = msg.forward_signature
