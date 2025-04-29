@@ -14,6 +14,8 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import os
+
 from pyrogram import Client, filters
 from pyrogram.raw import functions
 from pyrogram.types import Message
@@ -76,7 +78,7 @@ Do not spam further messages else I may have to block you!</i>
         "core.antipm", f"allowusers{ids}"
     ):
         default_pic = db.get("core.antipm", "antipm_pic", None)
-        if default_pic:
+        if default_pic and os.path.exists(default_pic):
             await client.send_photo(message.chat.id, default_pic, caption=default_text)
         else:
             await client.send_message(message.chat.id, default_text)
@@ -232,7 +234,7 @@ async def set_antipm_pic(_, message: Message):
 
     await message.edit("Setting antipm picture...")
 
-    photo = await message.reply_to_message.download("./antipm_pic.jpg")
+    photo = await message.reply_to_message.download("antipm_pic.jpg")
 
     old_antipm_pic = db.get("core.antipm", "antipm_pic", None)
     if old_antipm_pic:
