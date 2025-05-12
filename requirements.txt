@@ -5,11 +5,9 @@ gunicorn
 flask
 humanize
 pygments
-ffmpeg-python
 pymongo
 psutil
-Pillow>=9.0.0
-pytubefix
+Pillow>=10.3.0
 click
 dnspython
 requests

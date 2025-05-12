@@ -5,10 +5,8 @@ gunicorn
 flask
 humanize
 pygments
-ffmpeg-python
 pymongo
-Pillow>=9.0.0
-pytube
+Pillow>=10.3.0
 click
 pymongo[srv]
 dnspython
