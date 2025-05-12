@@ -54,14 +54,16 @@ async def convert_to_image(message, client) -> None | str:
             cmd = (
                 f"lottie_convert.py --frame 0 -if lottie -of png {path_s} {final_path}"
             )
-            await exec(cmd) # skipcq
+            await exec(cmd)  # skipcq
     elif message.reply_to_message.audio:
         thumb = message.reply_to_message.audio.thumbs[0].file_id
         final_path = await client.download_media(thumb)
     elif message.reply_to_message.video or message.reply_to_message.animation:
         final_path = "fetched_thumb.png"
         vid_path = await client.download_media(message.reply_to_message)
-        await exec(f"ffmpeg -i {vid_path} -filter:v scale=500:500 -an {final_path}") # skipcq
+        await exec(
+            f"ffmpeg -i {vid_path} -filter:v scale=500:500 -an {final_path}"
+        )  # skipcq
     elif message.reply_to_message.document:
         if message.reply_to_message.document.mime_type == "image/jpeg":
             final_path = await message.reply_to_message.download()
@@ -78,9 +80,11 @@ async def convert_to_image(message, client) -> None | str:
 
 
 def remove_background(photo_data):
+    with open(photo_data, "rb") as image_file:
+        image_data = image_file.read()
     response = requests.post(
         "https://api.remove.bg/v1.0/removebg",
-        files={"image_file": open(photo_data, "rb")},
+        files={"image_file": image_data},
         data={"size": "auto"},
         headers={"X-Api-Key": rmbg_key},
     )

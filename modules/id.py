@@ -15,7 +15,7 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from pyrogram import Client, enums, filters
-from pyrogram.types import Message, MessageOriginHiddenUser, MessageOriginUser
+from pyrogram.types import Message, MessageOriginHiddenUser
 
 from utils.misc import modules_help, prefix
 
@@ -71,7 +71,6 @@ async def ids(_, message: Message):
                     ]
                 )
             elif ffc := rtm.forward_origin.sender_user:
-                # print(rtm.forward_origin)
                 text = "\n".join(
                     [
                         text,

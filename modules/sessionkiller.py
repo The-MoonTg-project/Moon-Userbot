@@ -39,9 +39,9 @@ async def sessions_list(client: Client, message: Message):
     sessions = (await client.invoke(GetAuthorizations())).authorizations
     for num, session in enumerate(sessions, 1):
         formatted_sessions.append(
-            f"<b>{num}</b>. <b>{escape(session.device_model)}</b> on <code>{escape(session.platform if session.platform!= '' else 'unknown platform')}</code>\n"
+            f"<b>{num}</b>. <b>{escape(session.device_model)}</b> on <code>{escape(session.platform if session.platform != '' else 'unknown platform')}</code>\n"
             f"<b>Hash:</b> <code>{session.hash}</code>\n"
-            f"<b>App name:</b> <code>{escape(session.app_name)}</code> <code>v.{escape(session.app_version if session.app_version!= '' else 'unknown')}</code>\n"
+            f"<b>App name:</b> <code>{escape(session.app_name)}</code> <code>v.{escape(session.app_version if session.app_version != '' else 'unknown')}</code>\n"
             f"<b>Created (last activity):</b> {datetime.fromtimestamp(session.date_created).isoformat()} ({datetime.fromtimestamp(session.date_active).isoformat()})\n"
             f"<b>IP and location: </b>: <code>{session.ip}</code> (<i>{session.country}</i>)\n"
             f"<b>Official status:</b> <code>{'✅' if session.official_app else '❌️'}</code>\n"
@@ -139,7 +139,7 @@ async def check_new_login(client: Client, update: UpdateServiceNotification, _, 
                 f"Logined at: <code>{logined_time}</code>\n"
                 f"IP: <code>{auth.ip}</code>\n"
                 f"Country: <code>{auth.country}</code>\n"
-                f'Official app: <b>{"yes" if auth.official_app else "no"}</b>\n\n'
+                f"Official app: <b>{'yes' if auth.official_app else 'no'}</b>\n\n"
                 f"<b>It is you? Type <code>{prefix}sk off</code> and try logging "
                 f"in again.</b>"
             )

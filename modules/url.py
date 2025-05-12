@@ -78,7 +78,6 @@ async def urldl(client: Client, message: Message):
 
     await message.edit("<b>Trying to download...</b>")
 
-    ext = "." + link.split(".")[-1]
     c_time = time.time()
 
     resp = requests.head(link, allow_redirects=True, timeout=5)

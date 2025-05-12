@@ -367,14 +367,7 @@ def get_reply_text(reply: types.Message) -> str:
                                                                         0
                                                                     ].id
                                                                     == reply.from_user.id
-                                                                    else "👤 invited %s to the group"
-                                                                    % (
-                                                                        get_full_name(
-                                                                            reply.new_chat_members[
-                                                                                0
-                                                                            ]
-                                                                        )
-                                                                    )
+                                                                    else f"👤 invited {get_full_name(reply.new_chat_members[0])} to the group"
                                                                 )
                                                                 if reply.new_chat_members
                                                                 else (
@@ -382,12 +375,7 @@ def get_reply_text(reply: types.Message) -> str:
                                                                         "👤 left the group"
                                                                         if reply.left_chat_member.id
                                                                         == reply.from_user.id
-                                                                        else "👤 removed %s"
-                                                                        % (
-                                                                            get_full_name(
-                                                                                reply.left_chat_member
-                                                                            )
-                                                                        )
+                                                                        else f"👤 removed {get_full_name(reply.left_chat_member)}"
                                                                     )
                                                                     if reply.left_chat_member
                                                                     else (
