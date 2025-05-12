@@ -43,7 +43,7 @@ async def user_exec(client: Client, message: Message):
 
     try:
         with redirect_stdout(stdout):
-            exec(code)
+            exec(code) # skipcq
         text = (
             "<b>Code:</b>\n"
             f"<code>{code}</code>\n\n"
@@ -68,7 +68,7 @@ async def user_eval(client: Client, message: Message):
     code = message.text.split(maxsplit=1)[1]
 
     try:
-        result = eval(code)
+        result = eval(code) # skipcq
         await message.edit(
             "<b>Expression:</b>\n"
             f"<code>{code}</code>\n\n"
