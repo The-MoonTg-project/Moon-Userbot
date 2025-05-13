@@ -16,47 +16,19 @@ from pyrogram.types import Message
 
 from utils.misc import modules_help, prefix
 from utils.scripts import format_module_help, with_reply
+from utils.module import ModuleManager
 
-
-class HelpNavigator:
-    def __init__(self):
-        self.current_page = 1
-        self.total_pages = (len(modules_help) + 9) // 10
-        self.module_list = list(modules_help.keys())
-
-    async def send_page(self, message: Message):
-        start_index = (self.current_page - 1) * 10
-        end_index = start_index + 10
-        page_modules = self.module_list[start_index:end_index]
-        text = "<b>Help for <a href=https://t.me/Moonub_chat>Moon-Userbot</a></b>\n"
-        text += f"For more help on how to use a command, type <code>{prefix}help [module]</code>\n\n"
-        text += f"Help Page No: {self.current_page}/{self.total_pages}\n\n"
-        for module_name in page_modules:
-            commands = modules_help[module_name]
-            text += f"<b>• {module_name.title()}:</b> {', '.join([f'<code>{prefix + cmd_name.split()[0]}</code>' for cmd_name in commands.keys()])}\n"
-        text += f"\n<b>The number of modules in the userbot: {len(modules_help)}</b>"
-        await message.edit(text, disable_web_page_preview=True)
-
-    def next_page(self):
-        if self.current_page < self.total_pages:
-            self.current_page += 1
-            return True
-        return False
-
-    def prev_page(self):
-        if self.current_page > 1:
-            self.current_page -= 1
-            return True
-        return False
-
-
-help_navigator = HelpNavigator()
+module_manager = ModuleManager.get_instance()
 
 
 @Client.on_message(filters.command(["help", "h"], prefix) & filters.me)
 async def help_cmd(_, message: Message):
+    if not module_manager.help_navigator:
+        await message.edit("<b>Help system is not initialized yet. Please wait...</b>")
+        return
+
     if len(message.command) == 1:
-        await help_navigator.send_page(message)
+        await module_manager.help_navigator.send_page(message)
     elif message.command[1].lower() in modules_help:
         await message.edit(format_module_help(message.command[1].lower(), prefix))
     else:
@@ -82,20 +54,25 @@ async def help_cmd(_, message: Message):
 @Client.on_message(filters.command(["pn", "pp", "pq"], prefix) & filters.me)
 @with_reply
 async def handle_navigation(_, message: Message):
-    if message.reply_to_message and "Help Page No:" in message.reply_to_message.text:
+    if not module_manager.help_navigator:
+        await message.edit("<b>Help system is not initialized yet. Please wait...</b>")
+        return
+
+    reply_message = message.reply_to_message
+    if reply_message and "Help Page No:" in message.reply_to_message.text:
         cmd = message.command[0].lower()
         if cmd == "pn":
-            if help_navigator.next_page():
-                await help_navigator.send_page(message)
-                return await message.reply_to_message.delete()
+            if module_manager.help_navigator.next_page():
+                await module_manager.help_navigator.send_page(reply_message)
+                return await message.delete()
             await message.edit("No more pages available.")
         elif cmd == "pp":
-            if help_navigator.prev_page():
-                await help_navigator.send_page(message)
-                return await message.reply_to_message.delete()
+            if module_manager.help_navigator.prev_page():
+                await module_manager.help_navigator.send_page(reply_message)
+                return await message.delete()
             return await message.edit("This is the first page.")
         elif cmd == "pq":
-            await message.reply_to_message.delete()
+            await reply_message.delete()
             return await message.edit("Help closed.")
 
 

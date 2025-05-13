@@ -56,8 +56,9 @@ import requests
 from utils import config
 from utils.db import db
 from utils.misc import gitrepo, userbot_version
-from utils.scripts import restart, load_module
+from utils.scripts import restart
 from utils.rentry import rentry_cleanup_job
+from utils.module import ModuleManager
 
 SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
 if SCRIPT_PATH != os.getcwd():
@@ -142,23 +143,8 @@ async def main():
         restart()
 
     load_missing_modules()
-    success_modules = 0
-    failed_modules = 0
-
-    for path in Path("modules").rglob("*.py"):
-        try:
-            await load_module(
-                path.stem, app, core="custom_modules" not in path.parent.parts
-            )
-        except Exception:
-            logging.warning("Can't import module %s", path.stem, exc_info=True)
-            failed_modules += 1
-        else:
-            success_modules += 1
-
-    logging.info("Imported %s modules", success_modules)
-    if failed_modules:
-        logging.warning("Failed to import %s modules", failed_modules)
+    module_manager = ModuleManager.get_instance()
+    await module_manager.load_modules(app)
 
     if info := db.get("core.updater", "restart_info"):
         text = {
