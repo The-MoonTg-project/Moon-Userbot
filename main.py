@@ -46,7 +46,6 @@ import logging
 import sqlite3
 import platform
 import subprocess
-from pathlib import Path
 
 from pyrogram import Client, idle, errors
 from pyrogram.enums.parse_mode import ParseMode

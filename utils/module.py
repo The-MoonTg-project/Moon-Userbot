@@ -35,9 +35,9 @@ class ModuleManager:
             else:
                 self.success_modules += 1
 
-        logging.info(f"Imported {self.success_modules} modules")
+        logging.info("Imported %d modules", self.success_modules)
         if self.failed_modules:
-            logging.warning(f"Failed to import {self.failed_modules} modules")
+            logging.warning("Failed to import %d modules", self.failed_modules)
 
         self.help_navigator = HelpNavigator()
         return self.help_navigator
@@ -48,7 +48,7 @@ class HelpNavigator:
         self.current_page = 1
         self.module_list = list(modules_help.keys())
         self.total_pages = (len(modules_help) + 9) // 10
-        logging.info(f"Initialized HelpNavigator with {len(self.module_list)} modules")
+        logging.info("Initialized HelpNavigator with %d modules", len(self.module_list))
 
     async def send_page(self, message):
         from utils.misc import prefix
