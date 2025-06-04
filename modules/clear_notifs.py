@@ -15,8 +15,7 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from pyrogram import Client, filters
-from pyrogram.errors import FloodWait
-from pyrogram.raw import functions, types
+from pyrogram.raw import functions
 from pyrogram.types import Message
 
 from utils.misc import modules_help, prefix
