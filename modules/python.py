@@ -31,7 +31,7 @@ from utils.scripts import format_exc
 @Client.on_message(
     filters.command(["ex", "exec", "py", "exnoedit"], prefix) & filters.me
 )
-async def user_exec(client: Client, message: Message):
+async def user_exec(_: Client, message: Message):
     if len(message.command) == 1:
         await message.edit("<b>Code to execute isn't provided</b>")
         return
@@ -43,7 +43,7 @@ async def user_exec(client: Client, message: Message):
 
     try:
         with redirect_stdout(stdout):
-            exec(code) # skipcq
+            exec(code)  # skipcq
         text = (
             "<b>Code:</b>\n"
             f"<code>{code}</code>\n\n"
@@ -68,7 +68,7 @@ async def user_eval(client: Client, message: Message):
     code = message.text.split(maxsplit=1)[1]
 
     try:
-        result = eval(code) # skipcq
+        result = eval(code)  # skipcq
         await message.edit(
             "<b>Expression:</b>\n"
             f"<code>{code}</code>\n\n"

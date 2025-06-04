@@ -32,23 +32,19 @@ async def solo_mention_clear(client: Client, message: Message):
 
 @Client.on_message(filters.command(["clear_all_@"], prefix) & filters.me)
 async def global_mention_clear(client: Client, message: Message):
-    request = functions.messages.GetAllChats(except_ids=[])
-    try:
-        result = await client.invoke(request)
-    except FloodWait as e:
-        await message.edit_text(
-            f"<b>FloodWait received. Wait {e.x} seconds before trying again</b>"
-        )
-        return
-    await message.delete()
-    for chat in result.chats:
-        if type(chat) is types.Chat:
-            peer_id = -chat.id
-        elif type(chat) is types.Channel:
-            peer_id = int(f"-100{chat.id}")
-        peer = await client.resolve_peer(peer_id)
+    counter: int = 0
+    await message.edit_text(
+        f"<b>Clearing all mentions...</b>\n\n<b>Cleared:</b> <code>{counter}</code> chats"
+    )
+    async for dialog in client.get_dialogs():
+        peer = await client.resolve_peer(dialog.chat.id)
         request = functions.messages.ReadMentions(peer=peer)
         await client.invoke(request)
+        counter += 1
+        await message.edit_text(
+            f"<b>Clearing all mentions...</b>\n\n<b>Cleared:</b> <code>{counter}</code> chats"
+        )
+    await message.delete()
 
 
 @Client.on_message(filters.command(["clear_reacts"], prefix) & filters.me)
@@ -61,23 +57,19 @@ async def solo_reaction_clear(client: Client, message: Message):
 
 @Client.on_message(filters.command(["clear_all_reacts"], prefix) & filters.me)
 async def global_reaction_clear(client: Client, message: Message):
-    request = functions.messages.GetAllChats(except_ids=[])
-    try:
-        result = await client.invoke(request)
-    except FloodWait as e:
-        await message.edit_text(
-            f"<b>FloodWait received. Wait {e.x} seconds before trying again</b>"
-        )
-        return
-    await message.delete()
-    for chat in result.chats:
-        if type(chat) is types.Chat:
-            peer_id = -chat.id
-        elif type(chat) is types.Channel:
-            peer_id = int(f"-100{chat.id}")
-        peer = await client.resolve_peer(peer_id)
+    counter: int = 0
+    await message.edit_text(
+        f"<b>Clearing all reactions...</b>\n\n<b>Cleared:</b> <code>{counter}</code> chats"
+    )
+    async for dialog in client.get_dialogs():
+        peer = await client.resolve_peer(dialog.chat.id)
         request = functions.messages.ReadReactions(peer=peer)
         await client.invoke(request)
+        counter += 1
+        await message.edit_text(
+            f"<b>Clearing all reactions...</b>\n\n<b>Cleared:</b> <code>{counter}</code> chats"
+        )
+    await message.delete()
 
 
 modules_help["clear_notifs"] = {

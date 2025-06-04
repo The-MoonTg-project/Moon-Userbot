@@ -235,7 +235,7 @@ async def upload_cmd(_, message: Message):
         )
     else:
         await message.edit(
-            f"<b>API returned an error!\n" f"{response.text}\n Not allowed</b>"
+            f"<b>API returned an error!\n{response.text}\n Not allowed</b>"
         )
         print(response.text)
     if os.path.exists(file_name):
@@ -251,7 +251,7 @@ async def webshot(client: Client, message: Message):
     elif message.reply_to_message:
         url = message.reply_to_message.text
         if not url.startswith("https://"):
-            url = "https://" + message.text.split(maxsplit=1)[1]
+            url = "https://" + url
     else:
         await message.edit_text(
             f"<b>Usage: </b><code>{prefix}webshot/{prefix}ws [url/reply to url]</code>"
@@ -269,11 +269,11 @@ async def webshot(client: Client, message: Message):
                 chat_id, screenshot_data, caption=f"Screenshot of <code>{url}</code>"
             )
         else:
-            await message.reply_text(
+            await message.edit_text(
                 "<code>Failed to generate screenshot...\nMake sure url is correct</code>"
             )
     except Exception as e:
-        await message.reply_text(f"An error occurred: {format_exc(e)}")
+        await message.edit_text(f"An error occurred: {format_exc(e)}")
 
 
 modules_help["url"] = {
