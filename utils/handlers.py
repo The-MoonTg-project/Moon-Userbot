@@ -857,9 +857,16 @@ class PromoteHandler:
     async def handle_reply_promote(self):
         if self.message.chat.type not in [ChatType.PRIVATE, ChatType.CHANNEL]:
             user_for_promote = self.message.reply_to_message.from_user
+            promote_title = (
+                self.message.text.split(maxsplit=1)[1]
+                if len(self.message.text.split()) > 1
+                else None
+            )
+            if promote_title and len(promote_title) > 16:
+                promote_title = promote_title[:16]
             if user_for_promote:
                 try:
-                    await self.promote_user(user_for_promote.id)
+                    await self.promote_user(user_for_promote.id, promote_title)
                     await self.message.edit(
                         self.construct_promote_message(user_for_promote)
                     )
@@ -876,9 +883,16 @@ class PromoteHandler:
         if self.message.chat.type not in [ChatType.PRIVATE, ChatType.CHANNEL]:
             if len(self.cause.split()) > 1:
                 user_to_promote = await self.get_user_to_promote()
+                promote_title = (
+                    " ".join(self.cause.split(" ")[2:])
+                    if len(self.cause.split(" ")) > 2
+                    else None
+                )
+                if promote_title and len(promote_title) > 16:
+                    promote_title = promote_title[:16]
                 if user_to_promote:
                     try:
-                        await self.promote_user(user_to_promote.id)
+                        await self.promote_user(user_to_promote.id, promote_title)
                         await self.message.edit(
                             self.construct_promote_message(user_to_promote)
                         )
@@ -902,12 +916,13 @@ class PromoteHandler:
         await self.message.edit("<b>Invalid user type</b>")
         return None
 
-    async def promote_user(self, user_id):
+    async def promote_user(self, user_id, title):
         try:
             await self.client.promote_chat_member(
                 self.chat_id,
                 user_id,
                 privileges=ChatPrivileges(**self.common_privileges_promote),
+                title=title,
             )
             if len(self.cause.split()) > 1 and self.message.chat.type == "group":
                 await self.client.set_administrator_title(
@@ -925,7 +940,7 @@ class PromoteHandler:
     def construct_promote_message(self, user):
         return (
             f"<b>{user.first_name}</b> <code>promoted!</code>"
-            + f"\n{'<b>Prefix:</b> <i>' + self.cause.split(' ', maxsplit=1)[1] + '</i>' if len(self.cause.split()) > 1 else ''}"
+            + f"\n{'<b>Title:</b> <i>' + self.cause.split(' ', maxsplit=1)[1] + '</i>' if len(self.cause.split()) > 1 else ''}"
         )
 
 
