@@ -16,6 +16,7 @@
 
 from contextlib import suppress
 
+from pyrogram.enums import ChatType
 from pyrogram import Client, ContinuePropagation, filters
 from pyrogram.errors import (
     UserAdminInvalid,
@@ -234,7 +235,7 @@ async def unpin(_, message: Message):
 
 @Client.on_message(filters.command("ro", prefix) & filters.me)
 async def ro(client: Client, message: Message):
-    if message.chat.type != "supergroup":
+    if message.chat.type not in [ChatType.GROUP, ChatType.SUPERGROUP]:
         await message.edit("<b>Invalid chat type</b>")
         return
 
@@ -266,7 +267,7 @@ async def ro(client: Client, message: Message):
 
 @Client.on_message(filters.command("unro", prefix) & filters.me)
 async def unro(client: Client, message: Message):
-    if message.chat.type != "supergroup":
+    if message.chat.type not in [ChatType.GROUP, ChatType.SUPERGROUP]:
         await message.edit("<b>Invalid chat type</b>")
         return
 
@@ -308,7 +309,7 @@ async def antiraid(client: Client, message: Message):
 
 @Client.on_message(filters.command(["welcome", "wc"], prefix) & filters.me)
 async def welcome(_, message: Message):
-    if message.chat.type != "supergroup":
+    if message.chat.type not in [ChatType.GROUP, ChatType.SUPERGROUP]:
         return await message.edit("<b>Unsupported chat type</b>")
 
     if len(message.command) > 1:
