@@ -23,7 +23,6 @@ from utils.misc import modules_help, prefix
 
 @Client.on_message(filters.command(["ping", "p"], prefix) & filters.me)
 async def ping(client: Client, message: Message):
-    await message.edit("<b>Ping!</b>")
     latency = await client.ping()
     await message.edit(f"<b>Pong! {latency}ms</b>")
 
