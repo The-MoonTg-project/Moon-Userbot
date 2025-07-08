@@ -17,4 +17,3 @@ beautifulsoup4
 aiohttp
 aiofiles
 pySmartDL
-lexica-api

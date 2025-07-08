@@ -37,7 +37,6 @@
 #     "aiohttp",
 #     "aiofiles",
 #     "pySmartDL",
-#     "lexica-api",
 # ]
 # ///
 import os
