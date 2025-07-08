@@ -24,6 +24,8 @@ from pyrogram.types import Message
 from utils.misc import modules_help, prefix
 from utils.scripts import with_reply, format_exc, resize_image
 
+QUOTES_API = "https://quotes-o042.onrender.com/generate"
+
 
 @Client.on_message(filters.command(["q", "quote"], prefix) & filters.me)
 @with_reply
@@ -68,7 +70,6 @@ async def quote_cmd(client: Client, message: Message):
     else:
         await message.edit("<b>Generating...</b>")
 
-    url = "https://quotes.fl1yd.su/generate"
     params = {
         "messages": [
             await render_message(client, msg) for msg in messages if not msg.empty
@@ -77,7 +78,7 @@ async def quote_cmd(client: Client, message: Message):
         "text_color": "#fff",
     }
 
-    response = requests.post(url, json=params)
+    response = requests.post(QUOTES_API, json=params)
     if not response.ok:
         return await message.edit(
             f"<b>Quotes API error!</b>\n<code>{response.text}</code>"
@@ -128,14 +129,13 @@ async def fake_quote_cmd(client: Client, message: types.Message):
     else:
         await message.edit("<b>Generating...</b>")
 
-    url = "https://quotes.fl1yd.su/generate"
     params = {
         "messages": [await render_message(client, q_message)],
         "quote_color": "#162330",
         "text_color": "#fff",
     }
 
-    response = requests.post(url, json=params)
+    response = requests.post(QUOTES_API, json=params)
     if not response.ok:
         return await message.edit(
             f"<b>Quotes API error!</b>\n<code>{response.text}</code>"
