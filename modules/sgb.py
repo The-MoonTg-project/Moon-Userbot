@@ -14,47 +14,39 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import asyncio
 
-from pyrogram import Client, enums, filters
+from pyrogram import Client, filters
+from pyrogram.errors import YouBlockedUser
 from pyrogram.types import Message
-from pyrogram.errors import RPCError
 
+from utils.conv import Conversation
 from utils.misc import modules_help, prefix
-from utils.scripts import edit_or_reply
+from utils.scripts import format_exc
 
 
 @Client.on_message(filters.command("sgb", prefix) & filters.me)
 async def sg(client: Client, message: Message):
-    lol = await edit_or_reply(message, "<code>Processing please wait</code>")
     if message.reply_to_message and message.reply_to_message.from_user:
         user_id = message.reply_to_message.from_user.id
     else:
         await message.edit(f"<b>Usage: </b><code>{prefix}sgb [id]</code>")
         return
     try:
-        await client.send_message(
-            "@SangMata_beta_bot", "/start", parse_mode=enums.ParseMode.MARKDOWN
-        )
-    except RPCError:
-        await lol.edit(
-            "**Please unblock @SangMata_beta_bot and try again**",
-            parse_mode=enums.ParseMode.MARKDOWN,
-        )
-        return
-    id = "@SangMata_beta_bot"
-    chat = message.chat.id
-    await client.send_message(id, user_id, parse_mode=enums.ParseMode.MARKDOWN)
-    await asyncio.sleep(2)
-    async for opt in client.get_chat_history("@SangMata_beta_bot", limit=1):
-        hmm = opt.text
-        if hmm.startswith("Forward"):
-            await lol.edit(
-                "**Unknown error occurred**", parse_mode=enums.ParseMode.MARKDOWN
-            )
-            return
-        await lol.delete()
-        await opt.copy(chat)
+        await message.edit("<code>Processing please wait</code>")
+        bot_username = "@SangMata_beta_bot"
+        async with Conversation(client, bot_username, timeout=15) as conv:
+            await conv.send_message(str(user_id))
+            response = await conv.get_response(timeout=10)
+            if "you have used up your quota" in response.text:
+                await message.edit(response.text.splitlines()[0])
+                return
+            return await message.edit(response.text)
+    except YouBlockedUser:
+        await message.edit("<i>Please unblock @SangMata_beta_bot first.</i>")
+    except TimeoutError:
+        await message.edit("<i>No response from bot within the timeout period.</i>")
+    except Exception as e:
+        await message.edit(f"<i>Error: {format_exc(e)}</i>")
 
 
 modules_help["sangmata"] = {"sgb": "reply to any user"}
