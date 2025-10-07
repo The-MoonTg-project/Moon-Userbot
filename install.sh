@@ -24,6 +24,8 @@ if command -v apt &>/dev/null; then
   PACKAGE_MANAGER="apt"
 elif command -v apk &>/dev/null; then
   PACKAGE_MANAGER="apk"
+elif command -v dnf &>/dev/null; then
+  PACKAGE_MANAGER="dnf"
 elif command -v yum &>/dev/null; then
   PACKAGE_MANAGER="yum"
 elif command -v pacman &>/dev/null; then
