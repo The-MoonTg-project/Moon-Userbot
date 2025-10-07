@@ -50,9 +50,8 @@ apk)
   apk update
   apk add python3 py3-virtualenv git wget || exit 2 # Packages here may be wrong, to verify
   ;;
-yum)
-  yum update -y
-  yum install python3 python3-venv git wget -y || exit 2 # Packages here may be wrong, to verify
+yum|dnf)
+  yum install python3 git wget -y || exit 2
   ;;
 pacman)
   pacman -S --noconfirm python python-virtualenv git wget || exit 2
