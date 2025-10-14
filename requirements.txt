@@ -17,5 +17,5 @@ beautifulsoup4
 aiohttp
 aiofiles
 pySmartDL
-tgcalls==3.0.0.dev6
-pytgcalls==3.0.0
+tgcalls
+pytgcalls
