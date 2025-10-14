@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 if ! command -v termux-setup-storage; then
   echo This script can be executed only on Termux
   exit 1
@@ -8,11 +10,10 @@ termux-wake-lock
 pkg update -y && pkg upgrade -y
 pkg install python3 git clang ffmpeg wget libjpeg-turbo libcrypt ndk-sysroot zlib openssl -y || exit 2
 
-
 LDFLAGS="-L${PREFIX}/lib/" CFLAGS="-I${PREFIX}/include/" pip3 install --upgrade wheel pillow
 
 if [[ -d "Moon-Userbot" ]]; then
-  cd Moon-Userbot
+  cd Moon-Userbot || exit
 elif [[ -f ".env.dist" ]] && [[ -f "main.py" ]] && [[ -d "modules" ]]; then
   :
 else
@@ -112,7 +113,7 @@ else
   db_type=sqlite3
 fi
 
-cat > .env << EOL
+cat >.env <<EOL
 API_ID=${api_id}
 API_HASH=${api_hash}
 

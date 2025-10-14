@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+if command -v termux-setup-storage; then
+  ./termux-install.sh
+  exit $?
+fi
+
 # Define color codes
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -44,7 +49,7 @@ fi
 case "$PACKAGE_MANAGER" in
 apt)
   apt update -y
-  apt install python3 python3-venv git wget -y || exit 2
+  apt install python3 python3-dev python3-venv git wget -y || exit 2
   ;;
 apk)
   apk update
