@@ -77,6 +77,7 @@ common_params = {
 
 if config.STRINGSESSION:
     common_params["session_string"] = config.STRINGSESSION
+    common_params["in_memory"] = True
 
 app = Client("my_account", **common_params)
 
