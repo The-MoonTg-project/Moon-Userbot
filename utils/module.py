@@ -14,6 +14,7 @@ class ModuleManager:
     def __init__(self):
         self.success_modules = 0
         self.failed_modules = 0
+        self.failed_list = []
         self.help_navigator = None
 
     @classmethod
@@ -32,6 +33,7 @@ class ModuleManager:
             except Exception:
                 logging.warning("Can't import module %s", path.stem, exc_info=True)
                 self.failed_modules += 1
+                self.failed_list.append(path.stem)
             else:
                 self.success_modules += 1
 
