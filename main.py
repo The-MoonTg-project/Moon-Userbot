@@ -39,24 +39,23 @@
 #     "pySmartDL",
 # ]
 # ///
-import os
 import logging
-
-import sqlite3
+import os
 import platform
+import sqlite3
 import subprocess
 
-from pyrogram import Client, idle, errors
-from pyrogram.enums.parse_mode import ParseMode
-from pyrogram.raw.functions.account import GetAuthorizations, DeleteAccount
 import requests
+from pyrogram import Client, errors, idle
+from pyrogram.enums.parse_mode import ParseMode
+from pyrogram.raw.functions.account import DeleteAccount, GetAuthorizations
 
 from utils import config
 from utils.db import db
 from utils.misc import gitrepo, userbot_version
-from utils.scripts import restart
-from utils.rentry import rentry_cleanup_job
 from utils.module import ModuleManager
+from utils.rentry import rentry_cleanup_job
+from utils.scripts import restart
 
 SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
 if SCRIPT_PATH != os.getcwd():
@@ -77,6 +76,7 @@ common_params = {
 
 if config.STRINGSESSION:
     common_params["session_string"] = config.STRINGSESSION
+    common_params["in_memory"] = True
 
 app = Client("my_account", **common_params)
 
@@ -142,13 +142,35 @@ async def main():
 
     load_missing_modules()
     module_manager = ModuleManager.get_instance()
+    info = db.get("core.updater", "restart_info")
+
+    if info:
+        try:
+            await app.edit_message_text(
+                info["chat_id"],
+                info["message_id"],
+                "<b>Loading modules...</b>",
+            )
+        except errors.RPCError:
+            pass
+
     await module_manager.load_modules(app)
 
-    if info := db.get("core.updater", "restart_info"):
+    if info:
         text = {
             "restart": "<b>Restart completed!</b>",
             "update": "<b>Update process completed!</b>",
         }[info["type"]]
+
+        if module_manager.failed_modules > 0:
+            failed_list = "\n".join(
+                [f"• <code>{m}</code>" for m in module_manager.failed_list]
+            )
+            text += (
+                f"\n\n[E] <b>Failed to load {module_manager.failed_modules} module(s):</b>\n"
+                f"{failed_list}\n\n"
+                "<i>Please check logs for more details.</i>"
+            )
         try:
             await app.edit_message_text(info["chat_id"], info["message_id"], text)
         except errors.RPCError:

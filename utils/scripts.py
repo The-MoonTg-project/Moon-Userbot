@@ -219,7 +219,7 @@ def restart() -> None:
             music_bot_process.terminate()
         except psutil.NoSuchProcess:
             print("Music bot is not running.")
-    os.execvp(sys.executable, [sys.executable, "main.py"]) # skipcq
+    os.execvp(sys.executable, [sys.executable, os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + os.sep +"main.py"]) # skipcq
 
 
 def format_exc(e: Exception, suffix="") -> str:
