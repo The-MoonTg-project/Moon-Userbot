@@ -56,7 +56,7 @@ def update_cache():
     db_cache.update(db.get_collection("core.ats"))
 
 
-@Client.on_message(filters.group & ~filters.me)
+@Client.on_message(filters.group | filters.channel & ~filters.me)
 async def admintool_handler(_, message: Message):
     if message.sender_chat and (
         message.sender_chat.type == "supergroup"
