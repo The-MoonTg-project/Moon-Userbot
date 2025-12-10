@@ -1,4 +1,4 @@
-pyrofork==2.3.69.dev1
+pyrofork==2.3.69
 tgcrypto
 wheel
 gunicorn
