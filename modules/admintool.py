@@ -375,6 +375,6 @@ modules_help["admintool"] = {
     "Running without arguments equals to toggling state",
     "welcome [text]*": "enable auto-welcome to new users in groups. "
     "Running without text equals to disable"
-    "Supported formats: {first}, {last}, {username}, {mention}, {id}, {chat_title}, {chat_id}",
+    "\nSupported formats: <code>{first}</code>, <code>{last}</code>, <code>{username}</code>, <code>{mention}</code>, <code>{id}</code>, <code>{chat_title}</code>, <code>{chat_id}</code>",
     "kickdel": "Kick all deleted accounts",
 }
