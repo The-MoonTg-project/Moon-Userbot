@@ -69,7 +69,7 @@ def format_welcome_text(raw_text: str, user, chat) -> str:
         .replace("{fullname}", fullname)
         .replace("{mention}", mention)
         .replace("{id}", str(uid))
-        .replace("{chatname}", chatname)
+        .replace("{chat_title}", chatname)
     )
 
     if "{username}" in text:
