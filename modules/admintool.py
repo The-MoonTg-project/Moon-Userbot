@@ -16,37 +16,35 @@
 
 from contextlib import suppress
 
-from pyrogram.enums import ChatType
 from pyrogram import Client, ContinuePropagation, filters
+from pyrogram.enums import ChatType
 from pyrogram.errors import (
-    UserAdminInvalid,
     ChatAdminRequired,
     RPCError,
+    UserAdminInvalid,
 )
 from pyrogram.raw import functions
-from pyrogram.types import Message, ChatPermissions
+from pyrogram.types import ChatPermissions, Message
 
 from utils.db import db
-from utils.scripts import format_exc, with_reply
-from utils.misc import modules_help, prefix
-
 from utils.handlers import (
-    BanHandler,
-    UnbanHandler,
-    KickHandler,
-    KickDeletedAccountsHandler,
-    TimeMuteHandler,
-    TimeUnmuteHandler,
-    TimeMuteUsersHandler,
-    UnmuteHandler,
-    MuteHandler,
-    DemoteHandler,
-    PromoteHandler,
     AntiChannelsHandler,
-    DeleteHistoryHandler,
     AntiRaidHandler,
+    BanHandler,
+    DeleteHistoryHandler,
+    DemoteHandler,
+    KickDeletedAccountsHandler,
+    KickHandler,
+    MuteHandler,
+    PromoteHandler,
+    TimeMuteHandler,
+    TimeMuteUsersHandler,
+    TimeUnmuteHandler,
+    UnbanHandler,
+    UnmuteHandler,
 )
-
+from utils.misc import modules_help, prefix
+from utils.scripts import format_exc, with_reply
 
 db_cache: dict = db.get_collection("core.ats")
 
@@ -54,6 +52,30 @@ db_cache: dict = db.get_collection("core.ats")
 def update_cache():
     db_cache.clear()
     db_cache.update(db.get_collection("core.ats"))
+
+
+def format_welcome_text(raw_text: str, user, chat) -> str:
+    first = user.first_name or ""
+    last = user.last_name or ""
+    fullname = f"{first} {last}".strip()
+    username = f"@{user.username}" if user.username else ""
+    mention = user.mention(first)
+    chatname = chat.title
+    uid = user.id
+
+    text = (
+        raw_text.replace("{first}", first)
+        .replace("{last}", last)
+        .replace("{fullname}", fullname)
+        .replace("{mention}", mention)
+        .replace("{id}", str(uid))
+        .replace("{chatname}", chatname)
+    )
+
+    if "{username}" in text:
+        text = text.replace("{username}", username or mention)
+
+    return text
 
 
 @Client.on_message(filters.group | filters.channel & ~filters.me)
@@ -91,7 +113,11 @@ async def admintool_handler(_, message: Message):
         f"welcome_enabled{message.chat.id}", False
     ):
         await message.reply(
-            db_cache.get(f"welcome_text{message.chat.id}"),
+            format_welcome_text(
+                db_cache.get(f"welcome_text{message.chat.id}"),
+                message.new_chat_members[0],
+                message.chat,
+            ),
             disable_web_page_preview=True,
         )
 
@@ -348,6 +374,7 @@ modules_help["admintool"] = {
     "antiraid [on|off]": "when enabled, anyone who writes message will be blocked. Useful in raids. "
     "Running without arguments equals to toggling state",
     "welcome [text]*": "enable auto-welcome to new users in groups. "
-    "Running without text equals to disable",
+    "Running without text equals to disable"
+    "Supported formats: {first}, {last}, {username}, {mention}, {id}, {chat_title}, {chat_id}",
     "kickdel": "Kick all deleted accounts",
 }
