@@ -97,7 +97,7 @@ We also push images to [Docker Hub](https://hub.docker.com/), so you can use the
     ```shell
     docker run --env-file ./.env -d qbtaumai/moonuserbot:latest
     ```
-    2. If you want to use image with flask web (only recommended for heroku/koyeb/render etc.):
+    2. If you want to use image with web (only recommended for heroku/koyeb/render etc.):
     ```shell
     docker run --env-file ./.env -d qbtaumai/moonubcloud:latest-cloud
     ```
