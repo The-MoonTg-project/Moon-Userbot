@@ -89,7 +89,7 @@ def load_missing_modules():
 
     try:
         f = requests.get(
-            "https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/full.txt"
+            f"https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/{config.modules_repo_branch}/full.txt"
         ).text
     except Exception:
         logging.error("Failed to fetch custom modules list")
@@ -101,7 +101,7 @@ def load_missing_modules():
     for module_name in all_modules:
         module_path = f"{custom_modules_path}/{module_name}.py"
         if not os.path.exists(module_path) and module_name in modules_dict:
-            url = f"https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/{modules_dict[module_name]}.py"
+            url = f"https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/{config.modules_repo_branch}/{modules_dict[module_name]}.py"
             resp = requests.get(url)
             if resp.ok:
                 with open(module_path, "wb") as f:

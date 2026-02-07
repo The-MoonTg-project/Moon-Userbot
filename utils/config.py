@@ -28,5 +28,5 @@ pm_limit = int(os.getenv("PM_LIMIT", env.int("PM_LIMIT", 4)))
 
 test_server = bool(os.getenv("TEST_SERVER", env.bool("TEST_SERVER", False)))
 modules_repo_branch = os.getenv(
-    "MODULES_REPO_BRANCH", env.str("MODULES_REPO_BRANCH", "master")
+    "MODULES_REPO_BRANCH", env.str("MODULES_REPO_BRANCH", "main")
 )
