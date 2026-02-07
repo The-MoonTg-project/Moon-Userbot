@@ -31,11 +31,17 @@ Choose your preferred platform to get started instantly:
 ---
 
 ## 📖 Documentation
-Don't know how to start? Visit our **[Official Wiki](https://github.com/The-MoonTg-project/Moon-Userbot/wiki)** for:
-* [Step-by-Step Installation](https://github.com/The-MoonTg-project/Moon-Userbot/wiki/Installation)
-* [Environment Variables Guide](https://github.com/The-MoonTg-project/Moon-Userbot/wiki/Installation#necessary-vars)
-* [Docker Setup](https://github.com/The-MoonTg-project/Moon-Userbot/wiki/Installation#docker)
-* [Local Hosting (Linux/Termux)](https://github.com/The-MoonTg-project/Moon-Userbot/wiki/Installation#local-host)
+
+Don't know how to start? Visit our **[Official Documentation](https://the-moontg-project.github.io/)** for:
+
+* **[Step-by-Step Installation](https://the-moontg-project.github.io/docs/installation)** – Get up and running in minutes.
+* **[Environment Variables Guide](https://the-moontg-project.github.io/docs/installation/#environment-variables)** – Detailed info on necessary vars.
+* **[Docker Setup](https://the-moontg-project.github.io/docs/installation/docker)** – Containerized deployment instructions.
+* **[Local Hosting](https://the-moontg-project.github.io/docs/installation/local)** – Guides for hosting on your machine, Linux, Windows(WSL) and Android(Termux). 
+
+> [!Tip]
+> Prefer GitHub? You can still access our **[Official Wiki](https://github.com/The-MoonTg-project/Moon-Userbot/wiki)** for a native GitHub documentation experience.
+
 
 ## 👨🏻‍💻 Community & Support
 * [News Channel](https://t.me/moonuserbot)
