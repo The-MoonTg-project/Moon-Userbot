@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+BIND_ADDR="0.0.0.0:${PORT:-8000}"
+
 cat <<'EOF'
  _      ____  ____  _     
 / \__/|/  _ \/  _ \/ \  /|
@@ -14,7 +16,5 @@ Please see < https://github.com/The-MoonTg-project/Moon-Userbot/blob/main/LICENS
 All rights reserved.
 EOF
 
-echo "Starting web server..."
-socat TCP-LISTEN:${PORT:-8000},reuseaddr,fork,crlf SYSTEM:'echo "HTTP/1.1 200 OK"; echo "Content-Length: 12"; echo; echo "This is Moon"' &
-
-python main.py
+echo "Starting gunicorn server on $BIND_ADDR..."
+gunicorn app:app --daemon --bind "$BIND_ADDR" && python main.py

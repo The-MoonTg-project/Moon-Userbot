@@ -1,2 +1,1 @@
-socat TCP-LISTEN:${PORT:-8000},reuseaddr,fork,crlf SYSTEM:'echo "HTTP/1.1 200 OK"; echo "Content-Length: 12"; echo; echo "This is Moon"' &
-python3 main.py
+gunicorn app:app & python3 main.py

@@ -1,6 +1,8 @@
 pyrofork==2.3.69
 tgcrypto
 wheel
+gunicorn
+flask
 humanize
 pygments
 pymongo
