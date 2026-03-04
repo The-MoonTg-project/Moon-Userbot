@@ -21,7 +21,7 @@ import requests
 from pyrogram import Client, filters, errors, types
 from pyrogram.types import Message
 
-from utils.misc import modules_help, prefix
+from utils import modules_help, prefix
 from utils.scripts import with_reply, format_exc, resize_image
 
 QUOTES_API = "https://quotes-o042.onrender.com/generate"

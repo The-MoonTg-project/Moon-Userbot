@@ -32,7 +32,7 @@
 #     "dnspython",
 #     "requests",
 #     "environs",
-#     "GitPython",
+#     "dulwich==1.1.0",
 #     "aiohttp",
 #     "aiofiles",
 # ]
@@ -50,7 +50,7 @@ from pyrogram.raw.functions.account import DeleteAccount, GetAuthorizations
 
 from utils import config
 from utils.db import db
-from utils.misc import gitrepo, userbot_version
+from utils import gitrepo, userbot_version
 from utils.module import ModuleManager
 from utils.rentry import rentry_cleanup_job
 from utils.scripts import restart
@@ -65,7 +65,7 @@ common_params = {
     "hide_password": True,
     "workdir": SCRIPT_PATH,
     "app_version": userbot_version,
-    "device_model": f"Moon-Userbot @ {gitrepo.head.commit.hexsha[:7]}",
+    "device_model": f"Moon-Userbot @ {gitrepo.head().decode('utf-8')[:7]}",
     "system_version": platform.version() + " " + platform.machine(),
     "sleep_threshold": 30,
     "test_mode": config.test_server,
@@ -192,6 +192,7 @@ async def main():
 
     await idle()
 
+    gitrepo.close()
     await app.stop()
 
 

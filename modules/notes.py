@@ -19,7 +19,7 @@ from pyrogram.types import Message
 
 from utils.db import db
 from utils.handlers import NoteSendHandler
-from utils.misc import modules_help, prefix
+from utils import modules_help, prefix
 
 
 @Client.on_message(filters.command(["save"], prefix) & filters.me)

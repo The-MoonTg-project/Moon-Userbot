@@ -28,7 +28,7 @@ from pyrogram.raw.types import UpdateServiceNotification
 from pyrogram.types import Message
 
 from utils.db import db
-from utils.misc import modules_help, prefix
+from utils import modules_help, prefix
 
 auth_hashes = db.get("core.sessionkiller", "auths_hashes", [])
 

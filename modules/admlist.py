@@ -20,7 +20,7 @@ from typing import AsyncGenerator, List, Optional, Union
 from pyrogram import Client, enums, filters, raw, types, utils
 from pyrogram.types.object import Object
 
-from utils.misc import modules_help, prefix
+from utils import modules_help, prefix
 from utils.scripts import format_exc
 
 

@@ -46,7 +46,7 @@ from pyrogram.utils import (
 )
 
 from utils.db import db
-from utils.misc import prefix
+from utils import prefix
 from utils.scripts import format_exc, text
 
 

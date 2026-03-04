@@ -5,7 +5,7 @@ from typing import Optional
 from pyrogram import Client
 
 from utils.scripts import load_module
-from utils.misc import modules_help
+from utils import modules_help
 
 
 class ModuleManager:
@@ -53,7 +53,7 @@ class HelpNavigator:
         logging.info("Initialized HelpNavigator with %d modules", len(self.module_list))
 
     async def send_page(self, message):
-        from utils.misc import prefix
+        from utils import prefix
 
         start_index = (self.current_page - 1) * 10
         end_index = start_index + 10

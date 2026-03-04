@@ -19,7 +19,7 @@ import asyncio
 from pyrogram import Client, filters
 from pyrogram.types import Message
 
-from utils.misc import modules_help, prefix
+from utils import modules_help, prefix
 
 commands = ["spam", "statspam", "slowspam", "fastspam"]
 

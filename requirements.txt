@@ -12,6 +12,6 @@ click
 dnspython
 requests
 environs
-GitPython
+dulwich==1.1.0
 aiohttp
 aiofiles

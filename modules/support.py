@@ -18,8 +18,8 @@ from pyrogram import Client, filters
 from pyrogram.types import Message
 import random
 import datetime
-
-from utils.misc import modules_help, prefix, userbot_version, python_version, gitrepo
+from dulwich.refs import Ref
+from utils import modules_help, prefix, userbot_version, python_version, gitrepo
 
 
 @Client.on_message(filters.command(["support", "repo"], prefix) & filters.me)
@@ -59,12 +59,31 @@ async def version(client: Client, message: Message):
 
     await message.delete()
 
-    remote_url = list(gitrepo.remote().urls)[0]
+    config = gitrepo.get_config()
+    try:
+        remote_url = config.get((b"remote", b"origin"), b"url").decode("utf-8")
+        if remote_url.endswith(".git"):
+            remote_url = remote_url[:-4]
+    except KeyError:
+        remote_url = "https://github.com/The-MoonTg-project/Moon-Userbot"
+
+    head_sha = gitrepo.head()
+    hexsha = head_sha.decode("utf-8")
+    commit_obj = gitrepo.get_object(head_sha)
+
     commit_time = (
-        datetime.datetime.fromtimestamp(gitrepo.head.commit.committed_date)
+        datetime.datetime.fromtimestamp(commit_obj.commit_time)
         .astimezone(datetime.timezone.utc)
         .strftime("%Y-%m-%d %H:%M:%S %Z")
     )
+
+    _, ref_path = gitrepo.refs.follow(Ref(b"HEAD"))
+    if ref_path:
+        active_branch = ref_path.split(b"/")[-1].decode("utf-8")
+    else:
+        active_branch = "detached"
+
+    author_name = commit_obj.author.decode("utf-8").split("<")[0].strip()
 
     await message.reply(
         f"<b>Moon Userbot version: {userbot_version}\n"
@@ -72,12 +91,12 @@ async def version(client: Client, message: Message):
         f"Changelog written by </b><i>"
         f"<a href=https://t.me/Qbtaumai>Abhi</a></i>\n\n"
         + (
-            f"<b>Branch: <a href={remote_url}/tree/{gitrepo.active_branch}>{gitrepo.active_branch}</a>\n"
-            if gitrepo.active_branch != "master"
+            f"<b>Branch: <a href={remote_url}/tree/{active_branch}>{active_branch}</a>\n"
+            if active_branch not in ["master", "main"]
             else ""
         )
-        + f"Commit: <a href={remote_url}/commit/{gitrepo.head.commit.hexsha}>"
-        f"{gitrepo.head.commit.hexsha[:7]}</a> by {gitrepo.head.commit.author.name}\n"
+        + f"Commit: <a href={remote_url}/commit/{hexsha}>"
+        f"{hexsha[:7]}</a> by {author_name}\n"
         f"Commit time: {commit_time}</b>",
     )
 

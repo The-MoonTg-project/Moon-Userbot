@@ -17,7 +17,7 @@
 from pyrogram import Client, enums, filters
 from pyrogram.types import Message, MessageOriginHiddenUser
 
-from utils.misc import modules_help, prefix
+from utils import modules_help, prefix
 
 
 @Client.on_message(filters.command("id", prefix) & filters.me)

@@ -22,7 +22,7 @@ from pyrogram.types import Message
 
 from utils.config import pm_limit
 from utils.db import db
-from utils.misc import modules_help, prefix
+from utils import modules_help, prefix
 
 anti_pm_enabled = filters.create(
     lambda _, __, ___: db.get("core.antipm", "status", False)

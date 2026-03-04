@@ -43,7 +43,7 @@ from utils.handlers import (
     UnbanHandler,
     UnmuteHandler,
 )
-from utils.misc import modules_help, prefix
+from utils import modules_help, prefix
 from utils.scripts import format_exc, with_reply
 
 db_cache: dict = db.get_collection("core.ats")

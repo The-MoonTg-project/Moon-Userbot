@@ -21,7 +21,7 @@ from pyrogram import Client, filters
 from pyrogram.types import Message
 
 # noinspection PyUnresolvedReferences
-from utils.misc import modules_help, prefix
+from utils import modules_help, prefix
 from utils.scripts import format_exc
 
 # noinspection PyUnresolvedReferences

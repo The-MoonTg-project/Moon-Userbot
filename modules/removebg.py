@@ -19,7 +19,7 @@ from pyrogram import Client, enums, filters
 from pyrogram.types import Message
 
 from utils.config import rmbg_key
-from utils.misc import modules_help, prefix
+from utils import modules_help, prefix
 from utils.scripts import edit_or_reply, format_exc
 
 

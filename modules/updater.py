@@ -22,7 +22,7 @@ import subprocess
 from pyrogram import Client, filters
 from pyrogram.types import Message
 
-from utils.misc import modules_help, prefix, requirements_list
+from utils import modules_help, prefix, requirements_list
 from utils.db import db
 from utils.scripts import format_exc, restart
 
