@@ -33,10 +33,8 @@
 #     "requests",
 #     "environs",
 #     "GitPython",
-#     "beautifulsoup4",
 #     "aiohttp",
 #     "aiofiles",
-#     "pySmartDL",
 # ]
 # ///
 import logging

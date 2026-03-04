@@ -13,7 +13,5 @@ dnspython
 requests
 environs
 GitPython
-beautifulsoup4
 aiohttp
 aiofiles
-pySmartDL
