@@ -15,14 +15,16 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import os
-import sys
 import shutil
 import subprocess
+import sys
 
+from dulwich import porcelain
+from dulwich.refs import Ref
 from pyrogram import Client, filters
 from pyrogram.types import Message
 
-from utils import modules_help, prefix, requirements_list
+from utils import gitrepo, modules_help, prefix, requirements_list
 from utils.db import db
 from utils.scripts import format_exc, restart
 
@@ -77,7 +79,13 @@ async def update(_, message: Message):
             subprocess.run(
                 [sys.executable, "-m", "pip", "install", "-U", "pip"], check=True
             )
-        subprocess.run(["git", "pull"], check=True)
+
+        porcelain.fetch(gitrepo, b"origin")
+        gitrepo.refs[Ref(b"refs/heads/main")] = gitrepo.refs[
+            Ref(b"refs/remotes/origin/main")
+        ]
+        gitrepo.refs.set_symbolic_ref(Ref(b"HEAD"), Ref(b"refs/heads/main"))
+        porcelain.reset(gitrepo, "hard")
 
         if (
             os.path.exists("requirements.txt")
