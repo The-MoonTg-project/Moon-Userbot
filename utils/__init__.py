@@ -49,14 +49,14 @@ try:
     gitrepo = Repo(".")
 except NotGitRepository:
     gitrepo = Repo.init(".")
-    config = gitrepo.get_config()
-    config.set(
+    gitconfig = gitrepo.get_config()
+    gitconfig.set(
         (b"remote", b"origin"),
         b"url",
         b"https://github.com/The-MoonTg-project/Moon-Userbot",
     )
-    config.set((b"remote", b"origin"), b"fetch", b"+refs/heads/*:refs/remotes/origin/*")
-    config.write_to_path()
+    gitconfig.set((b"remote", b"origin"), b"fetch", b"+refs/heads/*:refs/remotes/origin/*")
+    gitconfig.write_to_path()
 
     porcelain.fetch(gitrepo, b"origin")
 
