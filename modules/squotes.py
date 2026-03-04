@@ -18,65 +18,19 @@ import base64
 from io import BytesIO
 
 import requests
-from pyrogram import Client, filters, errors, types
+from pyrogram import Client, errors, filters, types
 from pyrogram.types import Message
 
 from utils import modules_help, prefix
-from utils.scripts import with_reply, format_exc, resize_image
 from utils.config import quotes_api as QUOTES_API
+from utils.scripts import format_exc, resize_image, with_reply
+
+FLAGS = {"!png", "!file", "!me", "!ls", "!noreply", "!nr"}
 
 
-@Client.on_message(filters.command(["q", "quote"], prefix) & filters.me)
-@with_reply
-async def quote_cmd(client: Client, message: Message):
-    if len(message.command) > 1 and message.command[1].isdigit():
-        count = int(message.command[1])
-        if count < 1:
-            count = 1
-        elif count > 15:
-            count = 15
-    else:
-        count = 1
-
-    is_png = "!png" in message.command or "!file" in message.command
-    send_for_me = "!me" in message.command or "!ls" in message.command
-    no_reply = "!noreply" in message.command or "!nr" in message.command
-
-    messages = []
-
-    async for msg in client.get_chat_history(
-        message.chat.id,
-        offset_id=message.reply_to_message.id + count,
-        limit=count,
-    ):
-        if msg.empty:
-            continue
-        if msg.id >= message.id:
-            break
-        if no_reply:
-            msg.reply_to_message = None
-
-        messages.append(msg)
-
-        if len(messages) >= count:
-            break
-
-    messages.reverse()
-
-    if send_for_me:
-        await message.delete()
-        message = await client.send_message("me", "<b>Generating...</b>")
-    else:
-        await message.edit("<b>Generating...</b>")
-
-    params = {
-        "messages": [
-            await render_message(client, msg) for msg in messages if not msg.empty
-        ],
-        "quote_color": "#162330",
-        "text_color": "#fff",
-    }
-
+async def _generate_and_send_quote(
+    client: Client, message, params: dict, is_png: bool, send_for_me: bool
+):
     response = requests.post(QUOTES_API, json=params)
     if not response.ok:
         return await message.edit(
@@ -92,10 +46,50 @@ async def quote_cmd(client: Client, message: Message):
         func = client.send_document if is_png else client.send_sticker
         chat_id = "me" if send_for_me else message.chat.id
         await func(chat_id, resized)
-    except errors.RPCError as e:  # no rights to send stickers, etc
+    except errors.RPCError as e:
         await message.edit(format_exc(e))
     else:
         await message.delete()
+
+
+@Client.on_message(filters.command(["q", "quote"], prefix) & filters.me)
+@with_reply
+async def quote_cmd(client: Client, message: Message):
+    if len(message.command) > 1 and message.command[1].isdigit():
+        count = max(1, min(int(message.command[1]), 15))
+    else:
+        count = 1
+
+    is_png = "!png" in message.command or "!file" in message.command
+    send_for_me = "!me" in message.command or "!ls" in message.command
+    no_reply = "!noreply" in message.command or "!nr" in message.command
+
+    reply_id = message.reply_to_message.id
+    msg_ids = list(range(reply_id, reply_id + count))
+
+    messages = await client.get_messages(message.chat.id, msg_ids)
+    if not isinstance(messages, list):
+        messages = [messages]
+    messages = [msg for msg in messages if not msg.empty]
+
+    if no_reply:
+        for msg in messages:
+            msg.reply_to_message = None
+
+    if send_for_me:
+        await message.delete()
+        message = await client.send_message("me", "<b>Generating...</b>")
+    else:
+        await message.edit("<b>Generating...</b>")
+
+    params = {
+        "messages": [
+            await render_message(client, msg) for msg in messages if not msg.empty
+        ],
+        "quote_color": "#162330",
+        "text_color": "#fff",
+    }
+    await _generate_and_send_quote(client, message, params, is_png, send_for_me)
 
 
 @Client.on_message(filters.command(["fq", "fakequote"], prefix) & filters.me)
@@ -105,13 +99,7 @@ async def fake_quote_cmd(client: Client, message: types.Message):
     send_for_me = "!me" in message.command or "!ls" in message.command
     no_reply = "!noreply" in message.command or "!nr" in message.command
 
-    fake_quote_text = " ".join(
-        [
-            arg
-            for arg in message.command[1:]
-            if arg not in ["!png", "!file", "!me", "!ls", "!noreply", "!nr"]
-        ]  # remove some special arg words
-    )
+    fake_quote_text = " ".join(arg for arg in message.command[1:] if arg not in FLAGS)
 
     if not fake_quote_text:
         return await message.edit("<b>Fake quote text is empty</b>")
@@ -133,94 +121,46 @@ async def fake_quote_cmd(client: Client, message: types.Message):
         "quote_color": "#162330",
         "text_color": "#fff",
     }
-
-    response = requests.post(QUOTES_API, json=params)
-    if not response.ok:
-        return await message.edit(
-            f"<b>Quotes API error!</b>\n<code>{response.text}</code>"
-        )
-
-    resized = resize_image(
-        BytesIO(response.content), img_type="PNG" if is_png else "WEBP"
-    )
-    await message.edit("<b>Sending...</b>")
-
-    try:
-        func = client.send_document if is_png else client.send_sticker
-        chat_id = "me" if send_for_me else message.chat.id
-        await func(chat_id, resized)
-    except errors.RPCError as e:  # no rights to send stickers, etc
-        await message.edit(format_exc(e))
-    else:
-        await message.delete()
+    await _generate_and_send_quote(client, message, params, is_png, send_for_me)
 
 
 files_cache = {}
 
 
-async def render_message(app: Client, message: types.Message) -> dict:
-    async def get_file(file_id) -> str:
-        if file_id in files_cache:
-            return files_cache[file_id]
+async def _get_cached_file(app: Client, file_id: str) -> str:
+    if file_id in files_cache:
+        return files_cache[file_id]
 
-        content = await app.download_media(file_id, in_memory=True)
-        data = base64.b64encode(bytes(content.getbuffer())).decode()
-        files_cache[file_id] = data
-        return data
+    content = await app.download_media(file_id, in_memory=True)
+    data = base64.b64encode(bytes(content.getbuffer())).decode()
+    files_cache[file_id] = data
+    return data
 
-    # text
-    if message.photo:
-        text = message.caption if message.caption else ""
-    elif message.poll:
-        text = get_poll_text(message.poll)
-    elif message.sticker:
-        text = ""
-    else:
-        text = get_reply_text(message)
 
-    # media
-    if message.photo:
-        media = await get_file(message.photo.file_id)
-    elif message.sticker:
-        media = await get_file(message.sticker.file_id)
-    else:
-        media = ""
+def _apply_forward_origin(msg: types.Message):
+    if not msg.forward_origin:
+        return
+    if isinstance(msg.forward_origin, types.MessageOriginUser):
+        msg.from_user = msg.forward_origin.sender_user
+    elif isinstance(msg.forward_origin, types.MessageOriginHiddenUser):
+        msg.from_user.id = 0
+        msg.from_user.first_name = msg.forward_origin.sender_user_name
+        msg.from_user.last_name = ""
+    elif isinstance(msg.forward_origin, types.MessageOriginChat):
+        msg.sender_chat = msg.forward_origin.sender_chat
+        msg.from_user.id = 0
+        if msg.forward_origin.author_signature:
+            msg.author_signature = msg.forward_origin.author_signature
 
-    # entities
-    entities = []
-    if message.entities:
-        for entity in message.entities:
-            entities.append(
-                {
-                    "offset": entity.offset,
-                    "length": entity.length,
-                    "type": str(entity.type).split(".")[-1].lower(),
-                }
-            )
 
-    def move_forwards(msg: types.Message):
-        if msg.forward_origin:
-            if isinstance(msg.forward_origin, types.MessageOriginUser):
-                msg.from_user = msg.forward_origin.sender_user
-            elif isinstance(msg.forward_origin, types.MessageOriginHiddenUser):
-                msg.from_user.id = 0
-                msg.from_user.first_name = msg.forward_origin.sender_user_name
-                msg.from_user.last_name = ""
-            elif isinstance(msg.forward_origin, types.MessageOriginChat):
-                msg.sender_chat = msg.forward_origin.sender_chat
-                msg.from_user.id = 0
-                if msg.forward_origin.author_signature:
-                    msg.author_signature = msg.forward_origin.author_signature
-
-    move_forwards(message)
-
-    # author
+async def _build_author(app: Client, message: types.Message) -> dict:
     author = {}
     if message.from_user and message.from_user.id != 0:
         from_user = message.from_user
 
         author["id"] = from_user.id
         author["name"] = get_full_name(from_user)
+
         if message.author_signature:
             author["rank"] = message.author_signature
         elif message.chat.type != "supergroup" or message.forward_date:
@@ -240,8 +180,8 @@ async def render_message(app: Client, message: types.Message) -> dict:
                 )
 
         if from_user.photo:
-            author["avatar"] = await get_file(from_user.photo.big_file_id)
-        elif not from_user.photo and from_user.username:
+            author["avatar"] = await _get_cached_file(app, from_user.photo.big_file_id)
+        elif from_user.username:
             # may be user blocked us, we will try to get avatar via t.me
             t_me_page = requests.get(f"https://t.me/{from_user.username}").text
             sub = '<meta property="og:image" content='
@@ -272,16 +212,53 @@ async def render_message(app: Client, message: types.Message) -> dict:
         author["rank"] = "channel" if message.sender_chat.type == "channel" else ""
 
         if message.sender_chat.photo:
-            author["avatar"] = await get_file(message.sender_chat.photo.big_file_id)
+            author["avatar"] = await _get_cached_file(
+                app, message.sender_chat.photo.big_file_id
+            )
         else:
             author["avatar"] = ""
     author["via_bot"] = message.via_bot.username if message.via_bot else ""
+    return author
+
+
+async def render_message(app: Client, message: types.Message) -> dict:
+    _apply_forward_origin(message)
+
+    # text
+    if message.photo:
+        text = message.caption if message.caption else ""
+    elif message.poll:
+        text = get_poll_text(message.poll)
+    elif message.sticker:
+        text = ""
+    else:
+        text = get_reply_text(message)
+
+    # media
+    if message.photo:
+        media = await _get_cached_file(app, message.photo.file_id)
+    elif message.sticker:
+        media = await _get_cached_file(app, message.sticker.file_id)
+    else:
+        media = ""
+
+    # entities
+    entities = []
+    if message.entities:
+        for entity in message.entities:
+            entities.append(
+                {
+                    "offset": entity.offset,
+                    "length": entity.length,
+                    "type": str(entity.type).split(".")[-1].lower(),
+                }
+            )
 
     # reply
     reply = {}
     reply_msg = message.reply_to_message
     if reply_msg and not reply_msg.empty:
-        move_forwards(reply_msg)
+        _apply_forward_origin(reply_msg)
 
         if reply_msg.from_user:
             reply["id"] = reply_msg.from_user.id
@@ -296,7 +273,7 @@ async def render_message(app: Client, message: types.Message) -> dict:
         "text": text,
         "media": media,
         "entities": entities,
-        "author": author,
+        "author": await _build_author(app, message),
         "reply": reply,
     }
 
@@ -312,126 +289,62 @@ def get_audio_text(audio: types.Audio) -> str:
 
 
 def get_reply_text(reply: types.Message) -> str:
-    return (
-        "📷 Photo" + ("\n" + reply.caption if reply.caption else "")
-        if reply.photo
-        else (
-            get_reply_poll_text(reply.poll)
-            if reply.poll
-            else (
-                "📍 Location"
-                if reply.location or reply.venue
-                else (
-                    "👤 Contact"
-                    if reply.contact
-                    else (
-                        "🖼 GIF"
-                        if reply.animation
-                        else (
-                            "🎧 Music" + get_audio_text(reply.audio)
-                            if reply.audio
-                            else (
-                                "📹 Video"
-                                if reply.video
-                                else (
-                                    "📹 Videomessage"
-                                    if reply.video_note
-                                    else (
-                                        "🎵 Voice"
-                                        if reply.voice
-                                        else (
-                                            (
-                                                reply.sticker.emoji + " "
-                                                if reply.sticker.emoji
-                                                else ""
-                                            )
-                                            + "Sticker"
-                                            if reply.sticker
-                                            else (
-                                                "💾 File " + reply.document.file_name
-                                                if reply.document
-                                                else (
-                                                    "🎮 Game"
-                                                    if reply.game
-                                                    else (
-                                                        "🎮 set new record"
-                                                        if reply.game_high_score
-                                                        else (
-                                                            f"{reply.dice.emoji} - {reply.dice.value}"
-                                                            if reply.dice
-                                                            else (
-                                                                (
-                                                                    "👤 joined the group"
-                                                                    if reply.new_chat_members[
-                                                                        0
-                                                                    ].id
-                                                                    == reply.from_user.id
-                                                                    else f"👤 invited {get_full_name(reply.new_chat_members[0])} to the group"
-                                                                )
-                                                                if reply.new_chat_members
-                                                                else (
-                                                                    (
-                                                                        "👤 left the group"
-                                                                        if reply.left_chat_member.id
-                                                                        == reply.from_user.id
-                                                                        else f"👤 removed {get_full_name(reply.left_chat_member)}"
-                                                                    )
-                                                                    if reply.left_chat_member
-                                                                    else (
-                                                                        f"✏ changed group name to {reply.new_chat_title}"
-                                                                        if reply.new_chat_title
-                                                                        else (
-                                                                            "🖼 changed group photo"
-                                                                            if reply.new_chat_photo
-                                                                            else (
-                                                                                "🖼 removed group photo"
-                                                                                if reply.delete_chat_photo
-                                                                                else (
-                                                                                    "📍 pinned message"
-                                                                                    if reply.pinned_message
-                                                                                    else (
-                                                                                        "🎤 started a new video chat"
-                                                                                        if reply.video_chat_started
-                                                                                        else (
-                                                                                            "🎤 ended the video chat"
-                                                                                            if reply.video_chat_ended
-                                                                                            else (
-                                                                                                "🎤 invited participants to the video chat"
-                                                                                                if reply.video_chat_members_invited
-                                                                                                else (
-                                                                                                    "👥 created the group"
-                                                                                                    if reply.group_chat_created
-                                                                                                    or reply.supergroup_chat_created
-                                                                                                    else (
-                                                                                                        "👥 created the channel"
-                                                                                                        if reply.channel_chat_created
-                                                                                                        else reply.text
-                                                                                                        or "unsupported message"
-                                                                                                    )
-                                                                                                )
-                                                                                            )
-                                                                                        )
-                                                                                    )
-                                                                                )
-                                                                            )
-                                                                        )
-                                                                    )
-                                                                )
-                                                            )
-                                                        )
-                                                    )
-                                                )
-                                            )
-                                        )
-                                    )
-                                )
-                            )
-                        )
-                    )
-                )
-            )
-        )
-    )
+    if reply.photo:
+        return "📷 Photo" + ("\n" + reply.caption if reply.caption else "")
+    if reply.poll:
+        return get_reply_poll_text(reply.poll)
+    if reply.location or reply.venue:
+        return "📍 Location"
+    if reply.contact:
+        return "👤 Contact"
+    if reply.animation:
+        return "🖼 GIF"
+    if reply.audio:
+        return "🎧 Music" + get_audio_text(reply.audio)
+    if reply.video:
+        return "📹 Video"
+    if reply.video_note:
+        return "📹 Videomessage"
+    if reply.voice:
+        return "🎵 Voice"
+    if reply.sticker:
+        prefix = reply.sticker.emoji + " " if reply.sticker.emoji else ""
+        return prefix + "Sticker"
+    if reply.document:
+        return "💾 File " + reply.document.file_name
+    if reply.game:
+        return "🎮 Game"
+    if reply.game_high_score:
+        return "🎮 set new record"
+    if reply.dice:
+        return f"{reply.dice.emoji} - {reply.dice.value}"
+    if reply.new_chat_members:
+        if reply.new_chat_members[0].id == reply.from_user.id:
+            return "👤 joined the group"
+        return f"👤 invited {get_full_name(reply.new_chat_members[0])} to the group"
+    if reply.left_chat_member:
+        if reply.left_chat_member.id == reply.from_user.id:
+            return "👤 left the group"
+        return f"👤 removed {get_full_name(reply.left_chat_member)}"
+    if reply.new_chat_title:
+        return f"✏ changed group name to {reply.new_chat_title}"
+    if reply.new_chat_photo:
+        return "🖼 changed group photo"
+    if reply.delete_chat_photo:
+        return "🖼 removed group photo"
+    if reply.pinned_message:
+        return "📍 pinned message"
+    if reply.video_chat_started:
+        return "🎤 started a new video chat"
+    if reply.video_chat_ended:
+        return "🎤 ended the video chat"
+    if reply.video_chat_members_invited:
+        return "🎤 invited participants to the video chat"
+    if reply.group_chat_created or reply.supergroup_chat_created:
+        return "👥 created the group"
+    if reply.channel_chat_created:
+        return "👥 created the channel"
+    return reply.text or "unsupported message"
 
 
 def get_poll_text(poll: types.Poll) -> str:
