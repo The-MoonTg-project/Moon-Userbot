@@ -18,6 +18,8 @@ db_type = os.getenv("DATABASE_TYPE", env.str("DATABASE_TYPE"))
 db_url = os.getenv("DATABASE_URL", env.str("DATABASE_URL", ""))
 db_name = os.getenv("DATABASE_NAME", env.str("DATABASE_NAME"))
 
+quotes_api = os.getenv("QUOTES_API", env.str("QUOTES_API", "https://quotes-o042.onrender.com/generate"))
+
 apiflash_key = os.getenv("APIFLASH_KEY", env.str("APIFLASH_KEY"))
 rmbg_key = os.getenv("RMBG_KEY", env.str("RMBG_KEY", ""))
 vt_key = os.getenv("VT_KEY", env.str("VT_KEY", ""))

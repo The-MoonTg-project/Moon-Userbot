@@ -23,8 +23,7 @@ from pyrogram.types import Message
 
 from utils import modules_help, prefix
 from utils.scripts import with_reply, format_exc, resize_image
-
-QUOTES_API = "https://quotes-o042.onrender.com/generate"
+from utils.config import quotes_api as QUOTES_API
 
 
 @Client.on_message(filters.command(["q", "quote"], prefix) & filters.me)
