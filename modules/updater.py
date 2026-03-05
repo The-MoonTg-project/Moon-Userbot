@@ -81,11 +81,10 @@ async def update(_, message: Message):
             )
 
         porcelain.fetch(gitrepo, b"origin")
-        gitrepo.refs[Ref(b"refs/heads/main")] = gitrepo.refs[
-            Ref(b"refs/remotes/origin/main")
-        ]
+        origin_main_sha = gitrepo.refs[Ref(b"refs/remotes/origin/main")]
+        gitrepo.refs[Ref(b"refs/heads/main")] = origin_main_sha
         gitrepo.refs.set_symbolic_ref(Ref(b"HEAD"), Ref(b"refs/heads/main"))
-        porcelain.reset(gitrepo, "hard")
+        porcelain.reset(gitrepo, "hard", treeish=origin_main_sha)
 
         if (
             os.path.exists("requirements.txt")

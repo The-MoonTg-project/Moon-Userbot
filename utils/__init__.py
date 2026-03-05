@@ -62,11 +62,10 @@ except NotGitRepository:
 
     porcelain.fetch(gitrepo, b"origin")
 
-    gitrepo.refs[Ref(b"refs/heads/main")] = gitrepo.refs[
-        Ref(b"refs/remotes/origin/main")
-    ]
+    origin_main_sha = gitrepo.refs[Ref(b"refs/remotes/origin/main")]
+    gitrepo.refs[Ref(b"refs/heads/main")] = origin_main_sha
     gitrepo.refs.set_symbolic_ref(Ref(b"HEAD"), Ref(b"refs/heads/main"))
-    porcelain.reset(gitrepo, "hard")
+    porcelain.reset(gitrepo, "hard", treeish=origin_main_sha)
 
 commits_since_tag = get_commits_since_latest_tag(gitrepo)
 userbot_version = f"2.5.{len(commits_since_tag)}"
