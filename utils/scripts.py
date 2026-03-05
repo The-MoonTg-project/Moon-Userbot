@@ -548,6 +548,68 @@ def parse_meta_comments(code: str) -> Dict[str, str]:
     return {groups[i]: groups[i + 1] for i in range(0, len(groups), 2)}
 
 
+def generate_waveform(audio_bytes, samples=64):
+    process = subprocess.run(
+        [
+            "ffmpeg",
+            "-i",
+            "pipe:0",
+            "-f",
+            "s16le",
+            "-ac",
+            "1",
+            "-ar",
+            "8000",
+            "pipe:1",
+            "-loglevel",
+            "quiet",
+        ],
+        input=audio_bytes,
+        capture_output=True,
+    )
+
+    pcm = process.stdout
+    if not pcm:
+        return b"\x00" * samples
+
+    # Convert PCM to amplitudes
+    step = max(1, len(pcm) // (samples * 2))
+    values = []
+
+    for i in range(0, len(pcm), step * 2):
+        if i + 2 > len(pcm):
+            break
+
+        sample = int.from_bytes(pcm[i : i + 2], "little", signed=True)
+        amp = min(31, int(abs(sample) / 32768 * 31))
+        values.append(amp)
+
+        if len(values) >= samples:
+            break
+
+    while len(values) < samples:
+        values.append(0)
+
+    # pack 5-bit samples
+    packed = bytearray()
+    buffer = 0
+    bits = 0
+
+    for v in values:
+        buffer |= (v & 31) << bits
+        bits += 5
+
+        while bits >= 8:
+            packed.append(buffer & 255)
+            buffer >>= 8
+            bits -= 8
+
+    if bits > 0:
+        packed.append(buffer)
+
+    return bytes(packed)
+
+
 def ReplyCheck(message: Message):
     reply_id = None
 
