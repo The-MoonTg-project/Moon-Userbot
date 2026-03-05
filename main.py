@@ -83,11 +83,10 @@ async def load_missing_modules():
     os.makedirs(custom_modules_path, exist_ok=True)
 
     try:
-        async with aiohttp.ClientSession() as session:
-            async with session.get(
-                f"https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/{config.modules_repo_branch}/full.txt"
-            ) as resp:
-                f = await resp.text()
+        async with aiohttp.ClientSession() as session, session.get(
+            f"https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/{config.modules_repo_branch}/full.txt"
+        ) as resp:
+            f = await resp.text()
     except Exception:
         logging.error("Failed to fetch custom modules list")
         return
