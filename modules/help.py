@@ -48,7 +48,13 @@ async def help_cmd(_, message: Message):
                         f" — <i>{cmd_desc}</i>",
                     )
         if not module_found:
-            await message.edit(f"<b>Module or command {command_name} not found</b>")
+            found = await module_manager.help_navigator.send_search_results(
+                message, command_name
+            )
+            if not found:
+                await message.edit(
+                    f"<b>Module or command <code>{command_name}</code> not found</b>"
+                )
 
 
 @Client.on_message(filters.command(["pn", "pp", "pq"], prefix) & filters.me)
@@ -78,6 +84,7 @@ async def handle_navigation(_, message: Message):
 
 modules_help["help"] = {
     "help [module/command name]": "Get common/module/command help",
+    "hs [query]": "Fuzzy search modules and commands by name",
     "pn/pp/pq": "Navigate through help pages"
     + " (pn: next page, pp: previous page, pq: quit help)",
 }

@@ -1,4 +1,5 @@
 import logging
+from difflib import SequenceMatcher
 from pathlib import Path
 from typing import Optional
 
@@ -78,3 +79,78 @@ class HelpNavigator:
             self.current_page -= 1
             return True
         return False
+
+    def fuzzy_search(self, query: str, fuzzy_threshold: float = 0.7) -> list:
+        """Search modules and commands using substring + fuzzy matching.
+
+        Returns a list of (match_type, name, module_name, score) tuples
+        sorted by relevance. match_type is 'module' or 'command'.
+
+        Substring matches (query is part of the name) are always included.
+        Fuzzy matches (for typos) only appear if similarity >= fuzzy_threshold.
+        """
+        query = query.lower()
+        results = []
+
+        for module_name, commands in modules_help.items():
+            mod_lower = module_name.lower()
+            if query in mod_lower:
+                score = 0.8 + (len(query) / len(mod_lower)) * 0.2
+                results.append(("module", module_name, module_name, score))
+            else:
+                score = SequenceMatcher(None, query, mod_lower).ratio()
+                if score >= fuzzy_threshold:
+                    results.append(("module", module_name, module_name, score))
+
+            for cmd_key in commands:
+                cmd_name = cmd_key.split()[0].lower()
+                if query in cmd_name:
+                    score = 0.8 + (len(query) / len(cmd_name)) * 0.2
+                    results.append(("command", cmd_name, module_name, score))
+                else:
+                    score = SequenceMatcher(None, query, cmd_name).ratio()
+                    if score >= fuzzy_threshold:
+                        results.append(("command", cmd_name, module_name, score))
+
+        # Sort by score descending, deduplicate
+        results.sort(key=lambda x: x[3], reverse=True)
+        seen = set()
+        unique = []
+        for r in results:
+            key = (r[0], r[1])
+            if key not in seen:
+                seen.add(key)
+                unique.append(r)
+        return unique[:15]
+
+    async def send_search_results(self, message, query: str):
+        """Search and display fuzzy results."""
+        from utils import prefix
+
+        results = self.fuzzy_search(query)
+        if not results:
+            return None
+
+        text = f"<b>Search results for</b> <code>{query}</code>:\n\n"
+        for match_type, name, module_name, _score in results:
+            if match_type == "module":
+                cmds = modules_help[module_name]
+                cmd_list = ", ".join(
+                    f"<code>{prefix}{c.split()[0]}</code>" for c in cmds
+                )
+                text += f"<b>• {module_name}</b> (module): {cmd_list}\n"
+            else:
+                desc = ""
+                for cmd_key, cmd_desc in modules_help[module_name].items():
+                    if cmd_key.split()[0].lower() == name:
+                        desc = cmd_desc
+                        break
+                text += (
+                    f"  ◦ <code>{prefix}{name}</code>"
+                    f" — <i>{desc}</i>"
+                    f"  [<code>{module_name}</code>]\n"
+                )
+
+        text += f"\n<b>Tip:</b> <code>{prefix}help [name]</code> for full details"
+        await message.edit(text, disable_web_page_preview=True)
+        return True
