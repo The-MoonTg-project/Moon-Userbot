@@ -28,6 +28,7 @@ from io import BytesIO
 from types import ModuleType
 from typing import Dict, Tuple
 
+import aiohttp
 import psutil
 from PIL import Image
 from pyrogram import Client, errors, filters
@@ -36,6 +37,7 @@ from pyrogram.errors import FloodWait, MessageNotModified, UserNotParticipant
 from pyrogram.types import Message
 
 from utils import modules_help, prefix, requirements_list
+from utils.config import apiflash_key
 from utils.db import db
 
 META_COMMENTS = re.compile(r"^ *# *meta +(\S+) *: *(.*?)\s*$", re.MULTILINE)
@@ -93,6 +95,15 @@ async def edit_or_send_as_file(
             os.remove(file_names)
         return
     return await message.edit(tex)
+
+
+async def generate_screenshot(url):
+    api_url = f"https://api.apiflash.com/v1/urltoimage?access_key={apiflash_key}&url={url}&format=png"
+    async with aiohttp.ClientSession() as session:
+        async with session.get(api_url) as resp:
+            if resp.status == 200:
+                return BytesIO(await resp.read())
+    return None
 
 
 def get_text(message: Message) -> None | str:
