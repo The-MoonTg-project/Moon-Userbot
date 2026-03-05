@@ -33,6 +33,7 @@
 #     "aiofiles",
 # ]
 # ///
+import asyncio
 import logging
 import os
 import platform
@@ -83,9 +84,12 @@ async def load_missing_modules():
     os.makedirs(custom_modules_path, exist_ok=True)
 
     try:
-        async with aiohttp.ClientSession() as session, session.get(
-            f"https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/{config.modules_repo_branch}/full.txt"
-        ) as resp:
+        async with (
+            aiohttp.ClientSession() as session,
+            session.get(
+                f"https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/{config.modules_repo_branch}/full.txt"
+            ) as resp,
+        ):
             f = await resp.text()
     except Exception:
         logging.error("Failed to fetch custom modules list")
@@ -185,12 +189,23 @@ async def main():
 
     logging.info("Moon-Userbot started!")
 
-    app.loop.create_task(rentry_cleanup_job())
+    cleanup_task = app.loop.create_task(rentry_cleanup_job())
 
-    await idle()
+    try:
+        await idle()
+    finally:
+        logging.info("Shutting down... cancelling background tasks.")
+        cleanup_task.cancel()
 
-    gitrepo.close()
-    await app.stop()
+        try:
+            await cleanup_task
+        except asyncio.CancelledError:
+            logging.info("Task rentry_cleanup cancelled")
+        except Exception as e:
+            logging.error(f"Error cancelling task rentry_cleanup: {e}")
+
+        gitrepo.close()
+        await app.stop()
 
 
 if __name__ == "__main__":

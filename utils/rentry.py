@@ -165,35 +165,18 @@ async def paste(
 async def rentry_cleanup_job():
     """Periodically checks and deletes rentry pastes older than 24 hours"""
     while True:
-        try:
-            rallUrls = db.get("core.rentry", "urls", default={"allUrls": {}})
-            now = datetime.now()
-            deleted_count = 0
-            error_count = 0
-
-            for entry_id, entry in list(rallUrls["allUrls"].items()):
-                url = entry["url"]
-                entry_time = datetime.strptime(entry["time"], "%d %I:%M:%S %p %Y")
-
-                if now - entry_time > timedelta(days=1):
-                    try:
-                        delete(url, entry["edit_code"])
-                        del rallUrls["allUrls"][entry_id]
-                        deleted_count += 1
-                        print(f"[#] Deleted expired rentry paste: {url}")
-                    except Exception as e:
-                        error_count += 1
-                        print(f"[!] Failed to delete rentry paste {url}: {str(e)}")
-
-            if deleted_count or error_count:
-                print(
-                    f"[*] Cleanup summary: {deleted_count} deleted, {error_count} failed"
-                )
-
-            if deleted_count:
-                db.set("core.rentry", "urls", rallUrls)
-
-        except Exception as e:
-            print(f"[!] Error in rentry cleanup job: {str(e)}")
-
+        rallUrls = db.get("core.rentry", "urls", default={"allUrls": {}})
+        now = datetime.now()
+        for entry_id, entry in list(rallUrls["allUrls"].items()):
+            url = entry["url"]
+            entry_time = datetime.fromisoformat(entry["time"])
+            if now - entry_time > timedelta(days=1):
+                edit_code = entry["edit_code"]
+                try:
+                    delete(url, edit_code)
+                    del rallUrls["allUrls"][entry_id]
+                    db.set("core", "rentry", rallUrls)
+                    print(f"[#] Deleted rentry URL: {url}")
+                except Exception as e:
+                    print(f"[!] Error deleting rentry URL {url}: {e}")
         await asyncio.sleep(12 * 60 * 60)
