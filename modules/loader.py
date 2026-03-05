@@ -52,14 +52,13 @@ async def get_mod_hash(_, message: Message):
     if len(message.command) == 1:
         return
     url = message.command[1].lower()
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url) as resp:
-            if resp.status != 200:
-                await message.edit(
-                    f"<b>Troubleshooting with downloading module <code>{url}</code></b>"
-                )
-                return
-            content = await resp.read()
+    async with aiohttp.ClientSession() as session, session.get(url) as resp:
+        if resp.status != 200:
+            await message.edit(
+                f"<b>Troubleshooting with downloading module <code>{url}</code></b>"
+            )
+            return
+        content = await resp.read()
 
     await message.edit(
         f"<b>Module hash: <code>{hashlib.sha256(content).hexdigest()}</code>\n"
@@ -91,11 +90,10 @@ async def loadmod(_, message: Message):
         elif "." not in url:
             module_name = url.lower()
             try:
-                async with aiohttp.ClientSession() as session:
-                    async with session.get(
-                        "https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/full.txt"
-                    ) as resp:
-                        f = await resp.text()
+                async with aiohttp.ClientSession() as session, session.get(
+                    "https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/full.txt"
+                ) as resp:
+                    f = await resp.text()
             except Exception:
                 return await message.edit("Failed to fetch custom modules list")
             modules_dict = {
@@ -133,14 +131,13 @@ async def loadmod(_, message: Message):
 
             module_name = url.split("/")[-1].split(".")[0]
 
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url) as resp:
-                if resp.status != 200:
-                    await message.edit(
-                        f"<b>Module <code>{module_name}</code> is not found</b>"
-                    )
-                    return
-                resp_content = await resp.read()
+        async with aiohttp.ClientSession() as session, session.get(url) as resp:
+            if resp.status != 200:
+                await message.edit(
+                    f"<b>Module <code>{module_name}</code> is not found</b>"
+                )
+                return
+            resp_content = await resp.read()
 
         if not os.path.exists(f"{BASE_PATH}/modules/custom_modules"):
             os.mkdir(f"{BASE_PATH}/modules/custom_modules")
@@ -154,11 +151,10 @@ async def loadmod(_, message: Message):
         with open(file_name, "rb") as f:
             content = f.read()
 
-        async with aiohttp.ClientSession() as session:
-            async with session.get(
-                "https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/modules_hashes.txt"
-            ) as resp:
-                modules_hashes = await resp.text()
+        async with aiohttp.ClientSession() as session, session.get(
+            "https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/modules_hashes.txt"
+        ) as resp:
+            modules_hashes = await resp.text()
 
         if hashlib.sha256(content).hexdigest() not in modules_hashes:
             os.remove(file_name)
@@ -243,11 +239,10 @@ async def load_all_mods(_, message: Message):
         os.mkdir(f"{BASE_PATH}/modules/custom_modules")
 
     try:
-        async with aiohttp.ClientSession() as session:
-            async with session.get(
-                "https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/full.txt"
-            ) as resp:
-                f = await resp.text()
+        async with aiohttp.ClientSession() as session, session.get(
+            "https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/full.txt"
+        ) as resp:
+            f = await resp.text()
     except Exception:
         return await message.edit("Failed to fetch custom modules list")
     modules_list = f.splitlines()
