@@ -9,7 +9,7 @@
 import os
 import time
 
-import requests
+import aiohttp
 from pyrogram import Client, enums, filters
 from pyrogram.types import Message
 
@@ -49,10 +49,13 @@ async def scan_my_file(_, message: Message):
 
     url = "https://www.virustotal.com/vtapi/v2/file/scan"
     params = {"apikey": vak}
-    files = {"file": (downloaded_file_name, open(downloaded_file_name, "rb"))}
-    response = requests.post(url, files=files, params=params, timeout=10)
+    form = aiohttp.FormData()
+    with open(downloaded_file_name, "rb") as fh:
+        form.add_field("file", fh.read(), filename=downloaded_file_name)
+    async with aiohttp.ClientSession() as session:
+        async with session.post(url, data=form, params=params, timeout=aiohttp.ClientTimeout(total=10)) as response:
+            r_json = await response.json()
     try:
-        r_json = response.json()
         md5 = r_json["md5"]
     except Exception as e:
         return await ms_.edit(format_exc(e))
@@ -95,34 +98,36 @@ async def scan_my_large_file(_, message: Message):
     url1 = "https://www.virustotal.com/api/v3/files/upload_url"
 
     headers = {"accept": "application/json", "x-apikey": vak}
+    timeout = aiohttp.ClientTimeout(total=10)
 
-    rponse = requests.get(url1, headers=headers, timeout=10)
-    try:
-        r_json = rponse.json()
-        upl_data = r_json["data"]
-    except Exception as e:
-        return await ms_.edit(format_exc(e))
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url1, headers=headers, timeout=timeout) as rponse:
+            try:
+                r_json = await rponse.json()
+                upl_data = r_json["data"]
+            except Exception as e:
+                return await ms_.edit(format_exc(e))
 
-    url = upl_data
+        url = upl_data
 
-    files = {"file": (downloaded_file_name, open(downloaded_file_name, "rb"))}
-    headers = {"accept": "application/json", "x-apikey": vak}
-    response = requests.post(url, files=files, headers=headers, timeout=10)
+        form = aiohttp.FormData()
+        with open(downloaded_file_name, "rb") as fh:
+            form.add_field("file", fh.read(), filename=downloaded_file_name)
+        headers = {"accept": "application/json", "x-apikey": vak}
+        async with session.post(url, data=form, headers=headers, timeout=timeout) as response:
+            r_json = await response.json()
 
-    r_json = response.json()
-    analysis_url = r_json["data"]["links"]["self"]
+        analysis_url = r_json["data"]["links"]["self"]
+        url = analysis_url
 
-    url = analysis_url
+        headers = {"accept": "application/json", "x-apikey": vak}
+        async with session.get(url, headers=headers, timeout=timeout) as response_result:
 
-    headers = {"accept": "application/json", "x-apikey": vak}
-
-    response_result = requests.get(url, headers=headers, timeout=10)
-
-    try:
-        r_json = response_result.json()
-        md5 = r_json["meta"]["file_info"]["md5"]
-    except Exception as e:
-        return await ms_.edit(format_exc(e))
+            try:
+                r_json = await response_result.json()
+                md5 = r_json["meta"]["file_info"]["md5"]
+            except Exception as e:
+                return await ms_.edit(format_exc(e))
     await ms_.edit(
         f'<b><u>Scanned {message.reply_to_message.document.file_name}</b></u>. <b>You Can Visit :</b> <a href="https://www.virustotal.com/gui/file/{md5}">Here</a> <b>In 5-10 Min To See File Report</b>'
     )

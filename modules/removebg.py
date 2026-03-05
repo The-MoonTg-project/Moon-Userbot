@@ -13,7 +13,7 @@ from datetime import datetime
 from functools import wraps
 from io import BytesIO
 
-import requests
+import aiohttp
 from PIL import Image
 from pyrogram import Client, enums, filters
 from pyrogram.types import Message
@@ -79,19 +79,23 @@ async def convert_to_image(message, client) -> None | str:
     return final_path
 
 
-def remove_background(photo_data):
+async def remove_background(photo_data):
     with open(photo_data, "rb") as image_file:
         image_data = image_file.read()
-    response = requests.post(
-        "https://api.remove.bg/v1.0/removebg",
-        files={"image_file": image_data},
-        data={"size": "auto"},
-        headers={"X-Api-Key": rmbg_key},
-    )
-    if response.status_code == 200:
-        return BytesIO(response.content)
-    print("Error:", response.status_code, response.text)
-    return None
+    form = aiohttp.FormData()
+    form.add_field("image_file", image_data)
+    form.add_field("size", "auto")
+    async with aiohttp.ClientSession() as session:
+        async with session.post(
+            "https://api.remove.bg/v1.0/removebg",
+            data=form,
+            headers={"X-Api-Key": rmbg_key},
+        ) as response:
+            if response.status == 200:
+                return BytesIO(await response.read())
+            error_text = await response.text()
+            print("Error:", response.status, error_text)
+            return None
 
 
 def _check_rmbg(func):
@@ -122,22 +126,21 @@ async def rmbg(client: Client, message: Message):
     start = datetime.now()
     await pablo.edit("sending to ReMove.BG")
     input_file_name = cool
-    files = {
-        "image_file": (input_file_name, open(input_file_name, "rb")),
-    }
-    r = requests.post(
-        "https://api.remove.bg/v1.0/removebg",
-        headers={"X-Api-Key": rmbg_key},
-        files=files,
-        allow_redirects=True,
-        stream=True,
-    )
+    form = aiohttp.FormData()
+    with open(input_file_name, "rb") as fh:
+        form.add_field("image_file", fh.read(), filename=input_file_name)
+    async with aiohttp.ClientSession() as session:
+        async with session.post(
+            "https://api.remove.bg/v1.0/removebg",
+            headers={"X-Api-Key": rmbg_key},
+            data=form,
+        ) as r:
+            r_content = await r.read()
+            contentType = r.headers.get("content-type")
     if os.path.exists(cool):
         os.remove(cool)
-    output_file_name = r
-    contentType = output_file_name.headers.get("content-type")
     if "image" in contentType:
-        with io.BytesIO(output_file_name.content) as remove_bg_image:
+        with io.BytesIO(r_content) as remove_bg_image:
             remove_bg_image.name = "BG_rem.png"
             await client.send_document(
                 message.chat.id, remove_bg_image, reply_to_message_id=message.id
@@ -152,7 +155,7 @@ async def rmbg(client: Client, message: Message):
     else:
         await pablo.edit(
             "ReMove.BG API returned Errors. Please report to @moonub_chat"
-            + f"\n`{output_file_name.content.decode('UTF-8')}"
+            + f"\n`{r_content.decode('UTF-8')}"
         )
 
 

@@ -20,7 +20,7 @@ import shutil
 import subprocess
 import sys
 
-import requests
+import aiohttp
 from pyrogram import Client, filters
 from pyrogram.types import Message
 
@@ -53,15 +53,17 @@ async def get_mod_hash(_, message: Message):
     if len(message.command) == 1:
         return
     url = message.command[1].lower()
-    resp = requests.get(url)
-    if not resp.ok:
-        await message.edit(
-            f"<b>Troubleshooting with downloading module <code>{url}</code></b>"
-        )
-        return
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as resp:
+            if resp.status != 200:
+                await message.edit(
+                    f"<b>Troubleshooting with downloading module <code>{url}</code></b>"
+                )
+                return
+            content = await resp.read()
 
     await message.edit(
-        f"<b>Module hash: <code>{hashlib.sha256(resp.content).hexdigest()}</code>\n"
+        f"<b>Module hash: <code>{hashlib.sha256(content).hexdigest()}</code>\n"
         f"Link: <code>{url}</code>\nFile: <code>{url.split('/')[-1]}</code></b>",
     )
 
@@ -90,9 +92,11 @@ async def loadmod(_, message: Message):
         elif "." not in url:
             module_name = url.lower()
             try:
-                f = requests.get(
-                    "https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/full.txt"
-                ).text
+                async with aiohttp.ClientSession() as session:
+                    async with session.get(
+                        "https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/full.txt"
+                    ) as resp:
+                        f = await resp.text()
             except Exception:
                 return await message.edit("Failed to fetch custom modules list")
             modules_dict = {line.split("/")[-1].split()[0]: line.strip() for line in f.splitlines()}
@@ -104,18 +108,20 @@ async def loadmod(_, message: Message):
                 )
                 return
         else:
-            modules_hashes = requests.get(
-                "https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/modules_hashes.txt"
-            ).text
-            resp = requests.get(url)
+            async with aiohttp.ClientSession() as session:
+                async with session.get(
+                    "https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/modules_hashes.txt"
+                ) as resp:
+                    modules_hashes = await resp.text()
+                async with session.get(url) as resp:
+                    if resp.status != 200:
+                        await message.edit(
+                            f"<b>Troubleshooting with downloading module <code>{url}</code></b>",
+                        )
+                        return
+                    resp_content = await resp.read()
 
-            if not resp.ok:
-                await message.edit(
-                    f"<b>Troubleshooting with downloading module <code>{url}</code></b>",
-                )
-                return
-
-            if hashlib.sha256(resp.content).hexdigest() not in modules_hashes:
+            if hashlib.sha256(resp_content).hexdigest() not in modules_hashes:
                 return await message.edit(
                     "<b>Only <a href=https://github.com/The-MoonTg-project/custom_modules/tree/main/modules_hashes.txt>"
                     "verified</a> modules or from the official "
@@ -126,16 +132,18 @@ async def loadmod(_, message: Message):
 
             module_name = url.split("/")[-1].split(".")[0]
 
-        resp = requests.get(url)
-        if not resp.ok:
-            await message.edit(f"<b>Module <code>{module_name}</code> is not found</b>")
-            return
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as resp:
+                if resp.status != 200:
+                    await message.edit(f"<b>Module <code>{module_name}</code> is not found</b>")
+                    return
+                resp_content = await resp.read()
 
         if not os.path.exists(f"{BASE_PATH}/modules/custom_modules"):
             os.mkdir(f"{BASE_PATH}/modules/custom_modules")
 
         with open(f"./modules/custom_modules/{module_name}.py", "wb") as f:
-            f.write(resp.content)
+            f.write(resp_content)
     else:
         file_name = await message.reply_to_message.download()
         module_name = message.reply_to_message.document.file_name[:-3]
@@ -143,9 +151,11 @@ async def loadmod(_, message: Message):
         with open(file_name, "rb") as f:
             content = f.read()
 
-        modules_hashes = requests.get(
-            "https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/modules_hashes.txt"
-        ).text
+        async with aiohttp.ClientSession() as session:
+            async with session.get(
+                "https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/modules_hashes.txt"
+            ) as resp:
+                modules_hashes = await resp.text()
 
         if hashlib.sha256(content).hexdigest() not in modules_hashes:
             os.remove(file_name)
@@ -230,23 +240,27 @@ async def load_all_mods(_, message: Message):
         os.mkdir(f"{BASE_PATH}/modules/custom_modules")
 
     try:
-        f = requests.get(
-            "https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/full.txt"
-        ).text
+        async with aiohttp.ClientSession() as session:
+            async with session.get(
+                "https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/full.txt"
+            ) as resp:
+                f = await resp.text()
     except Exception:
         return await message.edit("Failed to fetch custom modules list")
     modules_list = f.splitlines()
 
     await message.edit("<b>Loading modules...</b>")
-    for module_name in modules_list:
-        url = f"https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/{module_name}.py"
-        resp = requests.get(url)
-        if not resp.ok:
-            continue
-        with open(
-            f"./modules/custom_modules/{module_name.split('/')[1]}.py", "wb"
-        ) as f:
-            f.write(resp.content)
+    async with aiohttp.ClientSession() as session:
+        for module_name in modules_list:
+            url = f"https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/{module_name}.py"
+            async with session.get(url) as resp:
+                if resp.status != 200:
+                    continue
+                content = await resp.read()
+            with open(
+                f"./modules/custom_modules/{module_name.split('/')[1]}.py", "wb"
+            ) as f:
+                f.write(content)
 
     await message.edit(
         f"<b>Successfully loaded new modules: {len(modules_list)}\nRestarting...</b>",
@@ -297,26 +311,29 @@ async def updateallmods(_, message: Message):
     if not modules_installed:
         return await message.edit("<b>You don't have any modules installed</b>")
 
-    for module_name in modules_installed:
-        if not module_name.endswith(".py"):
-            continue
-        try:
-            f = requests.get(
-                "https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/full.txt"
-            ).text
-        except Exception:
-            return await message.edit("Failed to fetch custom modules list")
-        modules_dict = {line.split("/")[-1].split()[0]: line.strip() for line in f.splitlines()}
-        if module_name in modules_dict:
-            resp = requests.get(
-                f"https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/{modules_dict[module_name]}.py"
-            )
-            if not resp.ok:
-                modules_installed.remove(module_name)
+    async with aiohttp.ClientSession() as session:
+        for module_name in modules_installed:
+            if not module_name.endswith(".py"):
                 continue
+            try:
+                async with session.get(
+                    "https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/full.txt"
+                ) as resp:
+                    f = await resp.text()
+            except Exception:
+                return await message.edit("Failed to fetch custom modules list")
+            modules_dict = {line.split("/")[-1].split()[0]: line.strip() for line in f.splitlines()}
+            if module_name in modules_dict:
+                async with session.get(
+                    f"https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/{modules_dict[module_name]}.py"
+                ) as resp:
+                    if resp.status != 200:
+                        modules_installed.remove(module_name)
+                        continue
+                    content = await resp.read()
 
-            with open(f"./modules/custom_modules/{module_name}", "wb") as f:
-                f.write(resp.content)
+                with open(f"./modules/custom_modules/{module_name}", "wb") as f:
+                    f.write(content)
 
     await message.edit(f"<b>Successfully updated {len(modules_installed)} modules</b>")
 

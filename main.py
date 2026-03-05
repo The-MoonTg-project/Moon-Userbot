@@ -27,7 +27,6 @@
 #     "psutil",
 #     "Pillow>=10.3.0",
 #     "dnspython",
-#     "requests",
 #     "environs",
 #     "dulwich==1.1.0",
 #     "aiohttp",
@@ -40,7 +39,7 @@ import platform
 import sqlite3
 import subprocess
 
-import requests
+import aiohttp
 from pyrogram import Client, errors, idle
 from pyrogram.enums.parse_mode import ParseMode
 from pyrogram.raw.functions.account import DeleteAccount, GetAuthorizations
@@ -76,7 +75,7 @@ if config.STRINGSESSION:
 app = Client("my_account", **common_params)
 
 
-def load_missing_modules():
+async def load_missing_modules():
     all_modules = db.get("custom.modules", "allModules", [])
     if not all_modules:
         return
@@ -85,9 +84,11 @@ def load_missing_modules():
     os.makedirs(custom_modules_path, exist_ok=True)
 
     try:
-        f = requests.get(
-            f"https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/{config.modules_repo_branch}/full.txt"
-        ).text
+        async with aiohttp.ClientSession() as session:
+            async with session.get(
+                f"https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/{config.modules_repo_branch}/full.txt"
+            ) as resp:
+                f = await resp.text()
     except Exception:
         logging.error("Failed to fetch custom modules list")
         return
@@ -95,17 +96,18 @@ def load_missing_modules():
         line.split("/")[-1].split()[0]: line.strip() for line in f.splitlines()
     }
 
-    for module_name in all_modules:
-        module_path = f"{custom_modules_path}/{module_name}.py"
-        if not os.path.exists(module_path) and module_name in modules_dict:
-            url = f"https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/{config.modules_repo_branch}/{modules_dict[module_name]}.py"
-            resp = requests.get(url)
-            if resp.ok:
-                with open(module_path, "wb") as f:
-                    f.write(resp.content)
-                logging.info("Loaded missing module: %s", module_name)
-            else:
-                logging.warning("Failed to load module: %s", module_name)
+    async with aiohttp.ClientSession() as session:
+        for module_name in all_modules:
+            module_path = f"{custom_modules_path}/{module_name}.py"
+            if not os.path.exists(module_path) and module_name in modules_dict:
+                url = f"https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/{config.modules_repo_branch}/{modules_dict[module_name]}.py"
+                async with session.get(url) as resp:
+                    if resp.status == 200:
+                        with open(module_path, "wb") as f:
+                            f.write(await resp.read())
+                        logging.info("Loaded missing module: %s", module_name)
+                    else:
+                        logging.warning("Failed to load module: %s", module_name)
 
 
 async def main():
@@ -135,7 +137,7 @@ async def main():
         os.rename("./my_account.session", "./my_account.session-old")
         restart()
 
-    load_missing_modules()
+    await load_missing_modules()
     module_manager = ModuleManager.get_instance()
     info = db.get("core.updater", "restart_info")
 
