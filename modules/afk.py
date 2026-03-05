@@ -71,7 +71,8 @@ async def collect_afk_messages(bot: Client, message: Message):
                 )
             else:
                 last_seen = last_seen.replace("ago", "").strip()
-                text = text.format(last_seen=last_seen, reason=AFK_REASON)
+                u_f = message.from_user.mention if message.from_user else "User"
+                text = text.format(last_seen=last_seen, reason=AFK_REASON, user=u_f)
             await bot.send_message(
                 chat_id=GetChatID(message),
                 text=text,
@@ -205,5 +206,5 @@ async def auto_afk_unset(_, message: Message):
 modules_help["afk"] = {
     "afk [reason]": "Go to AFK mode with reason as anything after .afk\nUsage: <code>.afk <reason></code>",
     "unafk": "Get out of AFK",
-    "setafkmsg [reply to message]*": "Set your AFK message. Use <code>{reason}</code> and <code>{last_seen}</code> to indicate where the reason and last seen time will be placed.",
+    "setafkmsg [reply to message]*": "Set your AFK message. Use <code>{reason}</code> and <code>{last_seen}</code> to indicate where the reason and last seen time will be placed. Optionally use <code>{user}</code> to mention the user who messaged you.",
 }
