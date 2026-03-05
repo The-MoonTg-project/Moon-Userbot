@@ -45,8 +45,8 @@ from pyrogram.utils import (
     get_channel_id,
 )
 
-from utils.db import db
 from utils import prefix
+from utils.db import db
 from utils.scripts import format_exc, text
 
 

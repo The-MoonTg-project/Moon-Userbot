@@ -17,8 +17,10 @@
 import io
 import os
 import time
+
 from pyrogram import Client, filters
 from pyrogram.types import Message
+
 from utils import modules_help, prefix
 from utils.scripts import format_exc, progress
 
@@ -81,7 +83,7 @@ async def mupl(client: Client, message: Message):
                 message.chat.id,
                 bio,
                 progress=progress,
-                progress_args=(message, time.time(), "<b>Uploading Now...</b>")
+                progress_args=(message, time.time(), "<b>Uploading Now...</b>"),
             )
             await message.delete()
         except Exception as e:

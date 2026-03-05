@@ -24,20 +24,19 @@ import subprocess
 import sys
 import time
 import traceback
-from PIL import Image
 from io import BytesIO
 from types import ModuleType
 from typing import Dict, Tuple
 
 import psutil
+from PIL import Image
 from pyrogram import Client, errors, filters
+from pyrogram.enums import ChatMembersFilter
 from pyrogram.errors import FloodWait, MessageNotModified, UserNotParticipant
 from pyrogram.types import Message
-from pyrogram.enums import ChatMembersFilter
-
-from utils.db import db
 
 from utils import modules_help, prefix, requirements_list
+from utils.db import db
 
 META_COMMENTS = re.compile(r"^ *# *meta +(\S+) *: *(.*?)\s*$", re.MULTILINE)
 interact_with_to_delete = []
@@ -219,7 +218,15 @@ def restart() -> None:
             music_bot_process.terminate()
         except psutil.NoSuchProcess:
             print("Music bot is not running.")
-    os.execvp(sys.executable, [sys.executable, os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + os.sep +"main.py"]) # skipcq
+    os.execvp(
+        sys.executable,
+        [
+            sys.executable,
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            + os.sep
+            + "main.py",
+        ],
+    )  # skipcq
 
 
 def format_exc(e: Exception, suffix="") -> str:
@@ -230,7 +237,7 @@ def format_exc(e: Exception, suffix="") -> str:
             f"<b>Telegram API error!</b>\n"
             f"<code>[{e.CODE} {e.ID or e.NAME}] — {e.MESSAGE.format(value=e.value)}</code>\n\n<b>{suffix}</b>"
         )
-    return f"<b>Error!</b>\n" f"<code>{err}</code>"
+    return f"<b>Error!</b>\n<code>{err}</code>"
 
 
 def with_reply(func):

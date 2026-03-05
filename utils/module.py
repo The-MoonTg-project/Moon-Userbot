@@ -4,8 +4,8 @@ from typing import Optional
 
 from pyrogram import Client
 
-from utils.scripts import load_module
 from utils import modules_help
+from utils.scripts import load_module
 
 
 class ModuleManager:

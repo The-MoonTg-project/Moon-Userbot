@@ -23,8 +23,8 @@ from pyrogram.types import (
     Message,
 )
 
-from utils.db import db
 from utils import modules_help, prefix
+from utils.db import db
 from utils.scripts import format_exc
 
 
@@ -204,7 +204,7 @@ async def filters_handler(_, message: Message):
             key, _ = a
             key = key.replace("<", "").replace(">", "")
             text += f"{index}. <code>{key}</code>\n"
-        text = f"<b>Your filters in current chat</b>:\n\n" f"{text}"
+        text = f"<b>Your filters in current chat</b>:\n\n{text}"
         text = text[:4096]
         return await message.edit(text)
     except Exception as e:

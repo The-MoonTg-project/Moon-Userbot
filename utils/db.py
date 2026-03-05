@@ -14,12 +14,14 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import re
 import json
-import threading
+import re
 import sqlite3
-from dns import resolver
+import threading
+
 import pymongo
+from dns import resolver
+
 from utils import config
 
 resolver.default_resolver = resolver.Resolver(configure=False)

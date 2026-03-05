@@ -20,15 +20,14 @@ import time
 from datetime import datetime
 from html import escape
 
-from pyrogram import Client, filters
-from pyrogram import ContinuePropagation
+from pyrogram import Client, ContinuePropagation, filters
 from pyrogram.errors import RPCError
 from pyrogram.raw.functions.account import GetAuthorizations, ResetAuthorization
 from pyrogram.raw.types import UpdateServiceNotification
 from pyrogram.types import Message
 
-from utils.db import db
 from utils import modules_help, prefix
+from utils.db import db
 
 auth_hashes = db.get("core.sessionkiller", "auths_hashes", [])
 

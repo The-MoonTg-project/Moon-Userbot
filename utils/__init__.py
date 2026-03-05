@@ -55,7 +55,9 @@ except NotGitRepository:
         b"url",
         b"https://github.com/The-MoonTg-project/Moon-Userbot",
     )
-    gitconfig.set((b"remote", b"origin"), b"fetch", b"+refs/heads/*:refs/remotes/origin/*")
+    gitconfig.set(
+        (b"remote", b"origin"), b"fetch", b"+refs/heads/*:refs/remotes/origin/*"
+    )
     gitconfig.write_to_path()
 
     porcelain.fetch(gitrepo, b"origin")

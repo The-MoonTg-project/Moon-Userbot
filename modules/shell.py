@@ -14,13 +14,13 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from subprocess import Popen, PIPE, TimeoutExpired
 import os
+from subprocess import PIPE, Popen, TimeoutExpired
 from time import perf_counter
 
 from pyrogram import Client, filters
-from pyrogram.types import Message
 from pyrogram.errors import MessageTooLong
+from pyrogram.types import Message
 
 from utils import modules_help, prefix
 

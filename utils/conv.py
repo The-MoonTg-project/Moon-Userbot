@@ -14,14 +14,13 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import asyncio
 from collections import OrderedDict
+from typing import Dict, List, Optional, Union
 
 from pyrogram import Client, filters, types
-from pyrogram.handlers import MessageHandler
 from pyrogram.enums.parse_mode import ParseMode
-
-import asyncio
-from typing import Union, List, Dict, Optional
+from pyrogram.handlers import MessageHandler
 
 
 class _TrueFilter(filters.Filter):

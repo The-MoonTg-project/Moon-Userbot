@@ -13,8 +13,8 @@ import aiohttp
 from pyrogram import Client, enums, filters
 from pyrogram.types import Message
 
-from utils.config import vt_key as vak
 from utils import modules_help, prefix
+from utils.config import vt_key as vak
 from utils.scripts import edit_or_reply, format_exc, progress
 
 
@@ -53,7 +53,9 @@ async def scan_my_file(_, message: Message):
     with open(downloaded_file_name, "rb") as fh:
         form.add_field("file", fh.read(), filename=downloaded_file_name)
     async with aiohttp.ClientSession() as session:
-        async with session.post(url, data=form, params=params, timeout=aiohttp.ClientTimeout(total=10)) as response:
+        async with session.post(
+            url, data=form, params=params, timeout=aiohttp.ClientTimeout(total=10)
+        ) as response:
             r_json = await response.json()
     try:
         md5 = r_json["md5"]
@@ -114,15 +116,18 @@ async def scan_my_large_file(_, message: Message):
         with open(downloaded_file_name, "rb") as fh:
             form.add_field("file", fh.read(), filename=downloaded_file_name)
         headers = {"accept": "application/json", "x-apikey": vak}
-        async with session.post(url, data=form, headers=headers, timeout=timeout) as response:
+        async with session.post(
+            url, data=form, headers=headers, timeout=timeout
+        ) as response:
             r_json = await response.json()
 
         analysis_url = r_json["data"]["links"]["self"]
         url = analysis_url
 
         headers = {"accept": "application/json", "x-apikey": vak}
-        async with session.get(url, headers=headers, timeout=timeout) as response_result:
-
+        async with session.get(
+            url, headers=headers, timeout=timeout
+        ) as response_result:
             try:
                 r_json = await response_result.json()
                 md5 = r_json["meta"]["file_info"]["md5"]

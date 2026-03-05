@@ -14,8 +14,9 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from datetime import datetime
 import sys
+from datetime import datetime
+
 from pyrogram import Client
 
 from utils import config

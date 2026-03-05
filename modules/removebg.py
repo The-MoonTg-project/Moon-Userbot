@@ -18,8 +18,8 @@ from PIL import Image
 from pyrogram import Client, enums, filters
 from pyrogram.types import Message
 
-from utils.config import rmbg_key
 from utils import modules_help, prefix
+from utils.config import rmbg_key
 from utils.scripts import edit_or_reply, format_exc
 
 

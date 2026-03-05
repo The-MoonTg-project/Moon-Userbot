@@ -25,9 +25,8 @@ from pyrogram import Client, filters
 from pyrogram.types import Message
 
 from utils import modules_help, prefix
-from utils.scripts import restart
 from utils.db import db
-
+from utils.scripts import restart
 
 BASE_PATH = os.path.abspath(os.getcwd())
 CATEGORIES = [
@@ -99,7 +98,9 @@ async def loadmod(_, message: Message):
                         f = await resp.text()
             except Exception:
                 return await message.edit("Failed to fetch custom modules list")
-            modules_dict = {line.split("/")[-1].split()[0]: line.strip() for line in f.splitlines()}
+            modules_dict = {
+                line.split("/")[-1].split()[0]: line.strip() for line in f.splitlines()
+            }
             if module_name in modules_dict:
                 url = f"https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/{modules_dict[module_name]}.py"
             else:
@@ -135,7 +136,9 @@ async def loadmod(_, message: Message):
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as resp:
                 if resp.status != 200:
-                    await message.edit(f"<b>Module <code>{module_name}</code> is not found</b>")
+                    await message.edit(
+                        f"<b>Module <code>{module_name}</code> is not found</b>"
+                    )
                     return
                 resp_content = await resp.read()
 
@@ -322,7 +325,9 @@ async def updateallmods(_, message: Message):
                     f = await resp.text()
             except Exception:
                 return await message.edit("Failed to fetch custom modules list")
-            modules_dict = {line.split("/")[-1].split()[0]: line.strip() for line in f.splitlines()}
+            modules_dict = {
+                line.split("/")[-1].split()[0]: line.strip() for line in f.splitlines()
+            }
             if module_name in modules_dict:
                 async with session.get(
                     f"https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/{modules_dict[module_name]}.py"

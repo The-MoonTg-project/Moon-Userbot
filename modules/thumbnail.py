@@ -15,12 +15,12 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import os
-from PIL import Image
 
+from PIL import Image
 from pyrogram import Client, filters
 from pyrogram.types import Message
 
-from utils import prefix, modules_help
+from utils import modules_help, prefix
 
 
 @Client.on_message(filters.command("setthumb", prefix) & filters.me)

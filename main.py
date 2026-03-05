@@ -44,9 +44,8 @@ from pyrogram import Client, errors, idle
 from pyrogram.enums.parse_mode import ParseMode
 from pyrogram.raw.functions.account import DeleteAccount, GetAuthorizations
 
-from utils import config
+from utils import config, gitrepo, userbot_version
 from utils.db import db
-from utils import gitrepo, userbot_version
 from utils.module import ModuleManager
 from utils.rentry import rentry_cleanup_job
 from utils.scripts import restart

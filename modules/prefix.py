@@ -17,14 +17,12 @@
 from pyrogram import Client, filters
 from pyrogram.types import Message
 
-from utils.db import db
 from utils import modules_help, prefix
+from utils.db import db
 from utils.scripts import restart
 
 
-@Client.on_message(
-    filters.command(["sp", "setprefix"], prefix) & filters.me
-)
+@Client.on_message(filters.command(["sp", "setprefix"], prefix) & filters.me)
 async def setprefix(_, message: Message):
     if len(message.command) > 1:
         pref = message.command[1]

@@ -40,9 +40,7 @@ async def _generate_and_send_quote(
                 )
             content = await response.read()
 
-    resized = resize_image(
-        BytesIO(content), img_type="PNG" if is_png else "WEBP"
-    )
+    resized = resize_image(BytesIO(content), img_type="PNG" if is_png else "WEBP")
     await message.edit("<b>Sending...</b>")
 
     try:

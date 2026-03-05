@@ -5,11 +5,10 @@ import asyncio
 import http.cookiejar
 import urllib.parse
 import urllib.request
-
-from uuid import uuid4
 from datetime import datetime, timedelta
 from http.cookies import SimpleCookie
 from json import loads as json_loads
+from uuid import uuid4
 
 from utils.db import db
 

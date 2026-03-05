@@ -24,8 +24,8 @@ from pyrogram.errors import MessageTooLong
 from pyrogram.types import Message
 
 from utils import modules_help, prefix
-from utils.scripts import edit_or_reply, format_exc, progress
 from utils.rentry import paste as rentry_paste
+from utils.scripts import edit_or_reply, format_exc, progress
 
 
 async def read_file(file_path):
