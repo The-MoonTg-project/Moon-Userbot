@@ -90,8 +90,8 @@ if [[ "$create_venv" != "n" ]] && [[ "$create_venv" != "N" ]]; then
   python3 -m venv venv
   . venv/bin/activate
 
-  # Upgrade pip and install wheel and pillow
-  pip install -U pip wheel pillow
+  # Upgrade pip and install pillow
+  pip install -U pip pillow
 fi
 
 if [ -d ".venv" ]; then

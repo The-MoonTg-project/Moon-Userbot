@@ -1,14 +1,11 @@
 pyrofork==2.3.69
 tgcrypto
-wheel
 gunicorn
 flask
 humanize
-pygments
 pymongo
 psutil
 Pillow>=10.3.0
-click
 dnspython
 requests
 environs
