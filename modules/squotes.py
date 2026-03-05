@@ -70,11 +70,11 @@ async def quote_cmd(client: Client, message: Message):
     messages = await client.get_messages(message.chat.id, msg_ids)
     if not isinstance(messages, list):
         messages = [messages]
-    messages = [msg for msg in messages if not msg.empty]
+    messages = [msg for msg in messages if not msg.empty]  # type: ignore
 
     if no_reply:
         for msg in messages:
-            msg.reply_to_message = None
+            msg.reply_to_message = None  # type: ignore
 
     if send_for_me:
         await message.delete()
@@ -84,7 +84,9 @@ async def quote_cmd(client: Client, message: Message):
 
     params = {
         "messages": [
-            await render_message(client, msg) for msg in messages if not msg.empty
+            await render_message(client, msg)  # type: ignore
+            for msg in messages
+            if not msg.empty  # type: ignore
         ],
         "quote_color": "#162330",
         "text_color": "#fff",
@@ -105,10 +107,10 @@ async def fake_quote_cmd(client: Client, message: types.Message):
         return await message.edit("<b>Fake quote text is empty</b>")
 
     q_message = await client.get_messages(message.chat.id, message.reply_to_message.id)
-    q_message.text = fake_quote_text
-    q_message.entities = None
+    q_message.text = fake_quote_text  # type: ignore
+    q_message.entities = None  # type: ignore
     if no_reply:
-        q_message.reply_to_message = None
+        q_message.reply_to_message = None  # type: ignore
 
     if send_for_me:
         await message.delete()
@@ -117,7 +119,7 @@ async def fake_quote_cmd(client: Client, message: types.Message):
         await message.edit("<b>Generating...</b>")
 
     params = {
-        "messages": [await render_message(client, q_message)],
+        "messages": [await render_message(client, q_message)],  # type: ignore
         "quote_color": "#162330",
         "text_color": "#fff",
     }
@@ -132,7 +134,7 @@ async def _get_cached_file(app: Client, file_id: str) -> str:
         return files_cache[file_id]
 
     content = await app.download_media(file_id, in_memory=True)
-    data = base64.b64encode(bytes(content.getbuffer())).decode()
+    data = base64.b64encode(bytes(content.getbuffer())).decode()  # type: ignore
     files_cache[file_id] = data
     return data
 
@@ -308,8 +310,8 @@ def get_reply_text(reply: types.Message) -> str:
     if reply.voice:
         return "🎵 Voice"
     if reply.sticker:
-        prefix = reply.sticker.emoji + " " if reply.sticker.emoji else ""
-        return prefix + "Sticker"
+        sprefix = reply.sticker.emoji + " " if reply.sticker.emoji else ""
+        return sprefix + "Sticker"
     if reply.document:
         return "💾 File " + reply.document.file_name
     if reply.game:
