@@ -80,7 +80,8 @@ class HelpNavigator:
             return True
         return False
 
-    def fuzzy_search(self, query: str, fuzzy_threshold: float = 0.7) -> list:
+    @staticmethod
+    def fuzzy_search(query: str, fuzzy_threshold: float = 0.7) -> list:
         """Search modules and commands using substring + fuzzy matching.
 
         Returns a list of (match_type, name, module_name, score) tuples
