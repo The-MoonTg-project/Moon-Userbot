@@ -547,67 +547,47 @@ def parse_meta_comments(code: str) -> Dict[str, str]:
 
     return {groups[i]: groups[i + 1] for i in range(0, len(groups), 2)}
 
+# https://git.cubable.date/QEcho/custom-plugins/src/commit/2144d656b740b27e1855d6eaad4e136a14a3862f/utils/ai_tools.py#L160
+async def generate_waveform(audio_bytes: bytes, points: int = 100) -> tuple[bytes, int]:
+    """
+    Decode audio with miniaudio and compute a 5-bit waveform + duration.
+    """
+    import miniaudio  # skipcq
 
-def generate_waveform(audio_bytes, samples=64):
-    process = subprocess.run(
-        [
-            "ffmpeg",
-            "-i",
-            "pipe:0",
-            "-f",
-            "s16le",
-            "-ac",
-            "1",
-            "-ar",
-            "8000",
-            "pipe:1",
-            "-loglevel",
-            "quiet",
-        ],
-        input=audio_bytes,
-        capture_output=True,
-    )
+    try:
+        decoded = miniaudio.decode(
+            audio_bytes,
+            output_format=miniaudio.SampleFormat.SIGNED16,
+            nchannels=1,
+            sample_rate=16000,
+        )
 
-    pcm = process.stdout
-    if not pcm:
-        return b"\x00" * samples
+        samples = decoded.samples  # array.array of int16
+        duration = decoded.num_frames // 16000
 
-    # Convert PCM to amplitudes
-    step = max(1, len(pcm) // (samples * 2))
-    values = []
+        if not samples:
+            return b"\x00" * ((points * 5 + 7) // 8), duration
 
-    for i in range(0, len(pcm), step * 2):
-        if i + 2 > len(pcm):
-            break
+        chunk_size = max(1, len(samples) // points)
+        values = []
 
-        sample = int.from_bytes(pcm[i : i + 2], "little", signed=True)
-        amp = min(31, int(abs(sample) / 32768 * 31))
-        values.append(amp)
+        for i in range(points):
+            window = samples[i * chunk_size : (i + 1) * chunk_size]
+            if window:
+                rms = math.sqrt(sum(s * s for s in window) / len(window))
+                values.append(int(min(31, rms / 1000)))
+            else:
+                values.append(0)
 
-        if len(values) >= samples:
-            break
+        bits = "".join(f"{v:05b}" for v in values)
+        bits = bits.ljust((len(bits) + 7) // 8 * 8, "0")
+        waveform = bytes(int(bits[i : i + 8], 2) for i in range(0, len(bits), 8))
 
-    while len(values) < samples:
-        values.append(0)
+        return waveform, duration
 
-    # pack 5-bit samples
-    packed = bytearray()
-    buffer = 0
-    bits = 0
-
-    for v in values:
-        buffer |= (v & 31) << bits
-        bits += 5
-
-        while bits >= 8:
-            packed.append(buffer & 255)
-            buffer >>= 8
-            bits -= 8
-
-    if bits > 0:
-        packed.append(buffer)
-
-    return bytes(packed)
+    except Exception:
+        empty_length = (points * 5 + 7) // 8
+        return b"\x00" * empty_length, 0
 
 
 def ReplyCheck(message: Message):
