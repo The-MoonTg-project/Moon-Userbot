@@ -48,7 +48,8 @@ async def ask_ai(_, message: Message):
     start_time = perf_counter()
     timeout = aiohttp.ClientTimeout(total=60)
     try:
-        async with aiohttp.ClientSession(timeout=timeout).post(url, headers=headers, json=payload) as response:
+        async with aiohttp.ClientSession(timeout=timeout) as session:
+            async with session.post(url, headers=headers, json=payload) as response:
                 data = await response.json(content_type=None)
     except aiohttp.ClientError as exc:
         text += f"<b>Request failed:</b> <code>{html.escape(str(exc))}</code>"
