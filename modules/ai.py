@@ -26,6 +26,33 @@ from utils.config import CF_ACCOUNT_ID, CF_API_KEY
 from utils.misc import modules_help, prefix
 
 
+def _parse_cf_response(data) -> str:
+    if not (isinstance(data, dict) and data.get("success")):
+        errors = data.get("errors") if isinstance(data, dict) else None
+        raise ValueError(str(errors) if errors else str(data))
+    result = data.get("result") or {}
+    return (
+        result.get("response")
+        or result.get("text")
+        or result.get("output_text")
+        or "No response returned."
+    )
+
+
+async def _call_cf_api(prompt: str) -> tuple:
+    url = (
+        f"https://api.cloudflare.com/client/v4/accounts/{CF_ACCOUNT_ID}"
+        "/ai/run/@cf/meta/llama-3.1-8b-instruct"
+    )
+    headers = {"Authorization": f"Bearer {CF_API_KEY}"}
+    timeout = aiohttp.ClientTimeout(total=60)
+    start = perf_counter()
+    async with aiohttp.ClientSession(timeout=timeout) as session, \
+            session.post(url, headers=headers, json={"prompt": prompt}) as response:
+        data = await response.json(content_type=None)
+    return _parse_cf_response(data), perf_counter() - start
+
+
 @Client.on_message(filters.command(["ask", "ai"], prefix) & filters.me)
 async def ask_ai(_, message: Message):
     if len(message.command) < 2:
@@ -38,39 +65,19 @@ async def ask_ai(_, message: Message):
             "<b>Set:</b> <code>CF_ACCOUNT_ID</code> and <code>CF_API_KEY</code>"
         )
 
-    url = f"https://api.cloudflare.com/client/v4/accounts/{CF_ACCOUNT_ID}/ai/run/@cf/meta/llama-3.1-8b-instruct"
-    headers = {"Authorization": f"Bearer {CF_API_KEY}"}
-    payload = {"prompt": prompt}
-
     text = f"<b>Prompt:</b> <code>{html.escape(prompt)}</code>\n\n"
     await message.edit(text + "<b>Running...</b>")
 
-    start_time = perf_counter()
-    timeout = aiohttp.ClientTimeout(total=60)
     try:
-        async with aiohttp.ClientSession(timeout=timeout) as session:
-            async with session.post(url, headers=headers, json=payload) as response:
-                data = await response.json(content_type=None)
+        answer, elapsed = await _call_cf_api(prompt)
+        text += f"<b>Response:</b>\n<code>{html.escape(answer)}</code>\n\n"
+        text += f"<b>Completed in {round(elapsed, 5)} seconds</b>"
     except aiohttp.ClientError as exc:
         text += f"<b>Request failed:</b> <code>{html.escape(str(exc))}</code>"
+    except ValueError as exc:
+        text += f"<b>API error:</b> <code>{html.escape(str(exc))}</code>"
     except Exception as exc:
         text += f"<b>Unexpected error:</b> <code>{html.escape(str(exc))}</code>"
-    else:
-        stop_time = perf_counter()
-        if isinstance(data, dict) and data.get("success"):
-            result = data.get("result") or {}
-            answer = (
-                result.get("response")
-                or result.get("text")
-                or result.get("output_text")
-                or ""
-            )
-            text += f"<b>Response:</b>\n<code>{html.escape(answer or 'No response returned.')}</code>\n\n"
-            text += f"<b>Completed in {round(stop_time - start_time, 5)} seconds</b>"
-        else:
-            errors = data.get("errors") if isinstance(data, dict) else None
-            err_text = str(errors) if errors else str(data)
-            text += f"<b>API error:</b> <code>{html.escape(err_text)}</code>"
 
     if len(text) > 3900:
         text = text[:3900] + "\n\n<b>...output truncated...</b>"
