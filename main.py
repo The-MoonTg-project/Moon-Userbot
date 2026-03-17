@@ -39,18 +39,17 @@ import sqlite3
 import subprocess
 
 import aiohttp
+from bottle import run as bottle_run
 from pyrogram import Client, errors, idle
 from pyrogram.enums.parse_mode import ParseMode
 from pyrogram.raw.functions.account import DeleteAccount, GetAuthorizations
 
+from app import bottle_app
 from utils import config, gitrepo, userbot_version
 from utils.db import db
 from utils.module import ModuleManager
 from utils.rentry import rentry_cleanup_job
 from utils.scripts import restart
-
-from app import app as bottle_app
-from bottle import run as bottle_run
 
 SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
 if SCRIPT_PATH != os.getcwd():
@@ -69,8 +68,8 @@ common_params = {
     "parse_mode": ParseMode.HTML,
 }
 
-if config.STRINGSESSION:
-    common_params["session_string"] = config.STRINGSESSION
+if config.session_string:
+    common_params["session_string"] = config.session_string
     # common_params["in_memory"] = True
 
 app = Client("my_account", **common_params)
@@ -191,18 +190,15 @@ async def main():
     logging.info("Moon-Userbot started!")
 
     cleanup_task = app.loop.create_task(rentry_cleanup_job())
-    webui_task = app.loop.create_task(asyncio.to_thread(bottle_run, bottle_app, host="0.0.0.0", port=config.port, debug=False))
 
     try:
-        await idle()
+        bottle_run(bottle_app, host="0.0.0.0", port=config.port, debug=False)
     finally:
         logging.info("Shutting down... cancelling background tasks.")
         cleanup_task.cancel()
-        webui_task.cancel()
 
         try:
             await cleanup_task
-            await webui_task
         except asyncio.CancelledError:
             logging.info("Task rentry_cleanup or webui_task cancelled")
         except Exception as e:
