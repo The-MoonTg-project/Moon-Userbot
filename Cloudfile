@@ -1,4 +1,4 @@
-FROM python:3.11
+FROM python:3.11-slim
 WORKDIR /app
 COPY . /app
 RUN apt-get -qq update && apt-get -qq install -y git wget ffmpeg mediainfo \
@@ -7,4 +7,5 @@ RUN apt-get -qq update && apt-get -qq install -y git wget ffmpeg mediainfo \
 RUN python -m venv --copies /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir flask gunicorn
 CMD ["bash", "cloud.sh"]

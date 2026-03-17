@@ -1,7 +1,5 @@
 pyrofork==2.3.69
 tgcrypto
-gunicorn
-flask
 humanize
 pymongo
 psutil

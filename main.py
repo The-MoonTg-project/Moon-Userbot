@@ -20,8 +20,6 @@
 #     "pip",
 #     "pyrofork",
 #     "tgcrypto",
-#     "gunicorn",
-#     "flask",
 #     "humanize",
 #     "pymongo",
 #     "psutil",
