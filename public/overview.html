@@ -1,0 +1,37 @@
+%if message:
+<div class="alert alert-{{message_type}}">{{message}}</div>
+%end
+<div class="card">
+    <h2>System Stats</h2>
+    <div class="stats-grid">
+        <div class="stat-item">
+            <div class="stat-value">{{uptime}}</div>
+            <div class="stat-label">Uptime</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value">{{memory_used}} MB</div>
+            <div class="stat-label">Memory Used / {{memory_total}} MB</div>
+            <div class="progress-bar"><div class="progress-fill" style="width: {{memory_percent}}%"></div></div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value">{{cpu_percent}}%</div>
+            <div class="stat-label">CPU Usage</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value">{{module_count}}</div>
+            <div class="stat-label">Total Modules</div>
+        </div>
+    </div>
+</div>
+<div class="card">
+    <h2>System Info</h2>
+    <div class="info-row"><span>Platform</span><span>{{platform}}</span></div>
+    <div class="info-row"><span>Python Version</span><span>{{python_version}}</span></div>
+    <div class="info-row"><span>Built-in Modules</span><span>{{builtin_count}}</span></div>
+    <div class="info-row"><span>Custom Modules</span><span>{{custom_count}}</span></div>
+</div>
+<div class="card">
+    <h2>Quick Actions</h2>
+    <a href="/modules" class="btn" style="background: #58a6ff; color: #fff; margin-right: 10px;">Manage Modules</a>
+    <a href="/logs" class="btn" style="background: #21262d; color: #c9d1d9;">View Logs</a>
+</div>

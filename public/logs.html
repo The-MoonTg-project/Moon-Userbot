@@ -1,0 +1,10 @@
+%if message:
+<div class="alert alert-{{message_type}}">{{message}}</div>
+%end
+<div class="card">
+    <h2>Recent Logs</h2>
+    <pre>{{logs}}</pre>
+</div>
+<div class="card">
+    <a href="/logs/clear" class="btn btn-danger">Clear Logs</a>
+</div>

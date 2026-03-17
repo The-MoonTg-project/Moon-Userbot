@@ -1,0 +1,22 @@
+%if message:
+<div class="alert alert-{{message_type}}">{{message}}</div>
+%end
+<div class="modules-grid">
+%for m in modules:
+<div class="module-card">
+    <div>
+        <span class="module-name">{{m['name']}}</span>
+        <span class="module-type type-{{m['type']}}">{{m['type']}}</span>
+    </div>
+    %if m['type'] == 'custom':
+    <form method="POST" action="/modules/delete" style="display:inline;">
+        <input type="hidden" name="module_name" value="{{m['name']}}">
+        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Delete module {{m['name']}}?')">Delete</button>
+    </form>
+    %end
+</div>
+%end
+</div>
+%if custom_count == 0:
+<div class="empty-state"><p>No custom modules installed</p></div>
+%end

@@ -49,6 +49,9 @@ from utils.module import ModuleManager
 from utils.rentry import rentry_cleanup_job
 from utils.scripts import restart
 
+from app import app as bottle_app
+from bottle import run as bottle_run
+
 SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
 if SCRIPT_PATH != os.getcwd():
     os.chdir(SCRIPT_PATH)
@@ -188,19 +191,22 @@ async def main():
     logging.info("Moon-Userbot started!")
 
     cleanup_task = app.loop.create_task(rentry_cleanup_job())
+    webui_task = app.loop.create_task(asyncio.to_thread(bottle_run, bottle_app, host="0.0.0.0", port=config.port, debug=False))
 
     try:
         await idle()
     finally:
         logging.info("Shutting down... cancelling background tasks.")
         cleanup_task.cancel()
+        webui_task.cancel()
 
         try:
             await cleanup_task
+            await webui_task
         except asyncio.CancelledError:
-            logging.info("Task rentry_cleanup cancelled")
+            logging.info("Task rentry_cleanup or webui_task cancelled")
         except Exception as e:
-            logging.error(f"Error cancelling task rentry_cleanup: {e}")
+            logging.error(f"Error cancelling task rentry_cleanup or webui_task: {e}")
 
         gitrepo.close()
         await app.stop()

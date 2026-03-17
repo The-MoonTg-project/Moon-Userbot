@@ -35,3 +35,5 @@ test_server = bool(os.getenv("TEST_SERVER", env.bool("TEST_SERVER", False)))
 modules_repo_branch = os.getenv(
     "MODULES_REPO_BRANCH", env.str("MODULES_REPO_BRANCH", "main")
 )
+
+port = int(os.getenv("PORT", env.int("PORT", 8000)))

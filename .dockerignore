@@ -1,0 +1,6 @@
+*.session
+.github/
+.idx/
+string_gen.py
+*install\.(sh|py)
+.deepsource.toml

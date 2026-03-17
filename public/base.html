@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moon Userbot</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0d1117; color: #c9d1d9; min-height: 100vh; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        header { background: #161b22; border-bottom: 1px solid #30363d; padding: 20px 0; margin-bottom: 30px; }
+        header .container { display: flex; justify-content: space-between; align-items: center; padding: 0 20px; flex-wrap: wrap; gap: 10px; }
+        h1 { color: #58a6ff; font-size: 1.5rem; }
+        nav { display: flex; gap: 5px; flex-wrap: wrap; }
+        nav a { color: #8b949e; text-decoration: none; padding: 8px 16px; border-radius: 6px; transition: all 0.2s; white-space: nowrap; }
+        nav a:hover, nav a.active { background: #21262d; color: #58a6ff; }
+        @media (max-width: 480px) {
+            header .container { justify-content: center; text-align: center; }
+            nav { justify-content: center; }
+            nav a { padding: 8px 12px; font-size: 0.875rem; }
+        }
+        .card { background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 20px; margin-bottom: 20px; }
+        .card h2 { color: #58a6ff; margin-bottom: 15px; font-size: 1.2rem; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        .stat-item { background: #21262d; padding: 15px; border-radius: 6px; text-align: center; }
+        .stat-value { font-size: 1.5rem; color: #58a6ff; font-weight: bold; }
+        .stat-label { color: #8b949e; font-size: 0.875rem; margin-top: 5px; }
+        .modules-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
+        .module-card { background: #21262d; padding: 15px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; }
+        .module-name { font-weight: 500; }
+        .module-type { font-size: 0.75rem; padding: 2px 8px; border-radius: 3px; margin-left: 8px; }
+        .type-builtin { background: #238636; color: #fff; }
+        .type-custom { background: #8957e5; color: #fff; }
+        .btn { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 0.875rem; text-decoration: none; display: inline-block; }
+        .btn-danger { background: #da3633; color: #fff; }
+        .btn-danger:hover { background: #f85149; }
+        .btn-sm { padding: 4px 10px; font-size: 0.75rem; }
+        .alert { padding: 12px 16px; border-radius: 6px; margin-bottom: 20px; }
+        .alert-success { background: #238636; color: #fff; }
+        .alert-error { background: #da3633; color: #fff; }
+        .info-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #30363d; }
+        .info-row:last-child { border-bottom: none; }
+        .empty-state { text-align: center; padding: 40px; color: #8b949e; }
+        pre { background: #0d1117; padding: 15px; border-radius: 6px; overflow-x: auto; font-size: 0.875rem; line-height: 1.5; max-height: 500px; overflow-y: auto; white-space: pre-wrap; }
+        .progress-bar { height: 8px; background: #21262d; border-radius: 4px; overflow: hidden; margin-top: 8px; }
+        .progress-fill { height: 100%; background: #58a6ff; transition: width 0.3s; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Moon Userbot</h1>
+            <nav>
+                <a href="/" {{!'class="active"' if page == 'overview' else ''}}>Overview</a>
+                <a href="/modules" {{!'class="active"' if page == 'modules' else ''}}>Modules</a>
+                <a href="/logs" {{!'class="active"' if page == 'logs' else ''}}>Logs</a>
+            </nav>
+        </div>
+    </header>
+    <div class="container">
+        {{!base}}
+    </div>
+</body>
+</html>
