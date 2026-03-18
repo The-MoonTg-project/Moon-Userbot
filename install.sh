@@ -188,6 +188,14 @@ if [[ $cohere_key = "" ]]; then
   printf "NOTE: API Not set; you'll not be able to use Coral AI modules\n"
 fi
 
+printf "If you wish to use a different PORT for the web ui, enter it here\n"
+printf "Leave empty to use default (8080)\n"
+read -r -p "PORT > " port
+
+if [[ $port = "" ]]; then
+  port=8000
+fi
+
 while true; do
   # Prompt for database type and database URL if MongoDB is selected
   printf "${YELLOW}Choose database type:${NC}\n" # skipcq

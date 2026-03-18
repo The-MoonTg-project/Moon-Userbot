@@ -18,7 +18,7 @@
 # requires-python = ">=3.11"
 # dependencies = [
 #     "pip",
-#     "pyrofork",
+#     "pyrofork==2.3.69",
 #     "tgcrypto",
 #     "humanize",
 #     "pymongo",
@@ -29,6 +29,7 @@
 #     "dulwich==1.1.0",
 #     "aiohttp",
 #     "aiofiles",
+#     "bottle",
 # ]
 # ///
 import asyncio
@@ -40,7 +41,7 @@ import subprocess
 
 import aiohttp
 from bottle import run as bottle_run
-from pyrogram import Client, errors, idle
+from pyrogram import Client, errors
 from pyrogram.enums.parse_mode import ParseMode
 from pyrogram.raw.functions.account import DeleteAccount, GetAuthorizations
 

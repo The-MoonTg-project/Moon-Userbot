@@ -97,6 +97,14 @@ if [[ $vt_key = "" ]]; then
   echo "NOTE: API Not set you'll not be able to use VirusTotal module"
 fi
 
+printf "If you wish to use a different PORT for the web ui, enter it here\n"
+printf "Leave empty to use default (8080)\n"
+read -r -p "PORT > " port
+
+if [[ $port = "" ]]; then
+  port=8000
+fi
+
 echo "Choose database type:"
 echo "[1] MongoDB (your url)"
 echo "[2] Sqlite"

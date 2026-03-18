@@ -26,7 +26,7 @@ Choose your preferred platform to get started instantly:
 
 | Koyeb | Heroku | Render |
 |:---:|:---:|:---:|
-| [![Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/deploy?type=git&repository=github.com/The-MoonTg-project/Moon-Userbot&branch=main&name=moonub) | [![Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/The-MoonTg-project/moonub-cloud) | [![Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/The-MoonTg-project/Moon-Userbot) |
+| [![Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/deploy?type=git&repository=github.com/The-MoonTg-project/Moon-Userbot&branch=main&name=moonub) | [![Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/The-MoonTg-project/Moon-Userbot) | [![Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/The-MoonTg-project/Moon-Userbot) |
 
 ---
 
@@ -37,7 +37,7 @@ Don't know how to start? Visit our **[Official Documentation](https://the-moontg
 * **[Step-by-Step Installation](https://the-moontg-project.github.io/docs/installation)** – Get up and running in minutes.
 * **[Environment Variables Guide](https://the-moontg-project.github.io/docs/installation/#environment-variables)** – Detailed info on necessary vars.
 * **[Docker Setup](https://the-moontg-project.github.io/docs/installation/docker)** – Containerized deployment instructions.
-* **[Local Hosting](https://the-moontg-project.github.io/docs/installation/local)** – Guides for hosting on your machine, Linux, Windows(WSL) and Android(Termux). 
+* **[Local Hosting](https://the-moontg-project.github.io/docs/installation/local)** – Guides for hosting on your machine, Linux, Windows(WSL) and Android(Termux).
 
 > [!Tip]
 > Prefer GitHub? You can still access our **[Official Wiki](https://github.com/The-MoonTg-project/Moon-Userbot/wiki)** for a native GitHub documentation experience.
@@ -48,7 +48,7 @@ Don't know how to start? Visit our **[Official Documentation](https://the-moontg
 * [Support Chat](https://t.me/moonub_chat)
 * [Custom Modules](https://t.me/moonub_modules)
 
-## Disclaimer 
+## Disclaimer
 > [!WARNING]
 > The use of this Telegram Userbot is entirely at your own risk. The developer of this Userbot is not responsible for any misuse, damage, or legal consequences that may arise from your use of this software.
 >> It is your responsibility to ensure that you use this Userbot in accordance with all applicable laws and regulations, and that you do not engage in any activities that may cause harm to others or violate their privacy. This includes, but is not limited to, the use of this Userbot to send spam, harass others, or engage in any other form of unlawful or malicious activity.

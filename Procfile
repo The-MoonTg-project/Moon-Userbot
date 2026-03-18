@@ -1,1 +1,1 @@
-web: bash cloud.sh
+web: python main.py
