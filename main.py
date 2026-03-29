@@ -36,12 +36,14 @@ import asyncio
 import logging
 import os
 import platform
+import socket
 import sqlite3
 import subprocess
+from wsgiref.simple_server import WSGIRequestHandler, WSGIServer, make_server
 
 import aiohttp
-from bottle import run as bottle_run
-from pyrogram import Client, errors
+from bottle import ServerAdapter
+from pyrogram import Client, errors, idle
 from pyrogram.enums.parse_mode import ParseMode
 from pyrogram.raw.functions.account import DeleteAccount, GetAuthorizations
 
@@ -68,6 +70,37 @@ common_params = {
     "test_mode": config.test_server,
     "parse_mode": ParseMode.HTML,
 }
+
+
+# Custom AsyncWSGIRefServer based on https://github.com/bottlepy/bottle/blob/2a743a302a71460bfe4c0b8b7cb99a306b0328c6/bottle.py#L3419
+class AsyncWSGIRefServer(ServerAdapter):
+    def run(self, handler):
+        class FixedHandler(WSGIRequestHandler):
+            def log_message(inner_self, format, *args):
+                if not self.quiet:
+                    return WSGIRequestHandler.log_message(inner_self, format, *args)
+
+        handler_cls = self.options.get("handler_class", FixedHandler)
+        server_cls = self.options.get("server_class", WSGIServer)
+
+        if ":" in self.host:  # Fix wsgiref for IPv6 addresses.
+            if getattr(server_cls, "address_family") == socket.AF_INET:
+
+                class IPv6Server(server_cls):
+                    address_family = socket.AF_INET6
+
+                server_cls = IPv6Server
+
+        self.srv = make_server(self.host, self.port, handler, server_cls, handler_cls)
+        try:
+            self.srv.serve_forever()
+        finally:
+            self.srv.server_close()
+
+    def shutdown(self):
+        if hasattr(self, "srv"):
+            self.srv.shutdown()
+
 
 if config.session_string:
     common_params["session_string"] = config.session_string
@@ -191,15 +224,18 @@ async def main():
     logging.info("Moon-Userbot started!")
 
     cleanup_task = app.loop.create_task(rentry_cleanup_job())
+    server = AsyncWSGIRefServer(host="0.0.0.0", port=config.port)
+    webui_task = asyncio.create_task(asyncio.to_thread(server.run, bottle_app))
 
     try:
-        bottle_run(bottle_app, host="0.0.0.0", port=config.port, debug=False)
+        await idle()
     finally:
         logging.info("Shutting down... cancelling background tasks.")
         cleanup_task.cancel()
+        server.shutdown()
 
         try:
-            await cleanup_task
+            await asyncio.gather(cleanup_task, webui_task, return_exceptions=True)
         except asyncio.CancelledError:
             logging.info("Task rentry_cleanup or webui_task cancelled")
         except Exception as e:
