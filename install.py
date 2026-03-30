@@ -29,8 +29,8 @@ common_params = {
 }
 
 if __name__ == "__main__":
-    if config.STRINGSESSION:
-        common_params["session_string"] = config.STRINGSESSION
+    if config.session_string:
+        common_params["session_string"] = config.session_string
 
     app = Client("my_account", **common_params)
 
