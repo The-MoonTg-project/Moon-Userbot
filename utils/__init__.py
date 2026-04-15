@@ -23,6 +23,7 @@ from dulwich.refs import Ref
 from dulwich.repo import Repo
 
 from .db import db
+from .reaction_handler import on_message_reactions_updated, MessageReactionsUpdated
 
 
 def get_commits_since_latest_tag(repo):
@@ -84,4 +85,6 @@ __all__ = [
     "prefix",
     "gitrepo",
     "userbot_version",
+    "on_message_reactions_updated",
+    "MessageReactionsUpdated",
 ]
