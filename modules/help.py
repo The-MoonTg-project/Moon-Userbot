@@ -64,16 +64,12 @@ async def search_cmd(_, message: Message):
         return
 
     if len(message.command) < 2:
-        return await message.edit(
-            f"<b>Usage:</b> <code>{prefix}search [query]</code>"
-        )
+        return await message.edit(f"<b>Usage:</b> <code>{prefix}search [query]</code>")
 
     query = " ".join(message.command[1:]).lower()
     found = await module_manager.help_navigator.send_search_results(message, query)
     if not found:
-        await message.edit(
-            f"<b>No results found for <code>{query}</code></b>"
-        )
+        await message.edit(f"<b>No results found for <code>{query}</code></b>")
 
 
 @Client.on_message(filters.command(["pn", "pp", "pq"], prefix) & filters.me)

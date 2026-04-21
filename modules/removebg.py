@@ -85,11 +85,14 @@ async def remove_background(photo_data):
     form = aiohttp.FormData()
     form.add_field("image_file", image_data)
     form.add_field("size", "auto")
-    async with aiohttp.ClientSession() as session, session.post(
-        "https://api.remove.bg/v1.0/removebg",
-        data=form,
-        headers={"X-Api-Key": rmbg_key},
-    ) as response:
+    async with (
+        aiohttp.ClientSession() as session,
+        session.post(
+            "https://api.remove.bg/v1.0/removebg",
+            data=form,
+            headers={"X-Api-Key": rmbg_key},
+        ) as response,
+    ):
         if response.status == 200:
             return BytesIO(await response.read())
         error_text = await response.text()
@@ -128,11 +131,14 @@ async def rmbg(client: Client, message: Message):
     form = aiohttp.FormData()
     with open(input_file_name, "rb") as fh:
         form.add_field("image_file", fh.read(), filename=input_file_name)
-    async with aiohttp.ClientSession() as session, session.post(
-        "https://api.remove.bg/v1.0/removebg",
-        headers={"X-Api-Key": rmbg_key},
-        data=form,
-    ) as r:
+    async with (
+        aiohttp.ClientSession() as session,
+        session.post(
+            "https://api.remove.bg/v1.0/removebg",
+            headers={"X-Api-Key": rmbg_key},
+            data=form,
+        ) as r,
+    ):
         r_content = await r.read()
         contentType = r.headers.get("content-type")
     if os.path.exists(cool):

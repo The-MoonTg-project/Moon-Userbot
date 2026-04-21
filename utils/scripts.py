@@ -37,9 +37,9 @@ from pyrogram.errors import FloodWait, MessageNotModified, UserNotParticipant
 from pyrogram.types import Message
 
 from utils import modules_help, prefix, requirements_list
-from utils.module import ModuleManager
 from utils.config import apiflash_key
 from utils.db import db
+from utils.module import ModuleManager
 
 META_COMMENTS = re.compile(r"^ *# *meta +(\S+) *: *(.*?)\s*$", re.MULTILINE)
 interact_with_to_delete = []
@@ -100,10 +100,9 @@ async def edit_or_send_as_file(
 
 async def generate_screenshot(url):
     api_url = f"https://api.apiflash.com/v1/urltoimage?access_key={apiflash_key}&url={url}&format=png"
-    async with aiohttp.ClientSession() as session:
-        async with session.get(api_url) as resp:
-            if resp.status == 200:
-                return BytesIO(await resp.read())
+    async with aiohttp.ClientSession() as session, session.get(api_url) as resp:
+        if resp.status == 200:
+            return BytesIO(await resp.read())
     return None
 
 
@@ -556,6 +555,7 @@ def parse_meta_comments(code: str) -> Dict[str, str]:
         return {}
 
     return {groups[i]: groups[i + 1] for i in range(0, len(groups), 2)}
+
 
 # https://git.cubable.date/QEcho/custom-plugins/src/commit/2144d656b740b27e1855d6eaad4e136a14a3862f/utils/ai_tools.py#L160
 async def generate_waveform(audio_bytes: bytes, points: int = 100) -> tuple[bytes, int]:

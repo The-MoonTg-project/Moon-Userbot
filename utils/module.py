@@ -57,7 +57,11 @@ class HelpNavigator:
         self.total_pages = (len(modules_help) + 9) // 10
         if self.current_page > self.total_pages:
             self.current_page = max(1, self.total_pages)
-        logging.info("Refreshed HelpNavigator: %d modules, %d pages", len(self.module_list), self.total_pages)
+        logging.info(
+            "Refreshed HelpNavigator: %d modules, %d pages",
+            len(self.module_list),
+            self.total_pages,
+        )
 
     async def send_page(self, message):
         from utils import prefix

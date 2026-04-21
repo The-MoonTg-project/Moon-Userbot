@@ -174,8 +174,7 @@ class MessageReactionsUpdated(Object):
         reactions = None
         if msg_reactions and msg_reactions.results:
             reactions = [
-                types.Reaction._parse_count(client, rc)
-                for rc in msg_reactions.results
+                types.Reaction._parse_count(client, rc) for rc in msg_reactions.results
             ]
 
         top_reactors = None
@@ -201,8 +200,12 @@ class MessageReactionsUpdated(Object):
             top_reactors=top_reactors,
             recent_reactions=recent_reactions,
             min=getattr(msg_reactions, "min", None) if msg_reactions else None,
-            can_see_list=getattr(msg_reactions, "can_see_list", None) if msg_reactions else None,
-            reactions_as_tags=getattr(msg_reactions, "reactions_as_tags", None) if msg_reactions else None,
+            can_see_list=getattr(msg_reactions, "can_see_list", None)
+            if msg_reactions
+            else None,
+            reactions_as_tags=getattr(msg_reactions, "reactions_as_tags", None)
+            if msg_reactions
+            else None,
         )
 
 
@@ -256,7 +259,9 @@ def on_message_reactions_updated(filters: Filter = None, group: int = 0) -> Call
 
         handler = RawUpdateHandler(
             raw_callback,
-            filters=lambda _, update: isinstance(update, raw.types.UpdateMessageReactions),
+            filters=lambda _, update: isinstance(
+                update, raw.types.UpdateMessageReactions
+            ),
         )
         func.handlers.append((handler, group))
 

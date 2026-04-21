@@ -52,9 +52,12 @@ async def scan_my_file(_, message: Message):
     form = aiohttp.FormData()
     with open(downloaded_file_name, "rb") as fh:
         form.add_field("file", fh.read(), filename=downloaded_file_name)
-    async with aiohttp.ClientSession() as session, session.post(
-        url, data=form, params=params, timeout=aiohttp.ClientTimeout(total=10)
-    ) as response:
+    async with (
+        aiohttp.ClientSession() as session,
+        session.post(
+            url, data=form, params=params, timeout=aiohttp.ClientTimeout(total=10)
+        ) as response,
+    ):
         r_json = await response.json()
     try:
         md5 = r_json["md5"]

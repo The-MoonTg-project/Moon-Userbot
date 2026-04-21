@@ -90,9 +90,12 @@ async def loadmod(client: Client, message: Message):
         elif "." not in url:
             module_name = url.lower()
             try:
-                async with aiohttp.ClientSession() as session, session.get(
-                    "https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/full.txt"
-                ) as resp:
+                async with (
+                    aiohttp.ClientSession() as session,
+                    session.get(
+                        "https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/full.txt"
+                    ) as resp,
+                ):
                     f = await resp.text()
             except Exception:
                 return await message.edit("Failed to fetch custom modules list")
@@ -151,9 +154,12 @@ async def loadmod(client: Client, message: Message):
         with open(file_name, "rb") as f:
             content = f.read()
 
-        async with aiohttp.ClientSession() as session, session.get(
-            "https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/modules_hashes.txt"
-        ) as resp:
+        async with (
+            aiohttp.ClientSession() as session,
+            session.get(
+                "https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/modules_hashes.txt"
+            ) as resp,
+        ):
             modules_hashes = await resp.text()
 
         if hashlib.sha256(content).hexdigest() not in modules_hashes:
@@ -173,9 +179,7 @@ async def loadmod(client: Client, message: Message):
         db.set("custom.modules", "allModules", all_modules)
     try:
         await load_module(module_name, client, message)
-        await message.edit(
-            f"<b>The module <code>{module_name}</code> is loaded!</b>"
-        )
+        await message.edit(f"<b>The module <code>{module_name}</code> is loaded!</b>")
     except Exception as e:
         await message.edit(
             f"<b>Failed to load module <code>{module_name}</code>:\n{e}</b>"
@@ -207,9 +211,7 @@ async def unload_mods(client: Client, message: Message):
         if module_name in all_modules:
             all_modules.remove(module_name)
             db.set("custom.modules", "allModules", all_modules)
-        await message.edit(
-            f"<b>The module <code>{module_name}</code> removed!</b>"
-        )
+        await message.edit(f"<b>The module <code>{module_name}</code> removed!</b>")
     elif os.path.exists(f"{BASE_PATH}/modules/{module_name}.py"):
         await message.edit(
             "<b>It is forbidden to remove built-in modules, it will disrupt the updater</b>"
@@ -226,9 +228,12 @@ async def load_all_mods(client: Client, message: Message):
         os.mkdir(f"{BASE_PATH}/modules/custom_modules")
 
     try:
-        async with aiohttp.ClientSession() as session, session.get(
-            "https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/full.txt"
-        ) as resp:
+        async with (
+            aiohttp.ClientSession() as session,
+            session.get(
+                "https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/full.txt"
+            ) as resp,
+        ):
             f = await resp.text()
     except Exception:
         return await message.edit("Failed to fetch custom modules list")
@@ -269,7 +274,8 @@ async def unload_all_mods(client, message: Message):
         return await message.edit("<b>You don't have any modules installed</b>")
 
     custom_modules = [
-        f[:-3] for f in os.listdir(f"{BASE_PATH}/modules/custom_modules")
+        f[:-3]
+        for f in os.listdir(f"{BASE_PATH}/modules/custom_modules")
         if f.endswith(".py")
     ]
     for name in custom_modules:

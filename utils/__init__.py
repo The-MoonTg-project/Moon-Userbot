@@ -23,7 +23,7 @@ from dulwich.refs import Ref
 from dulwich.repo import Repo
 
 from .db import db
-from .reaction_handler import on_message_reactions_updated, MessageReactionsUpdated
+from .reaction_handler import MessageReactionsUpdated, on_message_reactions_updated
 
 
 def get_commits_since_latest_tag(repo):

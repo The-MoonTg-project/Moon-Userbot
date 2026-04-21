@@ -31,7 +31,10 @@ FLAGS = {"!png", "!file", "!me", "!ls", "!noreply", "!nr"}
 async def _generate_and_send_quote(
     client: Client, message, params: dict, is_png: bool, send_for_me: bool
 ):
-    async with aiohttp.ClientSession() as session, session.post(QUOTES_API, json=params) as response:
+    async with (
+        aiohttp.ClientSession() as session,
+        session.post(QUOTES_API, json=params) as response,
+    ):
         if response.status != 200:
             error_text = await response.text()
             return await message.edit(
@@ -185,7 +188,10 @@ async def _build_author(app: Client, message: types.Message) -> dict:
             author["avatar"] = await _get_cached_file(app, from_user.photo.big_file_id)
         elif from_user.username:
             # may be user blocked us, we will try to get avatar via t.me
-            async with aiohttp.ClientSession() as session, session.get(f"https://t.me/{from_user.username}") as resp:
+            async with (
+                aiohttp.ClientSession() as session,
+                session.get(f"https://t.me/{from_user.username}") as resp,
+            ):
                 t_me_page = await resp.text()
             sub = '<meta property="og:image" content='
             index = t_me_page.find(sub)
@@ -197,7 +203,10 @@ async def _build_author(app: Client, message: types.Message) -> dict:
                     and link[0] != "https://telegram.org/img/t_logo.png"
                 ):
                     # found valid link
-                    async with aiohttp.ClientSession() as session, session.get(link[0]) as resp:
+                    async with (
+                        aiohttp.ClientSession() as session,
+                        session.get(link[0]) as resp,
+                    ):
                         avatar = await resp.read()
                     author["avatar"] = base64.b64encode(avatar).decode()
                 else:
