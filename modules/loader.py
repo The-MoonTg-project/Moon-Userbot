@@ -26,7 +26,7 @@ from pyrogram.types import Message
 
 from utils import modules_help, prefix
 from utils.db import db
-from utils.scripts import restart
+from utils.scripts import load_module, unload_module
 
 BASE_PATH = os.path.abspath(os.getcwd())
 CATEGORIES = [
@@ -67,7 +67,7 @@ async def get_mod_hash(_, message: Message):
 
 
 @Client.on_message(filters.command(["loadmod", "lm"], prefix) & filters.me)
-async def loadmod(_, message: Message):
+async def loadmod(client: Client, message: Message):
     if (
         not (
             message.reply_to_message
@@ -171,23 +171,19 @@ async def loadmod(_, message: Message):
     if module_name not in all_modules:
         all_modules.append(module_name)
         db.set("custom.modules", "allModules", all_modules)
-    await message.edit(
-        f"<b>The module <code>{module_name}</code> is loaded!\nRestarting...</b>"
-    )
-    db.set(
-        "core.updater",
-        "restart_info",
-        {
-            "type": "restart",
-            "chat_id": message.chat.id,
-            "message_id": message.id,
-        },
-    )
-    restart()
+    try:
+        await load_module(module_name, client, message)
+        await message.edit(
+            f"<b>The module <code>{module_name}</code> is loaded!</b>"
+        )
+    except Exception as e:
+        await message.edit(
+            f"<b>Failed to load module <code>{module_name}</code>:\n{e}</b>"
+        )
 
 
 @Client.on_message(filters.command(["unloadmod", "ulm"], prefix) & filters.me)
-async def unload_mods(_, message: Message):
+async def unload_mods(client: Client, message: Message):
     if len(message.command) <= 1:
         return
 
@@ -199,6 +195,7 @@ async def unload_mods(_, message: Message):
         module_name = module_name.split("/")[-1].split(".")[0]
 
     if os.path.exists(f"{BASE_PATH}/modules/custom_modules/{module_name}.py"):
+        await unload_module(module_name, client)
         os.remove(f"{BASE_PATH}/modules/custom_modules/{module_name}.py")
         if module_name == "musicbot":
             subprocess.run(
@@ -211,18 +208,8 @@ async def unload_mods(_, message: Message):
             all_modules.remove(module_name)
             db.set("custom.modules", "allModules", all_modules)
         await message.edit(
-            f"<b>The module <code>{module_name}</code> removed!\nRestarting...</b>"
+            f"<b>The module <code>{module_name}</code> removed!</b>"
         )
-        db.set(
-            "core.updater",
-            "restart_info",
-            {
-                "type": "restart",
-                "chat_id": message.chat.id,
-                "message_id": message.id,
-            },
-        )
-        restart()
     elif os.path.exists(f"{BASE_PATH}/modules/{module_name}.py"):
         await message.edit(
             "<b>It is forbidden to remove built-in modules, it will disrupt the updater</b>"
@@ -232,7 +219,7 @@ async def unload_mods(_, message: Message):
 
 
 @Client.on_message(filters.command(["loadallmods", "lmall"], prefix) & filters.me)
-async def load_all_mods(_, message: Message):
+async def load_all_mods(client: Client, message: Message):
     await message.edit("<b>Fetching info...</b>")
 
     if not os.path.exists(f"{BASE_PATH}/modules/custom_modules"):
@@ -260,45 +247,41 @@ async def load_all_mods(_, message: Message):
             ) as f:
                 f.write(content)
 
+    loaded = 0
+    for module_name in modules_list:
+        name = module_name.split("/")[-1].split()[0]
+        try:
+            await load_module(name, client)
+            loaded += 1
+        except Exception:
+            pass
+
     await message.edit(
-        f"<b>Successfully loaded new modules: {len(modules_list)}\nRestarting...</b>",
+        f"<b>Successfully loaded new modules: {loaded}</b>",
     )
-    db.set(
-        "core.updater",
-        "restart_info",
-        {
-            "type": "restart",
-            "chat_id": message.chat.id,
-            "message_id": message.id,
-        },
-    )
-    restart()
 
 
 @Client.on_message(filters.command(["unloadallmods", "ulmall"], prefix) & filters.me)
-async def unload_all_mods(_, message: Message):
+async def unload_all_mods(client, message: Message):
     await message.edit("<b>Fetching info...</b>")
 
     if not os.path.exists(f"{BASE_PATH}/modules/custom_modules"):
         return await message.edit("<b>You don't have any modules installed</b>")
+
+    custom_modules = [
+        f[:-3] for f in os.listdir(f"{BASE_PATH}/modules/custom_modules")
+        if f.endswith(".py")
+    ]
+    for name in custom_modules:
+        await unload_module(name, client)
+
     shutil.rmtree(f"{BASE_PATH}/modules/custom_modules")
     db.set("custom.modules", "allModules", [])
-    await message.edit("<b>Successfully unloaded all modules!\nRestarting...</b>")
-
-    db.set(
-        "core.updater",
-        "restart_info",
-        {
-            "type": "restart",
-            "chat_id": message.chat.id,
-            "message_id": message.id,
-        },
-    )
-    restart()
+    await message.edit("<b>Successfully unloaded all modules!</b>")
 
 
 @Client.on_message(filters.command(["updateallmods"], prefix) & filters.me)
-async def updateallmods(_, message: Message):
+async def updateallmods(client, message: Message):
     await message.edit("<b>Updating modules...</b>")
 
     if not os.path.exists(f"{BASE_PATH}/modules/custom_modules"):
@@ -309,9 +292,10 @@ async def updateallmods(_, message: Message):
     if not modules_installed:
         return await message.edit("<b>You don't have any modules installed</b>")
 
+    updated = 0
     async with aiohttp.ClientSession() as session:
-        for module_name in modules_installed:
-            if not module_name.endswith(".py"):
+        for module_file in modules_installed:
+            if not module_file.endswith(".py"):
                 continue
             try:
                 async with session.get(
@@ -323,19 +307,24 @@ async def updateallmods(_, message: Message):
             modules_dict = {
                 line.split("/")[-1].split()[0]: line.strip() for line in f.splitlines()
             }
+            module_name = module_file[:-3]
             if module_name in modules_dict:
                 async with session.get(
                     f"https://raw.githubusercontent.com/The-MoonTg-project/custom_modules/main/{modules_dict[module_name]}.py"
                 ) as resp:
                     if resp.status != 200:
-                        modules_installed.remove(module_name)
                         continue
                     content = await resp.read()
 
-                with open(f"./modules/custom_modules/{module_name}", "wb") as f:
+                with open(f"./modules/custom_modules/{module_name}.py", "wb") as f:
                     f.write(content)
+                try:
+                    await load_module(module_name, client)
+                    updated += 1
+                except Exception:
+                    pass
 
-    await message.edit(f"<b>Successfully updated {len(modules_installed)} modules</b>")
+    await message.edit(f"<b>Successfully updated {updated} modules</b>")
 
 
 modules_help["loader"] = {

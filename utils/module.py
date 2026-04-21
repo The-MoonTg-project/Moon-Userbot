@@ -1,12 +1,11 @@
 import logging
 from difflib import SequenceMatcher
 from pathlib import Path
-from typing import Optional
+from typing import Callable, Optional
 
 from pyrogram import Client
 
 from utils import modules_help
-from utils.scripts import load_module
 
 
 class ModuleManager:
@@ -24,11 +23,11 @@ class ModuleManager:
             cls._instance = ModuleManager()
         return cls._instance
 
-    async def load_modules(self, app: Client):
+    async def load_modules(self, app: Client, loader: Callable):
         """Load all modules and initialize help navigator"""
         for path in Path("modules").rglob("*.py"):
             try:
-                await load_module(
+                await loader(
                     path.stem, app, core="custom_modules" not in path.parent.parts
                 )
             except Exception:
@@ -52,6 +51,13 @@ class HelpNavigator:
         self.module_list = list(modules_help.keys())
         self.total_pages = (len(modules_help) + 9) // 10
         logging.info("Initialized HelpNavigator with %d modules", len(self.module_list))
+
+    def refresh(self):
+        self.module_list = list(modules_help.keys())
+        self.total_pages = (len(modules_help) + 9) // 10
+        if self.current_page > self.total_pages:
+            self.current_page = max(1, self.total_pages)
+        logging.info("Refreshed HelpNavigator: %d modules, %d pages", len(self.module_list), self.total_pages)
 
     async def send_page(self, message):
         from utils import prefix

@@ -52,7 +52,7 @@ from utils import config, gitrepo, userbot_version
 from utils.db import db
 from utils.module import ModuleManager
 from utils.rentry import rentry_cleanup_job
-from utils.scripts import restart
+from utils.scripts import load_module, restart
 
 SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
 if SCRIPT_PATH != os.getcwd():
@@ -187,7 +187,7 @@ async def main():
         except errors.RPCError:
             pass
 
-    await module_manager.load_modules(app)
+    await module_manager.load_modules(app, loader=load_module)
 
     if info:
         text = {

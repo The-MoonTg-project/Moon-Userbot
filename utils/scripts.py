@@ -37,6 +37,7 @@ from pyrogram.errors import FloodWait, MessageNotModified, UserNotParticipant
 from pyrogram.types import Message
 
 from utils import modules_help, prefix, requirements_list
+from utils.module import ModuleManager
 from utils.config import apiflash_key
 from utils.db import db
 
@@ -510,6 +511,10 @@ async def load_module(
 
     module.__meta__ = meta
 
+    help_navigator = ModuleManager.get_instance().help_navigator
+    if help_navigator:
+        help_navigator.refresh()
+
     return module
 
 
@@ -521,11 +526,16 @@ async def unload_module(module_name: str, client: Client) -> bool:
     module = importlib.import_module(path)
 
     for _name, obj in vars(module).items():
-        for handler, group in getattr(obj, "handlers", []):
-            client.remove_handler(handler, group)
+        if isinstance(getattr(obj, "handlers", []), list):
+            for handler, group in getattr(obj, "handlers", []):
+                client.remove_handler(handler, group)
 
-    del modules_help[module_name]
+    modules_help.pop(module_name, None)
     del sys.modules[path]
+
+    help_navigator = ModuleManager.get_instance().help_navigator
+    if help_navigator:
+        help_navigator.refresh()
 
     return True
 
