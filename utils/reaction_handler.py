@@ -236,7 +236,7 @@ def on_message_reactions_updated(filters: Filter = None, group: int = 0) -> Call
 
         async def raw_callback(client: Client, update, users, chats):
             if not isinstance(update, raw.types.UpdateMessageReactions):
-                return
+                raise pyrogram.ContinuePropagation
 
             parsed = MessageReactionsUpdated._parse(client, update, users, chats)
 
@@ -254,7 +254,10 @@ def on_message_reactions_updated(filters: Filter = None, group: int = 0) -> Call
         if not hasattr(func, "handlers"):
             func.handlers = []
 
-        handler = RawUpdateHandler(raw_callback)
+        handler = RawUpdateHandler(
+            raw_callback,
+            filters=lambda _, update: isinstance(update, raw.types.UpdateMessageReactions),
+        )
         func.handlers.append((handler, group))
 
         return func
