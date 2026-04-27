@@ -3,7 +3,7 @@ tgcrypto
 humanize
 pymongo
 psutil
-Pillow>=10.3.0
+Pillow>=12.2.0
 dnspython
 environs
 dulwich==1.1.0
