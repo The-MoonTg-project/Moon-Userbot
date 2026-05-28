@@ -6,7 +6,7 @@ psutil
 Pillow>=12.2.0
 dnspython
 environs
-dulwich==1.2.4
+dulwich==1.2.5
 aiohttp
 aiofiles
 bottle
