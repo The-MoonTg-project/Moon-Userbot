@@ -2,9 +2,48 @@
 <div class="alert alert-{{message_type}}">{{message}}</div>
 %end
 <div class="card">
-    <h2>Recent Logs</h2>
-    <pre>{{logs}}</pre>
+    <div class="card-head">
+        <div class="titles">
+            <h2>Recent Logs</h2>
+            <div class="card-sub">Last 500 lines</div>
+        </div>
+        <div class="side">
+            <button type="button" class="btn btn-secondary btn-sm" id="copy-logs-btn" onclick="copyLogs()">Copy</button>
+        </div>
+    </div>
+    <pre id="logs-content">{{logs}}</pre>
+    <div class="card-footer">
+        <a href="/logs/clear" class="btn btn-danger btn-sm" onclick="return confirm('Clear all logs?')">Clear Logs</a>
+    </div>
 </div>
-<div class="card">
-    <a href="/logs/clear" class="btn btn-danger">Clear Logs</a>
-</div>
+
+<script>
+function copyLogs() {
+    var text = document.getElementById('logs-content').innerText;
+    var btn = document.getElementById('copy-logs-btn');
+    function done(ok) {
+        if (!btn) return;
+        var original = 'Copy';
+        btn.textContent = ok ? 'Copied!' : 'Failed';
+        setTimeout(function () { btn.textContent = original; }, 1500);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () { done(true); }).catch(function () { done(false); });
+    } else {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        try {
+            document.execCommand('copy');
+            done(true);
+        } catch (e) {
+            done(false);
+        }
+        document.body.removeChild(ta);
+    }
+}
+</script>

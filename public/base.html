@@ -4,61 +4,364 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Moon Userbot</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0d1117; color: #c9d1d9; min-height: 100vh; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-        header { background: #161b22; border-bottom: 1px solid #30363d; padding: 20px 0; margin-bottom: 30px; }
-        header .container { display: flex; justify-content: space-between; align-items: center; padding: 0 20px; flex-wrap: wrap; gap: 10px; }
-        h1 { color: #58a6ff; font-size: 1.5rem; }
-        nav { display: flex; gap: 5px; flex-wrap: wrap; }
-        nav a { color: #8b949e; text-decoration: none; padding: 8px 16px; border-radius: 6px; transition: all 0.2s; white-space: nowrap; }
-        nav a:hover, nav a.active { background: #21262d; color: #58a6ff; }
-        @media (max-width: 480px) {
-            header .container { justify-content: center; text-align: center; }
-            nav { justify-content: center; }
-            nav a { padding: 8px 12px; font-size: 0.875rem; }
+        :root {
+            --bg: #26262c;
+            --bg-elevated: #1a1a1f;
+            --card: #0b0b0e;
+            --card-soft: #131316;
+            --border: rgba(255,255,255,0.07);
+            --border-soft: rgba(255,255,255,0.045);
+            --text: #f5f5f7;
+            --text-dim: #9c9ca6;
+            --text-faint: #68686f;
+            --green: #34d399;
+            --purple: #a78bfa;
+            --pill-bg: rgba(167, 139, 250, 0.14);
+            --pill-text: #c4b5fd;
+            --red: #f87171;
+            --radius: 20px;
+            --radius-sm: 12px;
         }
-        .card { background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 20px; margin-bottom: 20px; }
-        .card h2 { color: #58a6ff; margin-bottom: 15px; font-size: 1.2rem; }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
-        .stat-item { background: #21262d; padding: 15px; border-radius: 6px; text-align: center; }
-        .stat-value { font-size: 1.5rem; color: #58a6ff; font-weight: bold; }
-        .stat-label { color: #8b949e; font-size: 0.875rem; margin-top: 5px; }
-        .modules-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
-        .module-card { background: #21262d; padding: 15px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; }
-        .module-name { font-weight: 500; }
-        .module-type { font-size: 0.75rem; padding: 2px 8px; border-radius: 3px; margin-left: 8px; }
-        .type-builtin { background: #238636; color: #fff; }
-        .type-custom { background: #8957e5; color: #fff; }
-        .btn { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 0.875rem; text-decoration: none; display: inline-block; }
-        .btn-danger { background: #da3633; color: #fff; }
-        .btn-danger:hover { background: #f85149; }
-        .btn-sm { padding: 4px 10px; font-size: 0.75rem; }
-        .alert { padding: 12px 16px; border-radius: 6px; margin-bottom: 20px; }
-        .alert-success { background: #238636; color: #fff; }
-        .alert-error { background: #da3633; color: #fff; }
-        .info-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #30363d; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+        .container { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+
+        header {
+            background: rgba(38,38,44,0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-soft);
+        }
+        header .container {
+            display: flex; justify-content: center; align-items: center;
+            padding: 16px 24px;
+        }
+        .brand { display: flex; align-items: center; justify-content: center; width: 100%; }
+        h1 {
+            font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-size: 1.7rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+            text-align: center;
+            background: linear-gradient(160deg, var(--green), var(--purple));
+            -webkit-background-clip: text; background-clip: text; color: transparent;
+        }
+
+        /* Bottom floating nav — pill capsule, active item expands with icon + label */
+        .bottom-nav {
+            position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%);
+            display: flex; align-items: center; gap: 8px;
+            background: #0b0b0e; border: 1px solid var(--border);
+            border-radius: 999px; padding: 8px;
+            box-shadow: 0 14px 34px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.02);
+            z-index: 50;
+        }
+        .bottom-nav a {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            height: 44px; width: 44px; flex: 0 0 44px; border-radius: 999px;
+            color: var(--text-faint); text-decoration: none;
+            transition: all 0.2s ease; overflow: hidden; white-space: nowrap;
+        }
+        .bottom-nav a svg { width: 17px; height: 17px; flex-shrink: 0; }
+        .bottom-nav a:hover { color: var(--text-dim); }
+        .bottom-nav a .bn-label {
+            font-size: 0.8rem; font-weight: 600; text-align: left;
+            max-width: 0; opacity: 0; overflow: hidden;
+            transition: max-width 0.2s ease, opacity 0.15s ease;
+        }
+        .bottom-nav a.active {
+            width: auto; flex: 0 0 auto; padding: 0 18px 0 14px;
+            background: var(--card-soft); color: var(--text);
+        }
+        .bottom-nav a.active .bn-label { max-width: 90px; opacity: 1; }
+
+        @media (max-width: 480px) {
+            .bottom-nav { bottom: 14px; }
+        }
+
+        .container.page {
+            padding-top: 28px; padding-bottom: 108px;
+            opacity: 1; transform: translateY(0);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+        .container.page.page-fade-out { opacity: 0; transform: translateY(-10px); }
+        .container.page.page-fade-in-prep { opacity: 0; transform: translateY(10px); transition: none; }
+
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+        @media (max-width: 720px) { .grid-2 { grid-template-columns: 1fr; } }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 18px;
+        }
+        .card h2 {
+            color: var(--text); margin-bottom: 4px; font-size: 1rem; font-weight: 700; letter-spacing: -0.01em;
+        }
+        .card .card-sub { color: var(--text-faint); font-size: 0.78rem; margin-bottom: 16px; }
+
+        .card-footer { display: flex; justify-content: flex-end; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-soft); }
+
+        /* Shared card header: title+sub on the left, optional pill/action on the right */
+        .card-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 6px; }
+        .card-head .titles h2 { margin-bottom: 4px; }
+        .card-head .titles .card-sub { margin-bottom: 0; }
+        .card-head .side { flex-shrink: 0; padding-top: 2px; }
+
+        .pill {
+            display: inline-flex; align-items: center; gap: 4px;
+            background: var(--pill-bg); color: var(--pill-text);
+            font-size: 0.72rem; font-weight: 700; padding: 3px 10px; border-radius: 20px;
+            white-space: nowrap;
+        }
+        .pill.green { background: rgba(52, 211, 153, 0.14); color: var(--green); }
+
+        .status-pill { display: inline-flex; align-items: center; gap: 6px; background: rgba(52,211,153,0.12); color: var(--green); font-size: 0.72rem; font-weight: 700; padding: 5px 12px; border-radius: 20px; white-space: nowrap; }
+        .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: pulse 1.8s infinite; }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(52,211,153,0.55); }
+            70% { box-shadow: 0 0 0 6px rgba(52,211,153,0); }
+            100% { box-shadow: 0 0 0 0 rgba(52,211,153,0); }
+        }
+
+        .link-more { color: var(--text-dim); font-size: 0.78rem; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; margin-top: 14px; transition: color 0.15s ease; }
+        .link-more:hover { color: var(--text); }
+        .link-more .arrow { transition: transform 0.15s ease; }
+        .link-more:hover .arrow { transform: translateX(2px); }
+
+        .breakdown-bar { display: flex; height: 10px; border-radius: 6px; overflow: hidden; background: var(--card-soft); margin: 6px 0 16px; }
+        .breakdown-seg-builtin { background: var(--green); }
+        .breakdown-seg-custom { background: var(--purple); }
+        .breakdown-legend { display: flex; gap: 20px; flex-wrap: wrap; }
+        .breakdown-legend .item { display: flex; align-items: center; gap: 7px; font-size: 0.8rem; color: var(--text-dim); }
+        .breakdown-legend .swatch { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+        .breakdown-legend .count { color: var(--text); font-weight: 700; }
+
+
+        .stat-block { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; }
+        .stat-block .label { color: var(--text-faint); font-size: 0.78rem; font-weight: 500; display: flex; align-items: center; gap: 6px; }
+        .stat-block .label .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--purple); display: inline-block; }
+        .stat-value-lg { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; margin-top: 2px; }
+        .stat-value-lg .unit { font-size: 0.85rem; color: var(--text-faint); font-weight: 500; }
+        .stat-value-sub { color: var(--text-faint); font-size: 0.75rem; margin-top: 2px; }
+
+        .stats-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 24px; margin-top: 18px; }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; }
+        .stat-item { background: var(--card-soft); border: 1px solid var(--border-soft); padding: 16px; border-radius: var(--radius-sm); }
+        .stat-item .stat-value { font-size: 1.5rem; color: var(--text); font-weight: 700; letter-spacing: -0.02em; }
+        .stat-item .stat-label { color: var(--text-faint); font-size: 0.75rem; margin-top: 4px; font-weight: 500; }
+
+        .modules-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+        .module-card {
+            background: var(--card-soft); border: 1px solid var(--border-soft);
+            padding: 14px 16px; border-radius: var(--radius-sm);
+            display: flex; justify-content: space-between; align-items: center;
+            transition: border-color 0.15s ease;
+        }
+        .module-card:hover { border-color: var(--border); }
+        .module-name { font-weight: 500; font-size: 0.9rem; }
+        .module-type {
+            font-size: 0.65rem; padding: 3px 9px; border-radius: 20px; margin-left: 8px;
+            font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em;
+        }
+        .type-builtin { background: rgba(52, 211, 153, 0.14); color: var(--green); }
+        .type-custom { background: rgba(167, 139, 250, 0.14); color: var(--purple); }
+
+        .btn {
+            padding: 8px 16px; border: 1px solid transparent; border-radius: var(--radius-sm);
+            cursor: pointer; font-size: 0.85rem; font-weight: 600; text-decoration: none;
+            display: inline-flex; align-items: center; gap: 6px; transition: all 0.15s ease;
+        }
+        .btn-primary { background: linear-gradient(135deg, var(--green), var(--purple)); color: #0b0b0e; }
+        .btn-primary:hover { filter: brightness(1.1); }
+        .btn-secondary { background: var(--card-soft); color: var(--text); border-color: var(--border); }
+        .btn-secondary:hover { background: var(--bg-elevated); }
+        .btn-danger { background: rgba(248, 113, 113, 0.12); color: var(--red); border-color: rgba(248, 113, 113, 0.3); }
+        .btn-danger:hover { background: var(--red); color: #fff; }
+        .btn-sm { padding: 5px 11px; font-size: 0.75rem; }
+
+        .alert {
+            padding: 12px 16px; border-radius: var(--radius-sm); margin-bottom: 20px;
+            font-size: 0.875rem; font-weight: 500; border: 1px solid transparent;
+        }
+        .alert-success { background: rgba(52, 211, 153, 0.1); color: var(--green); border-color: rgba(52, 211, 153, 0.25); }
+        .alert-error { background: rgba(248, 113, 113, 0.1); color: var(--red); border-color: rgba(248, 113, 113, 0.25); }
+
+        .info-row { display: flex; justify-content: space-between; padding: 11px 0; border-bottom: 1px solid var(--border-soft); font-size: 0.875rem; }
         .info-row:last-child { border-bottom: none; }
-        .empty-state { text-align: center; padding: 40px; color: #8b949e; }
-        pre { background: #0d1117; padding: 15px; border-radius: 6px; overflow-x: auto; font-size: 0.875rem; line-height: 1.5; max-height: 500px; overflow-y: auto; white-space: pre-wrap; }
-        .progress-bar { height: 8px; background: #21262d; border-radius: 4px; overflow: hidden; margin-top: 8px; }
-        .progress-fill { height: 100%; background: #58a6ff; transition: width 0.3s; }
+        .info-row span:first-child { color: var(--text-faint); }
+        .info-row span:last-child { color: var(--text); font-weight: 500; }
+
+        .empty-state { text-align: center; padding: 48px 20px; color: var(--text-faint); font-size: 0.9rem; }
+
+        pre {
+            background: var(--card-soft); border: 1px solid var(--border-soft);
+            padding: 16px; border-radius: var(--radius-sm); overflow-x: auto;
+            font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
+            font-size: 0.8rem; line-height: 1.6; max-height: 500px; overflow-y: auto;
+            white-space: pre-wrap; color: var(--text-dim);
+        }
+
+        /* Gauge */
+        .gauge-wrap { display: flex; justify-content: center; margin: 8px 0 4px; }
+        .gauge-center { font-size: 1.6rem; font-weight: 700; }
+        .gauge-center-label { font-size: 0.7rem; color: var(--text-faint); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
     </style>
 </head>
 <body>
     <header>
         <div class="container">
-            <h1>Moon Userbot</h1>
-            <nav>
-                <a href="/" {{!'class="active"' if page == 'overview' else ''}}>Overview</a>
-                <a href="/modules" {{!'class="active"' if page == 'modules' else ''}}>Modules</a>
-                <a href="/logs" {{!'class="active"' if page == 'logs' else ''}}>Logs</a>
-            </nav>
+            <div class="brand">
+                <h1>Moon Userbot</h1>
+            </div>
         </div>
     </header>
-    <div class="container">
+    <div class="container page">
         {{!base}}
     </div>
+    <nav class="bottom-nav">
+        <a href="/" {{!'class="active"' if page == 'overview' else ''}}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+            <span class="bn-label">Overview</span>
+        </a>
+        <a href="/modules" {{!'class="active"' if page == 'modules' else ''}}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect></svg>
+            <span class="bn-label">Modules</span>
+        </a>
+        <a href="/logs" {{!'class="active"' if page == 'logs' else ''}}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+            <span class="bn-label">Logs</span>
+        </a>
+    </nav>
+    <script>
+    (function () {
+        var pageEl = document.querySelector('.container.page');
+        var navEl = document.querySelector('.bottom-nav');
+        var FADE_MS = 200;
+        var inflight = null;
+
+        // Pages register cleanup callbacks here (e.g. clearInterval) so that
+        // background work from the outgoing page stops when we swap content.
+        window.__moonCleanup = window.__moonCleanup || [];
+
+        function runCleanup() {
+            window.__moonCleanup.forEach(function (fn) {
+                try { fn(); } catch (e) {}
+            });
+            window.__moonCleanup = [];
+        }
+
+        function executeScripts(container) {
+            var scripts = container.querySelectorAll('script');
+            scripts.forEach(function (old) {
+                var s = document.createElement('script');
+                for (var i = 0; i < old.attributes.length; i++) {
+                    s.setAttribute(old.attributes[i].name, old.attributes[i].value);
+                }
+                s.textContent = old.textContent;
+                old.parentNode.replaceChild(s, old);
+            });
+        }
+
+        // Toggle .active on the existing nav <a> nodes (never recreate them)
+        // so the pill's own CSS transition actually gets to play, instead of
+        // snapping instantly the way a full DOM replace would.
+        function setActiveNav(url) {
+            var path = url.split('?')[0].split('#')[0];
+            if (path.length > 1 && path.endsWith('/')) path = path.slice(0, -1);
+            if (path === '') path = '/';
+
+            navEl.querySelectorAll('a').forEach(function (a) {
+                var href = a.getAttribute('href') || '';
+                var normalizedHref = href.length > 1 ? href.replace(/\/$/, '') : href;
+                a.classList.toggle('active', normalizedHref === path);
+            });
+        }
+
+        function applyContent(html, url, push) {
+            var doc = new DOMParser().parseFromString(html, 'text/html');
+            var newPage = doc.querySelector('.container.page');
+            if (!newPage) { window.location.href = url; return; }
+
+            runCleanup();
+            pageEl.innerHTML = newPage.innerHTML;
+            executeScripts(pageEl);
+            window.scrollTo(0, 0);
+
+            // Enter animation: start slightly offset/invisible, then release.
+            pageEl.classList.remove('page-fade-out');
+            pageEl.classList.add('page-fade-in-prep');
+            void pageEl.offsetWidth; // force reflow so the prep state applies
+            pageEl.classList.remove('page-fade-in-prep');
+
+            if (push) history.pushState({ url: url }, '', url);
+            document.title = doc.title || document.title;
+        }
+
+        function navigate(url, push) {
+            if (inflight) inflight.abort();
+            var controller = ('AbortController' in window) ? new AbortController() : null;
+            inflight = controller;
+
+            // Kick off the nav pill's own transition and the page fade-out
+            // at the same moment, so both animations read as one motion.
+            setActiveNav(url);
+            pageEl.classList.add('page-fade-out');
+
+            var fetchPromise = fetch(url, {
+                headers: { 'X-Requested-With': 'fetch' },
+                signal: controller ? controller.signal : undefined
+            }).then(function (res) {
+                if (!res.ok) throw new Error('Request failed');
+                return res.text();
+            });
+
+            var waitPromise = new Promise(function (resolve) {
+                setTimeout(resolve, FADE_MS);
+            });
+
+            Promise.all([fetchPromise, waitPromise])
+                .then(function (results) { applyContent(results[0], url, push); })
+                .catch(function (err) {
+                    if (err && err.name === 'AbortError') return;
+                    window.location.href = url;
+                })
+                .then(function () { inflight = null; });
+        }
+
+        document.addEventListener('click', function (e) {
+            var a = e.target.closest && e.target.closest('.bottom-nav a');
+            if (!a) return;
+            if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+
+            var url = a.getAttribute('href');
+            if (!url || url.charAt(0) !== '/') return;
+            if (url === window.location.pathname) return;
+
+            e.preventDefault();
+            navigate(url, true);
+        });
+
+        window.addEventListener('popstate', function () {
+            var url = window.location.pathname + window.location.search;
+            setActiveNav(url);
+            navigate(url, false);
+        });
+    })();
+    </script>
 </body>
 </html>

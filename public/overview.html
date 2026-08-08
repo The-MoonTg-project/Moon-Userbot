@@ -1,37 +1,173 @@
 %if message:
 <div class="alert alert-{{message_type}}">{{message}}</div>
 %end
-<div class="card">
-    <h2>System Stats</h2>
-    <div class="stats-grid">
-        <div class="stat-item">
-            <div class="stat-value">{{uptime}}</div>
-            <div class="stat-label">Uptime</div>
+
+<div class="grid-2">
+    <div class="card">
+        <div class="card-head">
+            <div class="titles">
+                <h2>Live Performance</h2>
+                <div class="card-sub">CPU &amp; memory, updated every 3s</div>
+            </div>
         </div>
-        <div class="stat-item">
-            <div class="stat-value">{{memory_used}} MB</div>
-            <div class="stat-label">Memory Used / {{memory_total}} MB</div>
-            <div class="progress-bar"><div class="progress-fill" style="width: {{memory_percent}}%"></div></div>
-        </div>
-        <div class="stat-item">
-            <div class="stat-value">{{cpu_percent}}%</div>
-            <div class="stat-label">CPU Usage</div>
-        </div>
-        <div class="stat-item">
-            <div class="stat-value">{{module_count}}</div>
-            <div class="stat-label">Total Modules</div>
+
+        <svg id="chart-svg" viewBox="0 0 300 110" width="100%" height="110" preserveAspectRatio="none">
+            <defs>
+                <linearGradient id="strokeGrad" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#34d399"></stop>
+                    <stop offset="100%" stop-color="#a78bfa"></stop>
+                </linearGradient>
+                <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#34d399" stop-opacity="0.28"></stop>
+                    <stop offset="100%" stop-color="#a78bfa" stop-opacity="0"></stop>
+                </linearGradient>
+            </defs>
+            <path id="chart-area" d="" fill="url(#areaGrad)" stroke="none"></path>
+            <path id="chart-line" d="" fill="none" stroke="url(#strokeGrad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>
+        </svg>
+
+        <div class="stats-grid-2">
+            <div>
+                <div class="stat-block" style="padding-top:0;">
+                    <span class="label"><span class="dot"></span>CPU</span>
+                    <span class="pill" id="cpu-pill">{{cpu_percent}}%</span>
+                </div>
+                <div class="stat-value-lg" id="cpu-value">{{cpu_percent}}<span class="unit">%</span></div>
+            </div>
+            <div>
+                <div class="stat-block" style="padding-top:0;">
+                    <span class="label"><span class="dot" style="background:var(--green);"></span>Memory</span>
+                    <span class="pill green" id="mem-pill">{{memory_percent}}%</span>
+                </div>
+                <div class="stat-value-lg" id="mem-value">{{memory_used}}<span class="unit"> MB</span></div>
+                <div class="stat-value-sub">of {{memory_total}} MB</div>
+            </div>
         </div>
     </div>
+
+    <div class="card">
+        <div class="card-head">
+            <div class="titles">
+                <h2>Server Overview</h2>
+                <div class="card-sub">{{platform}} · Python {{python_version}}</div>
+            </div>
+            <div class="side">
+                <span class="status-pill"><span class="status-dot"></span>Online</span>
+            </div>
+        </div>
+
+        <div class="gauge-wrap">
+            <svg width="150" height="150" viewBox="0 0 150 150">
+                <defs>
+                    <linearGradient id="gaugeGrad" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stop-color="#34d399"></stop>
+                        <stop offset="100%" stop-color="#a78bfa"></stop>
+                    </linearGradient>
+                </defs>
+                <circle cx="75" cy="75" r="62" fill="none" stroke="var(--border)" stroke-width="12"></circle>
+                <circle id="gauge-fill" cx="75" cy="75" r="62" fill="none" stroke="url(#gaugeGrad)" stroke-width="12"
+                        stroke-linecap="round" stroke-dasharray="389.6" stroke-dashoffset="389.6"
+                        transform="rotate(-90 75 75)"></circle>
+                <text x="75" y="70" text-anchor="middle" class="gauge-center" fill="var(--text)" id="gauge-text">{{memory_percent}}%</text>
+                <text x="75" y="88" text-anchor="middle" class="gauge-center-label" fill="var(--text-faint)">Memory</text>
+            </svg>
+        </div>
+
+        <div class="info-row"><span>Uptime</span><span>{{uptime}}</span></div>
+        <div class="info-row"><span>Total Modules</span><span>{{module_count}}</span></div>
+        <div class="info-row"><span>Built-in / Custom</span><span>{{builtin_count}} / {{custom_count}}</span></div>
+    </div>
 </div>
+
 <div class="card">
-    <h2>System Info</h2>
-    <div class="info-row"><span>Platform</span><span>{{platform}}</span></div>
-    <div class="info-row"><span>Python Version</span><span>{{python_version}}</span></div>
-    <div class="info-row"><span>Built-in Modules</span><span>{{builtin_count}}</span></div>
-    <div class="info-row"><span>Custom Modules</span><span>{{custom_count}}</span></div>
+    <div class="card-head">
+        <div class="titles">
+            <h2>Module Breakdown</h2>
+            <div class="card-sub">{{module_count}} modules total</div>
+        </div>
+    </div>
+    %if module_count > 0:
+    <div class="breakdown-bar">
+        <div class="breakdown-seg-builtin" style="flex: {{builtin_count}} 1 0;"></div>
+        <div class="breakdown-seg-custom" style="flex: {{custom_count}} 1 0;"></div>
+    </div>
+    <div class="breakdown-legend">
+        <div class="item"><span class="swatch" style="background:var(--green);"></span>Built-in <span class="count">{{builtin_count}}</span></div>
+        <div class="item"><span class="swatch" style="background:var(--purple);"></span>Custom <span class="count">{{custom_count}}</span></div>
+    </div>
+    %else:
+    <div class="empty-state">No modules loaded</div>
+    %end
+    <a href="/modules" class="link-more">Manage modules <span class="arrow">→</span></a>
 </div>
-<div class="card">
-    <h2>Quick Actions</h2>
-    <a href="/modules" class="btn" style="background: #58a6ff; color: #fff; margin-right: 10px;">Manage Modules</a>
-    <a href="/logs" class="btn" style="background: #21262d; color: #c9d1d9;">View Logs</a>
-</div>
+
+<script>
+(function () {
+    var maxPoints = 20;
+    var cpuHistory = [];
+    var memPercent = {{memory_percent}};
+    var gaugeCircumference = 2 * Math.PI * 62;
+
+    function setGauge(percent) {
+        var offset = gaugeCircumference * (1 - Math.min(percent, 100) / 100);
+        var fill = document.getElementById('gauge-fill');
+        var text = document.getElementById('gauge-text');
+        if (fill) fill.setAttribute('stroke-dashoffset', offset);
+        if (text) text.textContent = Math.round(percent) + '%';
+    }
+
+    function buildPath(values) {
+        if (values.length < 2) return { line: '', area: '' };
+        var w = 300, h = 110, pad = 8;
+        var stepX = w / (maxPoints - 1);
+        var maxV = 100;
+        var pts = values.map(function (v, i) {
+            var x = i * stepX;
+            var y = pad + (h - pad * 2) * (1 - v / maxV);
+            return [x, y];
+        });
+        var line = 'M ' + pts[0][0] + ' ' + pts[0][1];
+        for (var i = 1; i < pts.length; i++) {
+            line += ' L ' + pts[i][0] + ' ' + pts[i][1];
+        }
+        var area = line + ' L ' + pts[pts.length - 1][0] + ' ' + h + ' L 0 ' + h + ' Z';
+        return { line: line, area: area };
+    }
+
+    function render() {
+        var built = buildPath(cpuHistory);
+        var lineEl = document.getElementById('chart-line');
+        var areaEl = document.getElementById('chart-area');
+        if (lineEl) lineEl.setAttribute('d', built.line);
+        if (areaEl) areaEl.setAttribute('d', built.area);
+    }
+
+    function poll() {
+        fetch('/api/stats').then(function (res) { return res.json(); }).then(function (data) {
+            cpuHistory.push(data.cpu_percent);
+            if (cpuHistory.length > maxPoints) cpuHistory.shift();
+            render();
+
+            var cpuVal = document.getElementById('cpu-value');
+            var cpuPill = document.getElementById('cpu-pill');
+            var memVal = document.getElementById('mem-value');
+            var memPill = document.getElementById('mem-pill');
+
+            if (cpuVal) cpuVal.innerHTML = data.cpu_percent + '<span class="unit">%</span>';
+            if (cpuPill) cpuPill.textContent = data.cpu_percent + '%';
+            if (memVal) memVal.innerHTML = data.memory_used + '<span class="unit"> MB</span>';
+            if (memPill) memPill.textContent = data.memory_percent + '%';
+
+            setGauge(data.memory_percent);
+        }).catch(function () {});
+    }
+
+    cpuHistory.push({{cpu_percent}});
+    setGauge(memPercent);
+    poll();
+    var pollIntervalId = setInterval(poll, 3000);
+
+    window.__moonCleanup = window.__moonCleanup || [];
+    window.__moonCleanup.push(function () { clearInterval(pollIntervalId); });
+})();
+</script>
