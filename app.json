@@ -50,8 +50,8 @@
       "value": "123456779:ABCDE",
       "required": true
     },
-    "RMBG_KEY": {
-      "description": "ONLY, If you want to use removbg plugin You can get it from https://www.remove.bg/dashboard#api-key",
+    "LEONARDO_API_KEY": {
+      "description": "ONLY, If you want to use removebg plugin. remove.bg moved its API to Leonardo.Ai, get a key from https://app.leonardo.ai/api-access",
       "value": "123456779:ABCDE",
       "required": true
     },
