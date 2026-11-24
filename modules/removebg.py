@@ -19,7 +19,7 @@ from pyrogram import Client, enums, filters
 from pyrogram.types import Message
 
 from utils import modules_help, prefix
-from utils.config import rmbg_key
+from utils.config import rmbg_key, rmbg_url
 from utils.scripts import edit_or_reply, format_exc
 
 
@@ -88,7 +88,7 @@ async def remove_background(photo_data):
     async with (
         aiohttp.ClientSession() as session,
         session.post(
-            "https://api.remove.bg/v1.0/removebg",
+            rmbg_url,
             data=form,
             headers={"X-Api-Key": rmbg_key},
         ) as response,
@@ -134,7 +134,7 @@ async def rmbg(client: Client, message: Message):
     async with (
         aiohttp.ClientSession() as session,
         session.post(
-            "https://api.remove.bg/v1.0/removebg",
+            rmbg_url,
             headers={"X-Api-Key": rmbg_key},
             data=form,
         ) as r,
