@@ -42,6 +42,8 @@ Don't know how to start? Visit our **[Official Documentation](https://the-moontg
 > [!Tip]
 > Prefer GitHub? You can still access our **[Official Wiki](https://github.com/The-MoonTg-project/Moon-Userbot/wiki)** for a native GitHub documentation experience.
 
+> [!NOTE]
+> `rmbg` and `rebg` now use [Leonardo.Ai](https://docs.leonardo.ai/docs/migrate-from-the-removebg-api-to-leonardoai), because the remove.bg self-service API [stops accepting requests on December 1, 2026](https://www.remove.bg/faq). Set `LEONARDO_API_KEY` to a new key from [Leonardo API Access](https://app.leonardo.ai/api-access) and restart. `RMBG_KEY` no longer works. Leonardo bills API usage per image, and results are not kept in your Leonardo library.
 
 ## 👨🏻‍💻 Community & Support
 * [News Channel](https://t.me/moonuserbot)
