@@ -7,12 +7,14 @@
 # All rights reserved.
 # Modifed by @moonuserbot
 
+import asyncio
 import base64
 import io
 import json
 import os
 from datetime import datetime
 from functools import wraps
+from html import escape
 from io import BytesIO
 
 import aiohttp
@@ -81,10 +83,39 @@ async def convert_to_image(message, client) -> None | str:
     return final_path
 
 
-# remove.bg's API moved to Leonardo.Ai on December 1, 2026.
+# remove.bg's self-service API stops accepting requests on December 1, 2026 and
+# background removal is served by Leonardo.Ai instead.
 # https://docs.leonardo.ai/docs/migrate-from-the-removebg-api-to-leonardoai
-async def leonardo_remove_bg(image_data):
-    """Return (png_bytes, None) on success or (None, error_text) on failure."""
+LEONARDO_URL = "https://cloud.leonardo.ai/api/rest/v2/generationssync"
+# Leonardo's sync endpoint gives up after ~27 seconds; the rest of the budget
+# is headroom for uploading the image and downloading the result.
+LEONARDO_TIMEOUT = aiohttp.ClientTimeout(total=120)
+PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"
+
+
+def _leonardo_result_url(status, body):
+    """Return (url, None) for a usable response, else (None, error_text)."""
+    if status != 200:
+        return None, f"HTTP {status}: {body}"
+    try:
+        data = json.loads(body)
+    except ValueError:
+        data = None
+    if not isinstance(data, dict):
+        return None, "Invalid response from Leonardo.Ai."
+    # Leonardo often reports errors as HTTP 200 with an errors[] list.
+    if data.get("errors"):
+        return None, body
+    # results[] is empty when moderation withholds the output.
+    results = data.get("results")
+    if isinstance(results, list) and results and isinstance(results[0], dict):
+        url = results[0].get("url")
+        if isinstance(url, str) and url:
+            return url, None
+    return None, f"Leonardo.Ai returned no image: {body}"
+
+
+async def _leonardo_request(session, image_data):
     payload = {
         "model": "remove-bg",
         "ephemeral": True,
@@ -103,25 +134,37 @@ async def leonardo_remove_bg(image_data):
             },
         },
     }
-    async with aiohttp.ClientSession() as session:
-        async with session.post(
-            "https://cloud.leonardo.ai/api/rest/v2/generationssync",
-            json=payload,
-            headers={"Authorization": f"Bearer {leonardo_key}"},
-        ) as response:
-            error_text = await response.text()
-        try:
-            data = json.loads(error_text)
-        except ValueError:
-            data = None
-        results = data.get("results") if isinstance(data, dict) else None
-        # Errors come back as JSON, often with HTTP 200 and an errors[] list.
-        if not results or not results[0].get("url"):
-            return None, error_text
-        async with session.get(results[0]["url"]) as result:
-            if result.status != 200:
-                return None, f"Downloading the result failed: HTTP {result.status}"
-            return await result.read(), None
+    async with session.post(
+        LEONARDO_URL,
+        json=payload,
+        headers={"Authorization": f"Bearer {leonardo_key}"},
+    ) as response:
+        url, error = _leonardo_result_url(
+            response.status, await response.text(errors="replace")
+        )
+    if error:
+        return None, error
+    # The result is a presigned link: it must not receive the API key.
+    async with session.get(url) as result:
+        if result.status != 200:
+            return None, f"Downloading the result failed: HTTP {result.status}"
+        image = await result.read()
+    if not image.startswith(PNG_SIGNATURE):
+        return None, "Leonardo.Ai did not return a PNG image."
+    return image, None
+
+
+async def leonardo_remove_bg(image_data):
+    """Return (png_bytes, None) on success or (None, error_text) on failure."""
+    if not image_data:
+        return None, "The input image is empty."
+    try:
+        async with aiohttp.ClientSession(timeout=LEONARDO_TIMEOUT) as session:
+            return await _leonardo_request(session, image_data)
+    except asyncio.TimeoutError:
+        return None, "The Leonardo.Ai request timed out. Please try again."
+    except aiohttp.ClientError as error:
+        return None, f"The Leonardo.Ai request failed: {error}"
 
 
 async def remove_background(photo_data):
@@ -160,11 +203,13 @@ async def rmbg(client: Client, message: Message):
         await pablo.edit("<code>Reply to a valid media first.</code>")
         return
     start = datetime.now()
-    await pablo.edit("sending to Leonardo.Ai")
-    with open(cool, "rb") as fh:
-        r_content, error_text = await leonardo_remove_bg(fh.read())
-    if os.path.exists(cool):
-        os.remove(cool)
+    try:
+        await pablo.edit("sending to Leonardo.Ai")
+        with open(cool, "rb") as fh:
+            r_content, error_text = await leonardo_remove_bg(fh.read())
+    finally:
+        if os.path.exists(cool):
+            os.remove(cool)
     if r_content:
         with io.BytesIO(r_content) as remove_bg_image:
             remove_bg_image.name = "BG_rem.png"
@@ -176,28 +221,35 @@ async def rmbg(client: Client, message: Message):
         await pablo.edit(
             f"<code>Removed image's Background in {ms} seconds, powered by </code> <b>@moonuserbot</b>"
         )
-        if os.path.exists("BG_rem.png"):
-            os.remove("BG_rem.png")
     else:
         await pablo.edit(
-            "Leonardo.Ai API returned Errors. Please report to @moonub_chat"
-            + f"\n`{error_text}"
+            "Leonardo.Ai could not remove the background.\n"
+            f"<code>{escape(error_text[:1500])}</code>",
+            parse_mode=enums.ParseMode.HTML,
         )
 
 
 @Client.on_message(filters.command("rebg", prefix) & filters.me)
+@_check_rmbg
 async def rembg(client: Client, message: Message):
     await message.edit("<code>Processing...</code>")
     chat_id = message.chat.id
+    photo_data = None
     try:
         try:
             photo_data = await message.download()
         except ValueError:
+            if not message.reply_to_message:
+                await message.edit("<b>File not found</b>")
+                return
             try:
                 photo_data = await message.reply_to_message.download()
             except ValueError:
                 await message.edit("<b>File not found</b>")
                 return
+        if not photo_data:
+            await message.edit("<b>File not found</b>")
+            return
         background_removed_data = await remove_background(photo_data)
 
         if background_removed_data:
@@ -207,13 +259,13 @@ async def rembg(client: Client, message: Message):
             )
         else:
             await message.edit_text(
-                "`Is your LEONARDO_API_KEY valid, or did you not add it?`\n **Check logs for details**",
+                "`Leonardo.Ai could not remove the background. Is your LEONARDO_API_KEY valid?`\n **Check logs for details**",
                 parse_mode=enums.ParseMode.MARKDOWN,
             )
     except Exception as e:
         await message.reply_text(f"An error occurred: {format_exc(e)}")
     finally:
-        if os.path.exists(photo_data):
+        if photo_data and os.path.exists(photo_data):
             os.remove(photo_data)
 
 
