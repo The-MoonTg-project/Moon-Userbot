@@ -7,10 +7,14 @@
 # All rights reserved.
 # Modifed by @moonuserbot
 
+import asyncio
+import base64
 import io
+import json
 import os
 from datetime import datetime
 from functools import wraps
+from html import escape
 from io import BytesIO
 
 import aiohttp
@@ -19,7 +23,7 @@ from pyrogram import Client, enums, filters
 from pyrogram.types import Message
 
 from utils import modules_help, prefix
-from utils.config import rmbg_key
+from utils.config import leonardo_key
 from utils.scripts import edit_or_reply, format_exc
 
 
@@ -79,34 +83,97 @@ async def convert_to_image(message, client) -> None | str:
     return final_path
 
 
+LEONARDO_URL = "https://cloud.leonardo.ai/api/rest/v2/generationssync"
+LEONARDO_TIMEOUT = aiohttp.ClientTimeout(total=120)
+PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"
+
+
+def _leonardo_result_url(status, body):
+    if status != 200:
+        return None, f"HTTP {status}: {body}"
+    try:
+        data = json.loads(body)
+    except ValueError:
+        data = None
+    if not isinstance(data, dict):
+        return None, "Invalid response from Leonardo.Ai."
+    if data.get("errors"):
+        return None, body
+    results = data.get("results")
+    if isinstance(results, list) and results and isinstance(results[0], dict):
+        url = results[0].get("url")
+        if isinstance(url, str) and url:
+            return url, None
+    return None, f"Leonardo.Ai returned no image: {body}"
+
+
+async def _leonardo_request(session, image_data):
+    payload = {
+        "model": "remove-bg",
+        "ephemeral": True,
+        "parameters": {
+            "size": "auto",
+            "format": "png",
+            "guidances": {
+                "image_reference": [
+                    {
+                        "image": {
+                            "type": "BASE64",
+                            "data": base64.b64encode(image_data).decode(),
+                        }
+                    }
+                ]
+            },
+        },
+    }
+    async with session.post(
+        LEONARDO_URL,
+        json=payload,
+        headers={"Authorization": f"Bearer {leonardo_key}"},
+    ) as response:
+        url, error = _leonardo_result_url(
+            response.status, await response.text(errors="replace")
+        )
+    if error:
+        return None, error
+    async with session.get(url) as result:
+        if result.status != 200:
+            return None, f"Downloading the result failed: HTTP {result.status}"
+        image = await result.read()
+    if not image.startswith(PNG_SIGNATURE):
+        return None, "Leonardo.Ai did not return a PNG image."
+    return image, None
+
+
+async def leonardo_remove_bg(image_data):
+    if not image_data:
+        return None, "The input image is empty."
+    try:
+        async with aiohttp.ClientSession(timeout=LEONARDO_TIMEOUT) as session:
+            return await _leonardo_request(session, image_data)
+    except asyncio.TimeoutError:
+        return None, "The Leonardo.Ai request timed out. Please try again."
+    except aiohttp.ClientError as error:
+        return None, f"The Leonardo.Ai request failed: {error}"
+
+
 async def remove_background(photo_data):
     with open(photo_data, "rb") as image_file:
         image_data = image_file.read()
-    form = aiohttp.FormData()
-    form.add_field("image_file", image_data)
-    form.add_field("size", "auto")
-    async with (
-        aiohttp.ClientSession() as session,
-        session.post(
-            "https://api.remove.bg/v1.0/removebg",
-            data=form,
-            headers={"X-Api-Key": rmbg_key},
-        ) as response,
-    ):
-        if response.status == 200:
-            return BytesIO(await response.read())
-        error_text = await response.text()
-        print("Error:", response.status, error_text)
-        return None
+    result, error_text = await leonardo_remove_bg(image_data)
+    if result:
+        return BytesIO(result)
+    print("Error:", error_text)
+    return None
 
 
 def _check_rmbg(func):
     @wraps(func)
     async def check_rmbg(client: Client, message: Message):
-        if not rmbg_key:
+        if not leonardo_key:
             await edit_or_reply(
                 message,
-                "<code>Is Your RMBG Api 'rmbg_key' Valid Or You Didn't Add It??</code>",
+                "<code>Set LEONARDO_API_KEY to use this module. remove.bg moved its API to Leonardo.Ai, so old RMBG_KEY keys won't work.</code>",
             )
         else:
             await func(client, message)
@@ -126,24 +193,14 @@ async def rmbg(client: Client, message: Message):
         await pablo.edit("<code>Reply to a valid media first.</code>")
         return
     start = datetime.now()
-    await pablo.edit("sending to ReMove.BG")
-    input_file_name = cool
-    form = aiohttp.FormData()
-    with open(input_file_name, "rb") as fh:
-        form.add_field("image_file", fh.read(), filename=input_file_name)
-    async with (
-        aiohttp.ClientSession() as session,
-        session.post(
-            "https://api.remove.bg/v1.0/removebg",
-            headers={"X-Api-Key": rmbg_key},
-            data=form,
-        ) as r,
-    ):
-        r_content = await r.read()
-        contentType = r.headers.get("content-type")
-    if os.path.exists(cool):
-        os.remove(cool)
-    if "image" in contentType:
+    try:
+        await pablo.edit("sending to Leonardo.Ai")
+        with open(cool, "rb") as fh:
+            r_content, error_text = await leonardo_remove_bg(fh.read())
+    finally:
+        if os.path.exists(cool):
+            os.remove(cool)
+    if r_content:
         with io.BytesIO(r_content) as remove_bg_image:
             remove_bg_image.name = "BG_rem.png"
             await client.send_document(
@@ -154,29 +211,36 @@ async def rmbg(client: Client, message: Message):
         await pablo.edit(
             f"<code>Removed image's Background in {ms} seconds, powered by </code> <b>@moonuserbot</b>"
         )
-        if os.path.exists("BG_rem.png"):
-            os.remove("BG_rem.png")
     else:
         await pablo.edit(
-            "ReMove.BG API returned Errors. Please report to @moonub_chat"
-            + f"\n`{r_content.decode('UTF-8')}"
+            "Leonardo.Ai could not remove the background.\n"
+            f"<code>{escape(error_text[:1500])}</code>",
+            parse_mode=enums.ParseMode.HTML,
         )
 
 
 @Client.on_message(filters.command("rebg", prefix) & filters.me)
+@_check_rmbg
 async def rembg(client: Client, message: Message):
     await message.edit("<code>Processing...</code>")
     chat_id = message.chat.id
+    photo_data = None
     try:
         try:
             photo_data = await message.download()
         except ValueError:
+            if not message.reply_to_message:
+                await message.edit("<b>File not found</b>")
+                return
             try:
                 photo_data = await message.reply_to_message.download()
             except ValueError:
                 await message.edit("<b>File not found</b>")
                 return
-        background_removed_data = remove_background(photo_data)
+        if not photo_data:
+            await message.edit("<b>File not found</b>")
+            return
+        background_removed_data = await remove_background(photo_data)
 
         if background_removed_data:
             await message.delete()
@@ -185,13 +249,13 @@ async def rembg(client: Client, message: Message):
             )
         else:
             await message.edit_text(
-                "`Is Your RMBG Api 'rmbg_key' Valid Or You Didn't Add It??`\n **Check logs for details**",
+                "`Leonardo.Ai could not remove the background. Is your LEONARDO_API_KEY valid?`\n **Check logs for details**",
                 parse_mode=enums.ParseMode.MARKDOWN,
             )
     except Exception as e:
         await message.reply_text(f"An error occurred: {format_exc(e)}")
     finally:
-        if os.path.exists(photo_data):
+        if photo_data and os.path.exists(photo_data):
             os.remove(photo_data)
 
 

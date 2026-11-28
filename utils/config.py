@@ -24,7 +24,7 @@ quotes_api = os.getenv(
 )
 
 apiflash_key = os.getenv("APIFLASH_KEY", env.str("APIFLASH_KEY"))
-rmbg_key = os.getenv("RMBG_KEY", env.str("RMBG_KEY", ""))
+leonardo_key = os.getenv("LEONARDO_API_KEY", env.str("LEONARDO_API_KEY", ""))
 vt_key = os.getenv("VT_KEY", env.str("VT_KEY", ""))
 gemini_key = os.getenv("GEMINI_KEY", env.str("GEMINI_KEY", ""))
 cohere_key = os.getenv("COHERE_KEY", env.str("COHERE_KEY", ""))

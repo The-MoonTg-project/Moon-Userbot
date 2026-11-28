@@ -156,11 +156,11 @@ if [[ $apiflash_key = "" ]]; then
   printf "NOTE: API Not set; you'll get errors with webshot & ws module\n"
 fi
 
-printf "Enter RMBG_KEY for remove background module\n"
-printf "You can get it here -> https://www.remove.bg/dashboard#api-key\n"
-read -r -p "RMBG_KEY > " rmbg_key
+printf "Enter LEONARDO_API_KEY for remove background module (remove.bg moved its API to Leonardo.Ai)\n"
+printf "You can get it here -> https://app.leonardo.ai/api-access\n"
+read -r -p "LEONARDO_API_KEY > " leonardo_key
 
-if [[ $rmbg_key = "" ]]; then
+if [[ $leonardo_key = "" ]]; then
   printf "NOTE: API Not set; you'll not be able to use remove background modules\n"
 fi
 
@@ -259,7 +259,7 @@ DATABASE_NAME=${db_name}
 # only for mongodb
 DATABASE_URL=${db_url}
 APIFLASH_KEY=${apiflash_key}
-RMBG_KEY=${rmbg_key}
+LEONARDO_API_KEY=${leonardo_key}
 VT_KEY=${vt_key}
 GEMINI_KEY=${gemini_key}
 COHERE_KEY=${cohere_key}

@@ -60,11 +60,11 @@ if [[ $apiflash_key = "" ]]; then
 fi
 
 echo
-echo "Enter RMBG_KEY for remove background module"
-echo "You can get it here -> https://www.remove.bg/dashboard#api-key"
-read -r -p "RMBG_KEY > " rmbg_key
+echo "Enter LEONARDO_API_KEY for remove background module (remove.bg moved its API to Leonardo.Ai)"
+echo "You can get it here -> https://app.leonardo.ai/api-access"
+read -r -p "LEONARDO_API_KEY > " leonardo_key
 
-if [[ $rmbg_key = "" ]]; then
+if [[ $leonardo_key = "" ]]; then
   echo "NOTE: API Not set you'll not be able to use remove background modules"
 fi
 
@@ -136,7 +136,7 @@ DATABASE_NAME=${db_name}
 DATABASE_URL=${db_url}
 
 APIFLASH_KEY=${apiflash_key}
-RMBG_KEY=${rmbg_key}
+LEONARDO_API_KEY=${leonardo_key}
 VT_KEY=${vt_key}
 GEMINI_KEY=${gemini_key}
 COHERE_KEY=${cohere_key}

@@ -50,10 +50,9 @@
       "value": "123456779:ABCDE",
       "required": true
     },
-    "RMBG_KEY": {
-      "description": "ONLY, If you want to use removbg plugin You can get it from https://www.remove.bg/dashboard#api-key",
-      "value": "123456779:ABCDE",
-      "required": true
+    "LEONARDO_API_KEY": {
+      "description": "Optional, for rmbg and rebg. Get a new Leonardo key from https://app.leonardo.ai/api-access; old RMBG_KEY credentials do not work.",
+      "required": false
     },
     "VT_KEY": {
       "description": "ONLY, If you want to use VirusTotal plugin You can get it from https://www.virustotal.com/gui/",
