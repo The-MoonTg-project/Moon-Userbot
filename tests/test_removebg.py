@@ -22,7 +22,6 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def load_module():
-    # Import the complete plugin without starting the database or Telegram client.
     utils = ModuleType("utils")
     utils.modules_help = {}
     utils.prefix = "."
@@ -44,7 +43,6 @@ def load_module():
 
 
 removebg = load_module()
-# Captured now, before any test patches them.
 LEONARDO_URL = removebg.LEONARDO_URL
 LEONARDO_TIMEOUT = removebg.LEONARDO_TIMEOUT
 PNG_BUFFER = io.BytesIO()
@@ -92,7 +90,6 @@ class LeonardoTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(
             LEONARDO_URL, "https://cloud.leonardo.ai/api/rest/v2/generationssync"
         )
-        # Leonardo's sync endpoint can take ~27 s: never cut valid answers short.
         self.assertGreater(LEONARDO_TIMEOUT.total, 27)
 
     async def test_success_request_and_download(self):
@@ -100,7 +97,6 @@ class LeonardoTests(unittest.IsolatedAsyncioTestCase):
         headers, body = self.posts[0]
         self.assertEqual(headers["Authorization"], "Bearer test-key")
         self.assertEqual(headers["Content-Type"], "application/json")
-        # Leonardo rejects unknown keys, so only send documented ones.
         self.assertEqual(set(body), {"model", "ephemeral", "parameters"})
         self.assertEqual(set(body["parameters"]), {"size", "format", "guidances"})
         self.assertEqual(body["model"], "remove-bg")
@@ -111,7 +107,6 @@ class LeonardoTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(len(reference), 1)
         self.assertEqual(reference[0]["image"]["type"], "BASE64")
         self.assertEqual(base64.b64decode(reference[0]["image"]["data"]), PNG)
-        # The result is a presigned link and must not receive the API key.
         self.assertNotIn("Authorization", self.gets[0])
 
     async def test_http_errors_never_download_even_with_results(self):
@@ -249,7 +244,6 @@ class CommandTests(unittest.IsolatedAsyncioTestCase):
             self.addCleanup(p.stop)
 
     async def run_rmbg(self, helper):
-        # Run rmbg on self.photo with the Leonardo helper replaced by `helper`.
         with patch.object(
             removebg, "convert_to_image", AsyncMock(return_value=str(self.photo))
         ), patch.object(removebg, "leonardo_remove_bg", helper):
@@ -343,7 +337,6 @@ class CommandTests(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(self.photo.exists())
 
     async def test_rmbg_provider_error_is_truncated(self):
-        # A whole HTML error page must not overflow Telegram's message limit.
         await self.run_rmbg(AsyncMock(return_value=(None, "x" * 10000)))
         self.assertLess(len(self.progress.edit.call_args.args[0]), 2000)
 

@@ -83,18 +83,12 @@ async def convert_to_image(message, client) -> None | str:
     return final_path
 
 
-# remove.bg's self-service API stops accepting requests on December 1, 2026 and
-# background removal is served by Leonardo.Ai instead.
-# https://docs.leonardo.ai/docs/migrate-from-the-removebg-api-to-leonardoai
 LEONARDO_URL = "https://cloud.leonardo.ai/api/rest/v2/generationssync"
-# Leonardo's sync endpoint gives up after ~27 seconds; the rest of the budget
-# is headroom for uploading the image and downloading the result.
 LEONARDO_TIMEOUT = aiohttp.ClientTimeout(total=120)
 PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"
 
 
 def _leonardo_result_url(status, body):
-    """Return (url, None) for a usable response, else (None, error_text)."""
     if status != 200:
         return None, f"HTTP {status}: {body}"
     try:
@@ -103,10 +97,8 @@ def _leonardo_result_url(status, body):
         data = None
     if not isinstance(data, dict):
         return None, "Invalid response from Leonardo.Ai."
-    # Leonardo often reports errors as HTTP 200 with an errors[] list.
     if data.get("errors"):
         return None, body
-    # results[] is empty when moderation withholds the output.
     results = data.get("results")
     if isinstance(results, list) and results and isinstance(results[0], dict):
         url = results[0].get("url")
@@ -144,7 +136,6 @@ async def _leonardo_request(session, image_data):
         )
     if error:
         return None, error
-    # The result is a presigned link: it must not receive the API key.
     async with session.get(url) as result:
         if result.status != 200:
             return None, f"Downloading the result failed: HTTP {result.status}"
@@ -155,7 +146,6 @@ async def _leonardo_request(session, image_data):
 
 
 async def leonardo_remove_bg(image_data):
-    """Return (png_bytes, None) on success or (None, error_text) on failure."""
     if not image_data:
         return None, "The input image is empty."
     try:
